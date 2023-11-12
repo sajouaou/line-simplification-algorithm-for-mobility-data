@@ -39,7 +39,7 @@
 \usepackage[
     backend=biber,
     style=numeric,
-    sortlocale=de_DE,
+    sortlocale=fr_FR,
     natbib=true,
     url=false,
     doi=true,
@@ -672,7 +672,7 @@ where the priority of a point is the error (as computed by the oracle) of the li
 
 
 As we can see the following algorithm is using the error function in order to correct the result in real-time. In the context of this thesis we will investigate a solution
-that is based on the existing algorithm douglas peucker to see if it is possible to maintain a simplified version of the trip using this algorithm.
+that is based on the existing algorithm douglas-peucker to see if it is possible to maintain a simplified version of the trip using this algorithm.
 
 \end{enumerate}
 
@@ -680,6 +680,8 @@ that is based on the existing algorithm douglas peucker to see if it is possible
 
 
 \subsection{Moving Object Database}
+In order to store the position of our tracking objects it is important to
+search on moving object database as data output for this thesis.
 \cite[Moving objects are objects that change their value or location
 with time. These can be vehicles, persons, animals, aircarft, the air
 temperature of a city, the fuel price in a certain gas station, etc.
@@ -688,11 +690,63 @@ in collecting massive amounts of data that describe the temporal
 evolution of such objects and values. This creates opportunities
 to build applications on this data, which in turn calls for building]{zimanyi2019mobilitydb}
 
+As mentioned above the need for a specific database in order to have an efficient data storage.
+In the context of this thesis we will focus on mobilityDB which is a Moving Object database that extends
+PostgreSQL
+
 \subsubsection{PostgreSQL}
 
-\subsubsection{MobilityDB}
+\cite{postgresql} PostgreSQL is an object-relational database management system (ORDBMS) based on POSTGRES, Version 4.2,
+developed at the University of California at Berkeley Computer Science Department. POSTGRES pioneered many
+concepts that only became available in some commercial database systems much later.
+
+PostgreSQL is an open-source descendant of this original Berkeley code. It supports a large part of the SQL standard
+and offers many modern features:
+
+\begin{itemize}
+
+\item complex queries
+\item foreign keys
+\item triggers
+\item updatable views
+\item transactional integrity
+\item multiversion concurrency control
+\end{itemize}
+
+Also, PostgreSQL can be extended by the user in many ways, for example by adding new
+
+\begin{itemize}
+\item data types
+\item functions
+\item operators
+\item aggregate functions
+\item index methods
+\item procedural languages
+\end{itemize}
+And because of the liberal license, PostgreSQL can be used, modified, and distributed by anyone free of charge for any purpose, be it private, commercial, or academic.
+
 
 \subsubsection{PostGIS}
+
+\subsubsection{MobilityDB}
+MobilityDB uses the abstract data type approach of MOD imple-
+mentations \cite{guting2000foundation}. In an extensible relational database system this
+amounts to adding user-defined types that can be used as attribute
+types inside relations. MobilityDB defines in PostgreSQL and PostGIS
+the temporal types: tgeompoint, tgeogpoint, tfloat, tint,
+ttext, and tbool. These types encode functions from the time
+domain to their corresponding base type domains. For instance,
+the tgeompoint, tgeogpoint, and tfloat types encode, respec-
+tively, functions from time to the base types geometry(point),
+geography(point), and float1 . At the abstract level, these tem-
+poral functions can be of any order. At the representation level, a
+discrete approximation must be chosen. MobilityDB implements
+a novel discrete representation called the sequence representation.
+Assume a sequence of input events, as illustrated in Figure 1, where
+one event is a pair of a value of the base type and a time instant.
+The sequence representation defines a piece-wise linear function
+that interpolates the value between the consecutive timestamps of
+the input events.
 
 
 
