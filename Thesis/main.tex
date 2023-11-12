@@ -35,7 +35,16 @@
 
 \setcounter{secnumdepth}{4}
 
-\usepackage{biblatex} %Imports biblatex package
+%\usepackage{biblatex} %Imports biblatex package
+\usepackage[
+    backend=biber,
+    style=numeric,
+    sortlocale=de_DE,
+    natbib=true,
+    url=false,
+    doi=true,
+    eprint=false
+]{biblatex}
 \addbibresource{references.bib} %Import the bibliography file
 
 
