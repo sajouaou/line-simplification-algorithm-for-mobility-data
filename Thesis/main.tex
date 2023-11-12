@@ -266,7 +266,7 @@ General paths encompass polygonal paths without specific constraints on their ge
 \fi
 
 \chapter{State of the Art}
-In this section, we will provide a literature review on line simplification algorithms and stream processing algorithms.
+In this section, we will provide a literature review on line simplification algorithms, stream processing algorithms and subjects related to the topic of this thesis.
 
 \section{Error Metrics}
 \cite{van2017extensive}
@@ -561,7 +561,7 @@ applications see Figure \ref{fig:flume}.
 
 \begin{figure}[!h]
 	\centering
-	\includegraphics[width=1\linewidth]{figures/samza-arch4.png}
+	\includegraphics[width=1\linewidth]{figures/DevGuide_image00.png}
 	\caption{\cite{flume} Apache Flume}
 	\label{fig:flume}
 \end{figure}
@@ -574,16 +574,16 @@ Apache Kafka is a distributed system designed for streams.
 It is built to be fault-tolerant, high-throughput, horizontally
 scalable, and allows geographically distributing data streams
 and processing. See Figure \ref{fig:kafka} illustrates stream-centric
-architecture in Linkedin [26]
+architecture in Confluent blog  \cite{Kafka}
 
 \begin{figure}[!h]
 	\centering
-	\includegraphics[width=1\linewidth]{figures/streaming-flow.png}
+	\includegraphics[width=1\linewidth]{figures/data-flow-768x584.png}
 	\caption{Stream-centric architecture on Apache Kafka \cite{Kafka} }
 	\label{fig:kafka}
 \end{figure}
 
-Amazon Kinesis [27] is a fully managed, cloud-based
+Amazon Kinesis \cite{kinesis} is a fully managed, cloud-based
 service for real-time data processing over large, distributed
 data streams. Amazon Kinesis can continuously capture and
 store terabytes of data per hour from hundreds of thousands
@@ -593,26 +593,108 @@ events.
 
 
 
-IBM InfoSphere Streams [28] is an advanced analytic
-platform that allows user-developed applications to quickly
-ingest, analyze and correlate information as it arrives from
-thousands of real-time sources. The solution can handle very
-high data throughput rates, up to millions of events or
-messages per second see Figure \ref{fig:ibm}.
+IBM InfoSphere Streams \cite{ballard2014ibm,ibmdoc} is an advanced analytic
+platform that enables the development and execution
+of applications that process information in data streams.
+InfoSphere Streams enables continuous and fast analysis of massive volumes
+of moving data to help improve the speed of business insight and decision making see Figure \ref{fig:ibm}.
 
 \begin{figure}[!h]
 	\centering
-	\includegraphics[width=1\linewidth]{figures/streaming-flow.png}
-	\caption{IBM InfoSphere Streams}
+	\includegraphics[width=1\linewidth]{figures/model.jpg}
+	\caption{\cite{ibmdoc} IBM InfoSphere Streams}
 	\label{fig:ibm}
 \end{figure}
 
-As per IBM’s benchmark, this solution outperforms Apache
-Storm [29].
-The TIBCO StreamBase® Complex Event Processing
-(CEP) platform is a high-performance system for rapidly
-building applications that analyze and act on real-time
-streaming data [30].
+
+\subsection{Streaming for Line Simplification}
+In this section we will discuss the current state of line simplification algorithm/problem in the context of stream processing.
+The main problematic of this thesis is related to this problem because of that this subject will have a more in depth analysis.
+
+\cite{abam2007streaming} as mentionned in this article, suppose we are tracking one, or maybe many,
+moving objects. Each object is equipped with a device that
+is continuously transmitting its position. Thus we are re-
+ceiving a stream of data points that describes the path along
+which the object moves. The goal is to maintain this path
+for each object. We are interested in the scenario where we
+are tracking the objects over a very long period of time, as
+happens for instance when studying the migratory patterns
+of animals. In this situation it may be undesirable or even
+impossible to store the complete stream of data points. In-
+stead we have to maintain an approximation of the input
+path. This leads us to the following problem: we are receiving a (possibly infinite) stream $p0,p1,p2,...$ of points in
+the plane, and we wish to maintain a simplification (of the
+part of the path seen so far) that is as close to the original
+path as possible, while using not more than a given (fixed)
+amount of available storage.
+
+\subsubsection{Formalization}
+In this subsection we will formalize the problem of line simplification in a streaming mode based on the article \cite{abam2007streaming}.
+To be able to state the problem we wish to solve and the results we obtain more precisely, we first introduce some terminology and definitions.
+Let $p_0, p_1, \ldots$ be the given stream of input points. We use $P(n)$ to denote the path defined by the points
+$p_0, p_1, \ldots, p_n$ - that is, the path connecting those points in order - and for any two points $p, q$ on the path we use
+$P(p, q)$ to denote the subpath from $p$ to $q$. For two vertices $p_i, p_j$ we use $P(i, j)$ as a shorthand for $P\left(p_i, p_j\right)$.
+A segment $p_i p_j$ with $i<j$ is called a link or sometimes a shortcut. Thus $P(n)$ consists of the links $p_{i-1} p_i$ for $0<i \leqslant n$.
+We assume a function error is given that assigns a non-negative error to each link $p_i p_j$.
+A $\ell$-simplification of $P(n)$ is a polygonal path $Q:=q_0, q_1, \ldots, q_k, q_{k+1}$ where
+$k \leqslant \ell$ and $q_0=p_0$ and $q_{k+1}=p_n$, and $q_1, \ldots, q_k$ is a subsequence of
+$p_1, \ldots, p_{n-1}$. The error of a simplification $Q$ for a given function error, denoted
+$\operatorname{error}(Q)$, is defined as the maximum error of any of its links.
+
+\subsubsection{Evaluation}
+\cite{abam2007streaming}  Now consider an algorithm $\mathcal{A}:=\mathcal{A}(\ell)$ that maintains an $\ell$-simplification for the input stream $p_0, p_1, \ldots$,
+for some given $\ell$. Let $Q_{\mathcal{A}}(n)$ denote the simplification that $\mathcal{A}$ produces for the path $P(n)$. Let $\operatorname{Opt}(\ell)$
+denote an optimal off-line algorithm that produces an $\ell$-simplification. Thus $\operatorname{error}\left(Q_{O p t(\ell)}(n)\right)$ is the minimum possible
+error of any $\ell-$ simplification of $P(n)$. We define the quality of $\mathcal{A}$ using the competitive ratio, as is standard for on-line algorithms.
+We also allow resource augmentation. More precisely, we allow $\mathcal{A}$ to use a $2 k$-simplification, but we compare the error of this simplification
+to $Q_{O p t(k)}(n)$. (This is similar to Agarwal et al. \cite{agarwal2005near} who compare the quality of their solution to the min- $k$ problem for a given maximum error $\delta$
+to the optimal value for maximum error $\delta / 2$.) Thus we define the competitive ratio of an algorithm $\mathcal{A}(2 k)$ as
+$$
+\text { competitive ratio of } \mathcal{A}(2 k):=\max _{n \geqslant 0} \frac{\operatorname{error}\left(Q_{\mathcal{A}(2 k)}(n)\right)}{\operatorname{error}\left(Q_{O p t(k)}(n)\right)},
+$$
+where $\frac{\operatorname{error}\left(Q_{\mathcal{A}(2 k)}(n)\right)}{\operatorname{error}\left(Q_{O p t(k)}(n)\right)}$ is defined as
+1 if $\operatorname{error}\left(Q_{\mathcal{A}(2 k)}(n)\right)=$ $\operatorname{error}\left(Q_{O p t(k)}(n)\right)=0$.
+We say that an algorithm is $c$ competitive if its competitive ratio is at most $c$.
+
+\subsubsection{Algorithm}
+We will discuss the existing algorithm for the line simplification in a streaming model. In the article \cite{abam2007streaming} they propose
+the following algorithm. Our algorithm is quite simple. Suppose we have already handled the points $p_0, \ldots, p_n$.
+(We assume $n>\ell+1$; until that moment we can simply use all points and have zero error.) Let $Q:=q_0, q_1, \ldots, q_{\ell}, q_{\ell+1}$
+be the current simplification. Our algorithm will maintain a priority queue $\mathcal{Q}$ that stores the points $q_i$ with $1 \leqslant i \leqslant \ell$,
+where the priority of a point is the error (as computed by the oracle) of the link $q_{i-1} q_{i+1}$. In other words, the priority of $q_i$ is
+(an approximation of) the error that is incurred when $q_i$ is removed from the simplification. Now the next point $p_{n+1}$ is handled as follows:
+
+\begin{enumerate}
+\item  Set $q_{\ell+2}:=p_{n+1}$, thus obtaining an $(\ell+1)$-simplification of $P(n+1)$.
+\item  Compute $\operatorname{error}^*\left(q_{\ell} q_{\ell+2}\right)$ and insert $q_{\ell+1}$ into $\mathcal{Q}$ with this error as priority.
+\item  Extract the point $q_s$ with minimum priority from $\mathcal{Q}$; remove $q_s$ from the simplification.
+\item  Update the priorities of $q_{s-1}$ and $q_{s+1}$ in $\mathcal{Q}$.
+
+
+As we can see the following algorithm is using the error function in order to correct the result in real-time. In the context of this thesis we will investigate a solution
+that is based on the existing algorithm douglas peucker to see if it is possible to maintain a simplified version of the trip using this algorithm.
+
+\end{enumerate}
+
+
+
+
+\subsection{Moving Object Database}
+\cite[Moving objects are objects that change their value or location
+with time. These can be vehicles, persons, animals, aircarft, the air
+temperature of a city, the fuel price in a certain gas station, etc.
+The ubiquity of tracking devices and IoT technologies has resulted
+in collecting massive amounts of data that describe the temporal
+evolution of such objects and values. This creates opportunities
+to build applications on this data, which in turn calls for building]{zimanyi2019mobilitydb}
+
+\subsubsection{PostgreSQL}
+
+\subsubsection{MobilityDB}
+
+\subsubsection{PostGIS}
+
+
 
 \newpage
 \printbibliography
