@@ -407,7 +407,7 @@ point, resulting in the approximation.
 This algorithm takes a polyline P a sequence of
 points $\{p_{1},..., p_{n}\}$, and a user defined allowed spatial
 error, $\varepsilon $ > 0. For each combination of two points ($p_{i}$ and $p_{j}$) it checks if a line between them intersects all
-circles with radius $\varepsilon $ that center on the points that lie
+circles with radius $\varepsilon $ that center on the points that lie{\tiny {\tiny }}
 between them $\{p_{x} > p_{i},p_{x} < p_{j}\}$. When this is the
 case, the line $p_{i}p_{j}$ is an allowed shortcut and is added
 to the graph G, see Figure \ref{fig:imai}. After all allowed shortcuts
@@ -524,6 +524,86 @@ on data streams, see Figure \ref{fig:procs}).
     \label{fig:procs}
 \end{figure}
 
+
+
+\cite{namiot2015big}
+Apache Samza \cite{samza} is a distributed stream processing
+framework. It uses Apache Kafka for messaging, and
+Apache Hadoop YARN to provide fault tolerance, processor
+isolation, security, and resource management see Figure \ref{fig:samza}.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=1\linewidth]{figures/samza-arch4.png}
+	\caption{\cite{samza} Apache Samza}
+	\label{fig:samza}
+\end{figure}
+
+
+
+Apache Flume \cite{flume} is a distributed, reliable, and available
+service for efficiently collecting, aggregating, and moving
+large amounts of log data. It has a simple and flexible
+architecture based on streaming data flows. It is robust and
+fault tolerant with tunable reliability mechanisms and many
+failovers and recovery mechanisms. It uses a simple
+extensible data model that supports online analytic
+applications see Figure \ref{fig:flume}.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=1\linewidth]{figures/samza-arch4.png}
+	\caption{\cite{flume} Apache Flume}
+	\label{fig:flume}
+\end{figure}
+
+
+Apache Kafka itself is often used as a kernel for data stream
+architecture. Originally, Apache Kafka is publish-subscribe
+messaging rethought as a distributed commit log [25].
+Apache Kafka is a distributed system designed for streams.
+It is built to be fault-tolerant, high-throughput, horizontally
+scalable, and allows geographically distributing data streams
+and processing. See Figure \ref{fig:kafka} illustrates stream-centric
+architecture in Linkedin [26]
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=1\linewidth]{figures/streaming-flow.png}
+	\caption{Stream-centric architecture on Apache Kafka \cite{Kafka} }
+	\label{fig:kafka}
+\end{figure}
+
+Amazon Kinesis [27] is a fully managed, cloud-based
+service for real-time data processing over large, distributed
+data streams. Amazon Kinesis can continuously capture and
+store terabytes of data per hour from hundreds of thousands
+of sources such as website clickstreams, financial
+transactions, social media feeds, IT logs, and locationtracking
+events.
+
+
+
+IBM InfoSphere Streams [28] is an advanced analytic
+platform that allows user-developed applications to quickly
+ingest, analyze and correlate information as it arrives from
+thousands of real-time sources. The solution can handle very
+high data throughput rates, up to millions of events or
+messages per second see Figure \ref{fig:ibm}.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=1\linewidth]{figures/streaming-flow.png}
+	\caption{IBM InfoSphere Streams}
+	\label{fig:ibm}
+\end{figure}
+
+As per IBM’s benchmark, this solution outperforms Apache
+Storm [29].
+The TIBCO StreamBase® Complex Event Processing
+(CEP) platform is a high-performance system for rapidly
+building applications that analyze and act on real-time
+streaming data [30].
 
 \newpage
 \printbibliography
