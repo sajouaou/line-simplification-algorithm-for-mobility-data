@@ -646,7 +646,7 @@ $\operatorname{error}(Q)$, is defined as the maximum error of any of its links.
 for some given $\ell$. Let $Q_{\mathcal{A}}(n)$ denote the simplification that $\mathcal{A}$ produces for the path $P(n)$. Let $\operatorname{Opt}(\ell)$
 denote an optimal off-line algorithm that produces an $\ell$-simplification. Thus $\operatorname{error}\left(Q_{O p t(\ell)}(n)\right)$ is the minimum possible
 error of any $\ell-$ simplification of $P(n)$. We define the quality of $\mathcal{A}$ using the competitive ratio, as is standard for on-line algorithms.
-We also allow resource augmentation. More precisely, we allow $\mathcal{A}$ to use a $2 k$-simplification, but we compare the error of this simplification
+We also allow resource augmentation. More precisely, we allow $\mathcal{A}$ to use a $2k$-simplification, but we compare the error of this simplification
 to $Q_{O p t(k)}(n)$. (This is similar to Agarwal et al. \cite{agarwal2005near} who compare the quality of their solution to the min- $k$ problem for a given maximum error $\delta$
 to the optimal value for maximum error $\delta / 2$.) Thus we define the competitive ratio of an algorithm $\mathcal{A}(2 k)$ as
 $$
@@ -665,16 +665,15 @@ where the priority of a point is the error (as computed by the oracle) of the li
 (an approximation of) the error that is incurred when $q_i$ is removed from the simplification. Now the next point $p_{n+1}$ is handled as follows:
 
 \begin{enumerate}
-\item  Set $q_{\ell+2}:=p_{n+1}$, thus obtaining an $(\ell+1)$-simplification of $P(n+1)$.
-\item  Compute $\operatorname{error}^*\left(q_{\ell} q_{\ell+2}\right)$ and insert $q_{\ell+1}$ into $\mathcal{Q}$ with this error as priority.
-\item  Extract the point $q_s$ with minimum priority from $\mathcal{Q}$; remove $q_s$ from the simplification.
-\item  Update the priorities of $q_{s-1}$ and $q_{s+1}$ in $\mathcal{Q}$.
-
+	\item  Set $q_{\ell+2}:=p_{n+1}$, thus obtaining an $(\ell+1)$-simplification of $P(n+1)$.
+	\item  Compute $\operatorname{error}^*\left(q_{\ell} q_{\ell+2}\right)$ and insert $q_{\ell+1}$ into $\mathcal{Q}$ with this error as priority.
+	\item  Extract the point $q_s$ with minimum priority from $\mathcal{Q}$; remove $q_s$ from the simplification.
+	\item  Update the priorities of $q_{s-1}$ and $q_{s+1}$ in $\mathcal{Q}$.
+	
+\end{enumerate}
 
 As we can see the following algorithm is using the error function in order to correct the result in real-time. In the context of this thesis we will investigate a solution
 that is based on the existing algorithm douglas-peucker to see if it is possible to maintain a simplified version of the trip using this algorithm.
-
-\end{enumerate}
 
 
 
@@ -704,55 +703,47 @@ PostgreSQL is an open-source descendant of this original Berkeley code. It suppo
 and offers many modern features:
 
 \begin{itemize}
-
-\item complex queries
-\item foreign keys
-\item triggers
-\item updatable views
-\item transactional integrity
-\item multiversion concurrency control
+	
+	\item complex queries
+	\item foreign keys
+	\item triggers
+	\item updatable views
+	\item transactional integrity
+	\item multiversion concurrency control
 \end{itemize}
 
 Also, PostgreSQL can be extended by the user in many ways, for example by adding new
 
 \begin{itemize}
-\item data types
-\item functions
-\item operators
-\item aggregate functions
-\item index methods
-\item procedural languages
+	\item data types
+	\item functions
+	\item operators
+	\item aggregate functions
+	\item index methods
+	\item procedural languages
 \end{itemize}
 And because of the liberal license, PostgreSQL can be used, modified, and distributed by anyone free of charge for any purpose, be it private, commercial, or academic.
 
 
 \subsubsection{PostGIS}
+\cite{marquez2015postgis} PostGIS represents a potent open-source instrument facilitating the creation of resilient spatial databases. Serving as the geographic extension of the PostgreSQL database management system, PostGIS enables the incorporation of geographic objects within data tables. These geographic objects are specialized data types designed for the storage of geographic positions or sets thereof, integrated seamlessly into lines or polygons. In essence, PostGIS emerges as a formidable tool, empowering users to manage intricate geographical data proficiently and to visually interrogate such data when employed in conjunction with graphical tools, exemplified by QGIS.
 
 \subsubsection{MobilityDB}
-MobilityDB uses the abstract data type approach of MOD imple-
-mentations \cite{guting2000foundation}. In an extensible relational database system this
+MobilityDB uses the abstract data type approach of MOD implementations
+\cite{guting2000foundation}. In an extensible relational database system this
 amounts to adding user-defined types that can be used as attribute
 types inside relations. MobilityDB defines in PostgreSQL and PostGIS
 the temporal types: tgeompoint, tgeogpoint, tfloat, tint,
 ttext, and tbool. These types encode functions from the time
-domain to their corresponding base type domains. For instance,
-the tgeompoint, tgeogpoint, and tfloat types encode, respec-
-tively, functions from time to the base types geometry(point),
-geography(point), and float1 . At the abstract level, these tem-
-poral functions can be of any order. At the representation level, a
-discrete approximation must be chosen. MobilityDB implements
-a novel discrete representation called the sequence representation.
-Assume a sequence of input events, as illustrated in Figure 1, where
-one event is a pair of a value of the base type and a time instant.
-The sequence representation defines a piece-wise linear function
-that interpolates the value between the consecutive timestamps of
-the input events.
+domain to their corresponding base type domains. MobilityDB extends the existential
+spatial database by adding a new dimension. It becomes more dynamics and respond to the need 
+of processing moving object data. 
+
 
 
 
 \newpage
 \printbibliography
-
 %\bibliography{reference}
 %\bibliographystyle{abbrv}
 
