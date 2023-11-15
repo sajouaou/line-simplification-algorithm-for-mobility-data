@@ -1,0 +1,4 @@
+tkinter
+visvalingamwyatt
+rdp
+shapely
