@@ -1,0 +1,16 @@
+Data :
+- Random
+- Dataset
+- IoT device
+- tracking object API
+- 2D or 3D ? (It has an impact on the following)
+
+Proof of concept :
+- Simulate a stream of data
+- Evaluate the algorithm based on time and criteria describe in state of the art
+- Run in an controlled setup
+- Implementation of static algorithm and existing streaming algorithm (SQUISH)
+
+Implementation :
+- Connect to MobilityDB
+- Use of Streaming technology (Kafka,Spark,Kinesis,...)
