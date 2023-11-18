@@ -21,7 +21,7 @@ class OnlineTrajectoryGeneralizer:
 
     def __init__(self, traj_stream):
         """
-        Create TrajectoryGeneralizer
+        Create OnlineTrajectoryGeneralizer
 
         Parameters
         ----------
@@ -32,7 +32,7 @@ class OnlineTrajectoryGeneralizer:
 
     def generalize(self, tolerance,epsilon):
         """
-        Generalize the input Trajectory/TrajectoryCollection.
+        Generalize the input TrajectoryStream
 
         Parameters
         ----------
@@ -66,6 +66,17 @@ def SED(A,B,C):
 
 class SquishE(OnlineTrajectoryGeneralizer):
 
+    def __init__(self, traj_stream,error = SED):
+        """
+        Create TrajectoryGeneralizer
+
+        Parameters
+        ----------
+        traj_stream : Trajectory stream (Only 1 trajectory stream)
+        """
+        OnlineTrajectoryGeneralizer.__init__(self,traj_stream)
+        self.error = error
+
     def reduce(self,Q,pred,succ,p):
         priority,p_j = self.remove_min(Q)
         p[str(succ[str(p_j)])] = max(priority,p[str(succ[str(p_j)])])
@@ -79,7 +90,7 @@ class SquishE(OnlineTrajectoryGeneralizer):
 
     def adjust_priority(self,point,Q,pred,succ,p):
         if pred.get(str(point)) is not None  and succ.get(str(point)) is not None:
-            priority = p[str(point)] + SED(pred[str(point)],point,succ[str(point)])
+            priority = p[str(point)] + self.error(pred[str(point)],point,succ[str(point)])
             self.set_priority(point,priority,Q)
 
 
@@ -140,4 +151,42 @@ class SquishE(OnlineTrajectoryGeneralizer):
 
 
         return Trajectory( generalized, self.traj_stream.id, traj_id_col=self.traj_stream.get_traj_id_col())
+
+
+
+class SlidingWindowGeneralizer(OnlineTrajectoryGeneralizer):
+
+    def calculate_error(self,window):
+        max_error = 0
+        for i in range(1,len(window)):
+            error = SED(window[0],window[i],window[-1])
+            if error > max_error :
+                max_error = error
+
+        return max_error
+
+    def _generalize_traj(self, traj_stream, max_error,max_window_size):
+        window = []
+        anchor = 0
+        generalized = GeoDataFrame(pd.DataFrame([]))
+        while traj_stream.is_open():
+            i = 2
+            loop = True
+            window.append(traj_stream.get_points())
+            if traj_stream.is_open():
+                window.append(traj_stream.get_points())
+                while self.calculate_error(window) < max_error and loop :
+                    i += 1
+                    if len(window) == max_window_size or  not traj_stream.is_open():
+                        loop = False
+                    else :
+                        window.append(traj_stream.get_points())
+
+            generalized = pd.concat([ generalized, GeoDataFrame(pd.DataFrame(window[:i-1]) ) ])
+            window = []
+
+        generalized.crs = self.traj_stream.crs
+        generalized.index.name = "t"
+        return Trajectory( generalized, self.traj_stream.id, traj_id_col=self.traj_stream.get_traj_id_col())
+
 
