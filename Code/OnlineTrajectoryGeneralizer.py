@@ -7,7 +7,6 @@ import numpy as np
 
 from geopandas import GeoDataFrame
 import movingpandas as mpd
-
 from movingpandas.trajectory import Trajectory
 
 
@@ -156,37 +155,53 @@ class SquishE(OnlineTrajectoryGeneralizer):
 
 class SlidingWindowGeneralizer(OnlineTrajectoryGeneralizer):
 
-    def calculate_error(self,window):
-        max_error = 0
-        for i in range(1,len(window)):
-            error = SED(window[0],window[i],window[-1])
-            if error > max_error :
-                max_error = error
+	def calculate_error(self,window,max_error,max_speed_error = 20):
+		delta_e = window[-1].name - window[0].name
+		idt = window[0]['geometry'] - window[0]['geometry']
+		for i in range(1,len(window) -1) :
+			delta_i = window[i].name - window[0].name
+			x_i =  window[0]['geometry'].x + ( window[-1]['geometry'].x -  window[0]['geometry'].x )* (delta_i/delta_e)
+			y_i = window[0]['geometry'].y + ( window[-1]['geometry'].y -  window[0]['geometry'].y )* (delta_i/delta_e)
+			
+			point = Point(x_i,y_i)
+			
+			
+			v_i_1 = window[i]['geometry'].distance(window[i-1]['geometry']) / (window[i].name - window[i-1].name).total_seconds()
+			v_i = window[i]['geometry'].distance(window[i+1]['geometry']) / (window[i+1].name - window[i].name).total_seconds()
+			
+			print(point.distance(window[i]['geometry']) )
+			
+			if point.distance(window[i]['geometry']) > max_error or  np.abs( v_i - v_i_1) > max_speed_error :
+				return True
+		return False
 
-        return max_error
-
-    def _generalize_traj(self, traj_stream, max_error,max_window_size):
-        window = []
-        anchor = 0
-        generalized = GeoDataFrame(pd.DataFrame([]))
-        while traj_stream.is_open():
-            i = 2
-            loop = True
-            window.append(traj_stream.get_points())
-            if traj_stream.is_open():
-                window.append(traj_stream.get_points())
-                while self.calculate_error(window) < max_error and loop :
-                    i += 1
-                    if len(window) == max_window_size or  not traj_stream.is_open():
-                        loop = False
-                    else :
-                        window.append(traj_stream.get_points())
-
-            generalized = pd.concat([ generalized, GeoDataFrame(pd.DataFrame(window[:i-1]) ) ])
-            window = []
-
-        generalized.crs = self.traj_stream.crs
-        generalized.index.name = "t"
-        return Trajectory( generalized, self.traj_stream.id, traj_id_col=self.traj_stream.get_traj_id_col())
+	def _generalize_traj(self, traj_stream, max_error,max_window_size):
+	    	window = []
+	    	anchor = 0
+	    	generalized = GeoDataFrame(pd.DataFrame([]))
+	    	while traj_stream.is_open():
+	    		is_error = False
+	    		loop = True
+	    		window.append(traj_stream.get_points())
+	    		generalized = pd.concat([ generalized, GeoDataFrame(pd.DataFrame(window[0]) )])
+	    		if traj_stream.is_open():
+	    			window.append(traj_stream.get_points())
+	    			while loop :
+	    				if self.calculate_error(window,max_error) :
+	    					is_error = True
+	    					loop = False
+	    				elif len(window) == max_window_size or  not traj_stream.is_open():
+	    					loop = False
+	    				else :
+	    					window.append(traj_stream.get_points())
+	    		if traj_stream.is_open():
+	    			if is_error:
+	    				generalized = pd.concat([ generalized, GeoDataFrame(pd.DataFrame(window[-1]) )])
+	    			else :
+	    				generalized = pd.concat([ generalized, GeoDataFrame(pd.DataFrame(window[1:-1]) )])
+	    		window = [window[-1]]
+	    	generalized.crs = self.traj_stream.crs
+	    	generalized.index.name = "t"
+	    	return Trajectory( generalized, self.traj_stream.id, traj_id_col=self.traj_stream.get_traj_id_col())
 
 
