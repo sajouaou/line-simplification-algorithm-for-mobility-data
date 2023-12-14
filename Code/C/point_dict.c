@@ -9,6 +9,14 @@ struct PointDict
 };
 
 
+struct PointDict *
+create_PointDict(){
+  struct PointDict * result =  malloc(sizeof(struct PointDict));
+  result->key = NULL;
+  result->next_value = NULL;
+  return result;
+}
+
 void*
 get_point_dict(void *p_i,struct PointDict *dict)
 {
@@ -49,7 +57,7 @@ set_point_dict(void * p_i,void * p_j,struct PointDict *dict)
         }
         else if(dict->next_value  == NULL && loop )
         {
-            struct PointDict * entry = malloc(sizeof(struct PointDict));
+            struct PointDict * entry = create_PointDict();
             entry->key = p_i;
             entry->value = p_j;
             dict->next_value = entry;
@@ -101,7 +109,7 @@ void destroy_elem_PointDict(void * p_i,struct PointDict *dict)
                 }
             }
         }
-        temp = dict;
+        temp = d;
         d = d->next_value;
     }
 }

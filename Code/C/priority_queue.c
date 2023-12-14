@@ -1,5 +1,10 @@
 
 
+/*+
+UPDATE IDEA :
+USING STATIC STRUCTURE BY ADDING size_t allocated_size; and a table of PriorityQueue as the final structure adapat the algorithm from that.
+
+*/
 
 struct PriorityQueue
 {
@@ -8,6 +13,16 @@ struct PriorityQueue
   struct PriorityQueue *next_entry;
   size_t size;
 };
+
+
+static struct PriorityQueue *
+create_PriorityQueue(){
+  struct PriorityQueue * result =  malloc(sizeof(struct PriorityQueue));
+  result->next_entry = NULL;
+  result->point = NULL;
+  result->size = 0;
+  return result;
+}
 
 
 size_t size_queue(const struct PriorityQueue *Q)
@@ -22,7 +37,7 @@ struct PriorityQueue* remove_min(struct PriorityQueue *Q)
   {
      if(result == NULL)
      {
-       result = malloc(sizeof(struct PriorityQueue));
+       result = create_PriorityQueue();
 
      }
      void *point = Q->point;
@@ -46,7 +61,6 @@ set_priority_queue(void *p_i,double priority ,struct PriorityQueue *Q)
   Q->size++;
   // Check if p_i is already there and at the same time check position to put priority
   struct PriorityQueue * before_position = NULL;
-  struct PriorityQueue * insert_position = NULL;
 
   struct PriorityQueue * current = Q;
   struct PriorityQueue * before_current = NULL;
@@ -65,7 +79,7 @@ set_priority_queue(void *p_i,double priority ,struct PriorityQueue *Q)
       insert = current;
       before_insert = before_current;
     }
-    if(current->priority < priority && current->next_entry != NULL &&
+    if(current->point != p_i && current->priority < priority && current->next_entry != NULL &&
       current->next_entry->priority > priority &&
       before_position == NULL)
     {
@@ -73,7 +87,7 @@ set_priority_queue(void *p_i,double priority ,struct PriorityQueue *Q)
       //printf("INSERT POSITION : %lf , %lf \n",*(double *)(current->point), current->priority);
       before_position = current;
     }
-    else if(current->next_entry == NULL && current->priority < priority)
+    else if(current->next_entry == NULL && current->priority <= priority)
     {
       if(current == insert)
       {
@@ -103,13 +117,14 @@ set_priority_queue(void *p_i,double priority ,struct PriorityQueue *Q)
   {
     // Case insert was found and is the top of queue
     insert = remove_min(Q);
+    Q->size++;
   }
 
   if(insert == NULL &&  Q->point != NULL)
   {
     // Case insert is not found
     //printf("Case insert is not found\n");
-    insert = malloc(sizeof(struct PriorityQueue));
+    insert = create_PriorityQueue();
   }
 
   if(insert != NULL)
@@ -164,7 +179,7 @@ set_priority_queue(void *p_i,double priority ,struct PriorityQueue *Q)
 
 }
 
-void destroyQueue(struct PriorityQueue *Q)
+void destroy_Queue(struct PriorityQueue *Q)
 {
     while (Q != NULL)
     {

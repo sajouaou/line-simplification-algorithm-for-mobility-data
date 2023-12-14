@@ -1,16 +1,35 @@
-#define MAX(x, y) (((x) > (y)) ? (x) : (y))
 
 
 
 double
-SED(void *p_a,void *p_b,void *p_c)
+SED(void *p_a,void *p_b,void *p_c,interpType interp ,bool hasz )
 {
+  POINT2D *p2k, *p2_sync, *p2a, *p2b;
+  POINT3DZ *p3k, *p3_sync, *p3a, *p3b;
+
+
   const TInstant *start =  (const TInstant *) p_a;
   const TInstant *end = (const TInstant *) p_c;
   const TInstant *inst = (const TInstant *) p_b;
+
+    if (hasz)
+    {
+      p3a = (POINT3DZ *) DATUM_POINT3DZ_P(tinstant_value(start));
+      p3k = (POINT3DZ *) DATUM_POINT3DZ_P(tinstant_value(inst));
+      p3b = (POINT3DZ *) DATUM_POINT3DZ_P(tinstant_value(end));
+    }
+    else
+    {
+      p2a = (POINT2D *) DATUM_POINT2D_P(tinstant_value(start));
+      p2k = (POINT2D *) DATUM_POINT2D_P(tinstant_value(inst));
+      p2b = (POINT2D *) DATUM_POINT2D_P(tinstant_value(end));
+    }
+
   double startval = DatumGetFloat8(tinstant_value(start));
   double endval = DatumGetFloat8(tinstant_value(end));
   double value = DatumGetFloat8(tinstant_value(inst));
+
+  Datum tmp_value;
 
   double duration2 = (double) (end->t - start->t);
   double duration1 = (double) (inst->t - start->t);
@@ -18,6 +37,26 @@ SED(void *p_a,void *p_b,void *p_c)
   double ratio = duration1 / duration2;
   double value_interp = startval + (endval - startval) * ratio;
   double d = fabs(value - value_interp);
+  double d_tmp;
+
+   if (hasz)
+      {
+          tmp_value = tsegment_value_at_timestamp(start, end, interp, inst->t);
+          p3_sync = (POINT3DZ *) DATUM_POINT3DZ_P(tmp_value);
+          //d_tmp = dist3d_pt_seg(p3k, p3a, p3b);
+          d_tmp = dist3d_pt_pt(p3k, p3_sync);
+          pfree(DatumGetPointer(tmp_value));
+      }
+      else
+      {
+        tmp_value = tsegment_value_at_timestamp(start, end, interp, inst->t);
+          p2_sync = (POINT2D *) DATUM_POINT2D_P(tmp_value);
+          d_tmp = dist2d_pt_pt(p2k, p2_sync);
+          pfree(DatumGetPointer(tmp_value));
+      }
+
+  elog(NOTICE,"DISTANCE WITH Duration : %f \n DISTANCE WITH Point : %f",d,d_tmp);
+  d = d_tmp;
 
   return d;
 }
@@ -26,19 +65,24 @@ SED(void *p_a,void *p_b,void *p_c)
 
 
 void
-adjust_priority(void *p_i,struct PriorityQueue *Q, struct PointDict *pred,struct PointDict *succ,struct PriorityDict *p)
+adjust_priority(void *p_i,struct PriorityQueue *Q, struct PointDict *pred,struct PointDict *succ,struct PriorityDict *p,
+bool syncdist,interpType interp ,bool hasz )
 {
   void * p_h = get_point_dict(p_i,pred);
   void * p_k = get_point_dict(p_i,succ);
   if( p_h != NULL &&  p_k != NULL )
   {
-    double priority = get_priority_dict(p_i,p) + SED(p_h,p_i,p_k);
+    if(syncdist)
+    {
+    double priority = get_priority_dict(p_i,p) + SED(p_h,p_i,p_k, interp , hasz );
     set_priority_queue(p_i,priority,Q);
+    }
   }
 }
 
 void
-reduce(struct PriorityQueue *Q,struct PointDict *pred,struct PointDict *succ,struct PriorityDict *p)
+reduce(struct PriorityQueue *Q,struct PointDict *pred,struct PointDict *succ,struct PriorityDict *p,
+bool syncdist,interpType interp ,bool hasz )
 {
   struct PriorityQueue *entry = remove_min(Q);
   void * p_j = entry->point;
@@ -46,14 +90,17 @@ reduce(struct PriorityQueue *Q,struct PointDict *pred,struct PointDict *succ,str
   void * p_i = get_point_dict(p_j,pred);
   void * p_k = get_point_dict(p_j,succ);
 
-  set_priority_dict(p_k, MAX(priority, get_priority_dict(p_k,p) ) ,p);
-  set_priority_dict(p_i, MAX(priority, get_priority_dict(p_i,p) ) ,p);
+  double pr_i = get_priority_dict(p_i,p); if(priority > pr_i){ pr_i = priority; }
+  double pr_k = get_priority_dict(p_k,p); if(priority > pr_k){ pr_k = priority; }
+
+  set_priority_dict(p_k, pr_k ,p);
+  set_priority_dict(p_i, pr_i ,p);
 
   set_point_dict(p_i,p_k,succ);
   set_point_dict(p_k,p_i,pred);
 
-  adjust_priority(p_k ,Q,pred,succ,p);
-  adjust_priority(p_i ,Q,pred,succ,p);
+  adjust_priority(p_k ,Q,pred,succ,p,syncdist, interp ,hasz );
+  adjust_priority(p_i ,Q,pred,succ,p,syncdist, interp ,hasz );
 
   //Delete pointer
   free(entry);  destroy_elem_PriorityDict(p_j,p);
@@ -68,9 +115,10 @@ void
 iteration_simplification_sqe(void *p_i , void *p_j ,
                             int *beta,double lambda,int i,
                             struct PointDict *succ,struct PointDict *pred,
-                            struct PriorityDict *p,struct PriorityQueue *Q)
+                            struct PriorityDict *p,struct PriorityQueue *Q,
+                             bool syncdist,interpType interp ,bool hasz ,uint32_t minpts)
 {
-  if( double(i)/lambda >= *beta)
+  if( i/lambda >= *beta)
   {
       *beta += 1;
   }
@@ -80,15 +128,94 @@ iteration_simplification_sqe(void *p_i , void *p_j ,
   {
      set_point_dict(p_i,p_j,pred);
      set_point_dict(p_j,p_i,succ);
-     adjust_priority(p_j,Q,pred,succ,p);
+     adjust_priority(p_j,Q,pred,succ,p, syncdist, interp , hasz );
   }
 
-  if(size_queue(Q) == *beta ){
-    reduce(Q,pred,succ,p);
+  if(size_queue(Q) == *beta && minpts){
+    reduce(Q,pred,succ,p,syncdist, interp , hasz );
   }
 }
 
 
+typedef struct
+{
+  uint32_t i;
+
+  int beta;
+  struct PointDict *succ;
+  struct PointDict *pred;
+  struct PriorityDict *p;
+  struct PriorityQueue *Q;
+
+  TInstant * p_i;
+  TInstant * p_j;
+  TInstant * point;
+
+} squish_variables;
+
+
+void
+init_squish_variables(squish_variables *sq)
+{
+   sq->beta = 4;
+   sq->i = 0;
+   sq->succ = create_PointDict();
+   sq->pred = create_PointDict();
+   sq->p = create_PriorityDict();
+   sq->Q = create_PriorityQueue();
+
+   sq->p_i = NULL;
+   sq->p_j = NULL;
+   sq->point = NULL;
+}
+
+
+void
+free_squish_variables(squish_variables *sq)
+{
+  destroy_PointDict(sq->pred);
+  destroy_PointDict(sq->succ);
+  destroyQueue(sq->Q);
+  destroy_PriorityDict(sq->p);
+}
+
+void
+sq_iteration(TInstant * point,squish_variables *sq , double lambda, bool syncdist,
+                                                      uint32_t minpts)
+{
+  interpType interp = MEOS_FLAGS_GET_INTERP(point->flags);
+  bool hasz = MEOS_FLAGS_GET_Z(point->flags);
+  if(sq->i == 0)
+  {
+        sq->point = point;
+  }
+  sq->p_j = sq->p_i;
+  sq->p_i = point;
+
+
+  iteration_simplification_sqe(sq->p_i , sq->p_j ,&(sq->beta),lambda,sq->i,
+                                 sq->succ,sq->pred,
+                                 sq->p,sq->Q, syncdist,interp,hasz, minpts);
+  sq->i++;
+}
+
+TSequence *
+construct_simplify_path(squish_variables *sq )
+{
+  /* Create a new temporal sequence */
+  uint32_t outn = size_queue(Q);
+  const TInstant **instants = palloc(sizeof(TInstant *) * outn);
+  for (i = 0; i < outn; i++)
+  {
+   elog(NOTICE,"POINT FROM SUCC : %p",point);
+    instants[i] = point;
+    point = (TInstant *) get_point_dict(point,succ);
+  }
+  TSequence *result = tsequence_make(instants, outn, seq->period.lower_inc,
+      seq->period.upper_inc, LINEAR, NORMALIZE);
+  pfree(instants);
+  return result;
+}
 
 
 /**
@@ -96,20 +223,27 @@ iteration_simplification_sqe(void *p_i , void *p_j ,
  * Douglas-Peucker line simplification algorithm.
  */
 static TSequence *
-tsequence_simplify_sqe(const TSequence *seq, double dist, bool syncdist,
+tsequence_simplify_sqe(const TSequence *seq, double lambda, bool syncdist,
   uint32_t minpts)
 {
+
+  squish_variables SQ_variables;
+  init_squish_variables(&SQ_variables);
+
+
   uint32_t i,outn;
-
   int beta = 4;
-  struct PointDict *succ = malloc(sizeof(struct PointDict));
-  struct PointDict *pred = malloc(sizeof(struct PointDict));
-  struct PriorityDict *p = malloc(sizeof(struct PriorityDict));
-  struct PriorityQueue *Q = malloc(sizeof(struct PriorityQueue));
-
+  struct PointDict *succ = create_PointDict();
+  struct PointDict *pred = create_PointDict();
+  struct PriorityDict *p = create_PriorityDict();
+  struct PriorityQueue *Q = create_PriorityQueue();
   TInstant * p_i = NULL;
   TInstant * p_j = NULL;
   TInstant * point = NULL;
+
+
+  interpType interp = MEOS_FLAGS_GET_INTERP(seq->flags);
+  bool hasz = MEOS_FLAGS_GET_Z(seq->flags);
 
 
   assert(MEOS_FLAGS_LINEAR_INTERP(seq->flags));
@@ -118,39 +252,43 @@ tsequence_simplify_sqe(const TSequence *seq, double dist, bool syncdist,
   if (seq->count < 3)
     return tsequence_copy(seq);
 
-
-  i = 0;
   do
   {
     p_i = TSEQUENCE_INST_N(seq,i);
+    sq_iteration( TSEQUENCE_INST_N(seq,i) ,&SQ_variables, lambda,  syncdist,minpts);
+    /*
     if(i == 0){
       point = p_i;
     }
     iteration_simplification_sqe(p_i , p_j ,&beta,dist,i,
                                  succ,pred,
-                                 p,Q);
+                                 p,Q, syncdist,interp,hasz, minpts);
     p_j = p_i;
     i++;
+    */
   }
-  while(i < seq->count);
-
-
+  while(SQ_variables.i < seq->count);
 
 
   /* Create a new temporal sequence */
+  /*
   outn = size_queue(Q);
-  i = 0;
   const TInstant **instants = palloc(sizeof(TInstant *) * outn);
-  while(point != NULL && i < outn)
+  for (i = 0; i < outn; i++)
   {
+   elog(NOTICE,"POINT FROM SUCC : %p",point);
     instants[i] = point;
     point = (TInstant *) get_point_dict(point,succ);
-    i++;
   }
   TSequence *result = tsequence_make(instants, outn, seq->period.lower_inc,
-       seq->period.upper_inc, LINEAR, NORMALIZE);
+      seq->period.upper_inc, LINEAR, NORMALIZE);
   pfree(instants);
+  */
 
+
+  TSequence *result = construct_simplify_path(&SQ_variables);
+
+  free_squish_variables(&SQ_variables);
   destroy_PointDict(pred);
   destroy_PointDict(succ);
   destroyQueue(Q);

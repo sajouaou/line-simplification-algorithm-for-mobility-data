@@ -7,7 +7,6 @@ struct PointDict
     void *key;
     void *value;
     struct PointDict *next_value;
-    struct PointDict *last_value;
 };
 
 // Définir vos fonctions ici

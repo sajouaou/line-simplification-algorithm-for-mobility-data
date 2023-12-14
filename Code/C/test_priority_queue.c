@@ -61,7 +61,7 @@ int main()
 
     // Libérer la mémoire de la file de priorité
 
-    destroyQueue(queue);
+    destroy_Queue(queue);
     printf("Tous les tests ont réussi !\n");
 
     return 0;

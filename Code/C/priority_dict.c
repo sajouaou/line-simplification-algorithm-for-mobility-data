@@ -9,6 +9,13 @@ struct PriorityDict
 };
 
 
+struct PriorityDict *
+create_PriorityDict(){
+  struct PriorityDict * result =  malloc(sizeof(struct PriorityDict));
+  result->next_entry = NULL;
+  return result;
+}
+
 
 double
 get_priority_dict(void *p_i,struct PriorityDict *dict)
@@ -50,7 +57,7 @@ set_priority_dict(void * p_i,double priority,struct PriorityDict *dict)
         }
         else if(dict->next_entry  == NULL && loop )
         {
-            struct PriorityDict * entry = malloc(sizeof(struct PriorityDict));
+            struct PriorityDict * entry = create_PriorityDict();
             entry->point = p_i;
             entry->priority = priority;
             dict->next_entry = entry;
