@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-./install_dependance.sh
-git clone --branch develop https://github.com/MobilityDB/MobilityDB
+#./install_dependance.sh
+#git clone --branch develop https://github.com/MobilityDB/MobilityDB
 
 cat ../C/point_dict.c  >> MobilityDB/meos/src/general/temporal_analytics.c
 cat ../C/priority_dict.c  >> MobilityDB/meos/src/general/temporal_analytics.c
@@ -20,5 +20,5 @@ cmake ..
 make
 sudo make install
 cd ../../
-rm -r --force MobilityDB
+#rm -r --force MobilityDB
 ./setup_postgresql.sh

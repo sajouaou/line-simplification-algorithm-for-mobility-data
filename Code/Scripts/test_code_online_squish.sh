@@ -4,10 +4,10 @@
 source creditentials
 export PGPASSWORD=$password
 
-#rm -rf ../BuildScript/MobilityDB/build
-#mkdir ../BuildScript/MobilityDB/build
+rm -rf ../BuildScript/MobilityDB/build
+mkdir ../BuildScript/MobilityDB/build
 cd ../BuildScript/MobilityDB/build
-#cmake .. -DMEOS=on
+cmake .. -DMEOS=on
 #cmake ..
 make install
 

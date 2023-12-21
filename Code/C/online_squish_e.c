@@ -67,6 +67,8 @@ void
 init_squish_variables(squish_variables *sq);
 
 
+
+
 void
 free_squish_variables(squish_variables *sq);
 
@@ -74,8 +76,6 @@ void
 sq_iteration(TInstant * point,squish_variables *sq , double lambda, bool syncdist,
                                                       uint32_t minpts);
 
-TSequence *
-construct_simplify_path(squish_variables *sq );
 
 
 
