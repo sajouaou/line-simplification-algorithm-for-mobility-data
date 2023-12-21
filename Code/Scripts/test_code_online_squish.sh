@@ -6,7 +6,10 @@ export PGPASSWORD=$password
 
 #rm -rf ../BuildScript/MobilityDB/build
 #mkdir ../BuildScript/MobilityDB/build
-cd ../BuildScript/MobilityDB/build
+
+cd ../BuildScript
+./change_file.sh
+cd MobilityDB/build
 #cmake .. -DMEOS=on
 #cmake ..
 make install
