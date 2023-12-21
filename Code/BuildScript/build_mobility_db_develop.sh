@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-./install_dependance.sh
-git clone --branch develop https://github.com/MobilityDB/MobilityDB
+#./install_dependance.sh
+#git clone --branch develop https://github.com/MobilityDB/MobilityDB
 
 
 
@@ -15,5 +15,5 @@ cmake ..
 make
 sudo make install
 cd ../../
-rm -r --force MobilityDB
+#rm -r --force MobilityDB
 ./setup_postgresql.sh

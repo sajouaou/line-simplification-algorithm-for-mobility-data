@@ -1,115 +1,74 @@
 
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <search.h>
 
 struct PointDict
 {
     void *key;
     void *value;
-    struct PointDict *next_value;
-};
+} typedef PointDict;
 
 
-struct PointDict *
-create_PointDict(){
-  struct PointDict * result =  malloc(sizeof(struct PointDict));
-  result->key = NULL;
-  result->next_value = NULL;
-  return result;
+typedef void* Dict;
+
+int compar(const void *l, const void *r)
+{
+    const PointDict *lm = l;
+    const PointDict *lr = r;
+    return lm->key - lr->key;
 }
 
-void*
-get_point_dict(void *p_i,struct PointDict *dict)
+void pd_free(void *l)
 {
-    void * result = NULL;
-    short loop = 1;
-    while(loop && dict != NULL)
-    {
+    free(l);
+}
 
-        if(dict->key == p_i)
-        {
-            result = dict->value;
-            loop = 0;
-        }
-        dict = dict->next_value;
+
+void *
+get_point_dict(void *p_i,Dict *dict)
+{
+    PointDict find;
+    find.key = p_i;
+    void * result = tfind(&find, dict, compar);
+    if(result){
+        result = (*(PointDict**)result)->value;
     }
     return result;
 }
 
 
 void
-set_point_dict(void * p_i,void * p_j,struct PointDict *dict)
+set_point_dict(void * p_i,void * p_j,Dict *dict)
 {
-    short loop = 1;
-
-    while(loop && dict != NULL)
-    {
-        if(dict-> key == p_i)
-        {
-            dict->value = p_j;
-            loop = 0;
-        }
-        else if( dict->key == NULL)
-        {
-            dict->key = p_i;
-            dict->value = p_j;
-            loop = 0;
-
-        }
-        else if(dict->next_value  == NULL && loop )
-        {
-            struct PointDict * entry = create_PointDict();
-            entry->key = p_i;
-            entry->value = p_j;
-            dict->next_value = entry;
-            loop = 0;
-        }
-        dict = dict->next_value;
-    }
+   PointDict *find = malloc(sizeof(PointDict));
+   find->key = p_i;
+   find->value = p_j;
+   void * result = tfind(find, dict, compar);
+   if(result){
+        (*(PointDict**)result)->value = p_j;
+   }
+   else{
+        tsearch(find, dict, compar); /* insert */
+   }
 }
 
 
-void destroy_PointDict(struct PointDict *dict)
+void destroy_PointDict(void *dict)
 {
-    while (dict != NULL)
-    {
-        struct PointDict *temp = dict;
-        dict = dict->next_value;
-        free(temp);
-    }
+    tdestroy(dict,pd_free);
 }
 
 
-void destroy_elem_PointDict(void * p_i,struct PointDict *dict)
+void destroy_elem_PointDict(void * p_i,Dict *dict)
 {
-
-    struct PointDict *temp = NULL;
-    struct PointDict *d = dict;
-    short loop = 1;
-    while (d != NULL && loop)
+    PointDict find;
+    find.key = p_i;
+    void * r = tfind(&find, dict, compar);
+    if(r)
     {
-        if(d->key == p_i)
-        {
-            loop = 0;
-            if(temp != NULL)
-            {
-                temp->next_value = d->next_value;
-                free(d);
-            }
-            if(d == dict)
-            {
-                d->key = NULL;
-                d->value = NULL;
-                if(d->next_value != NULL)
-                {
-                    temp = d->next_value;
-                    d->key = temp->key ;
-                    d->value = temp->value ;
-                    d->next_value = temp->next_value;
-                    free(temp);
-                }
-            }
-        }
-        temp = d;
-        d = d->next_value;
+        PointDict * to_free = (*(PointDict**)r);
+        tdelete(&find,dict,compar);
+        free(to_free);
     }
 }

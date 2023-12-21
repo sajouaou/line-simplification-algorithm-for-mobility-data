@@ -1,115 +1,77 @@
 
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <search.h>
 
-struct PriorityDict
+
+typedef struct PriorityDict
 {
-  void * point;
+  void * key;
   double priority;
-  struct PriorityDict *next_entry;
-};
+} PriorityDict;
 
 
-struct PriorityDict *
-create_PriorityDict(){
-  struct PriorityDict * result =  malloc(sizeof(struct PriorityDict));
-  result->next_entry = NULL;
-  return result;
+typedef void* PDict;
+
+int comparp(const void *l, const void *r)
+{
+    const PriorityDict *lm = l;
+    const PriorityDict *lr = r;
+    return lm->key - lr->key;
+}
+
+void p_free(void *l)
+{
+    free(l);
 }
 
 
 double
-get_priority_dict(void *p_i,struct PriorityDict *dict)
+get_priority_dict(void *p_i,PDict *dict)
 {
     double result = -1;
-    short loop = 1;
-    while(loop && dict != NULL)
-    {
-
-        if(dict->point == p_i)
-        {
-            result = dict->priority;
-            loop = 0;
-        }
-        dict = dict->next_entry;
+    PriorityDict find;
+    find.key = p_i;
+    void * res = tfind(&find, dict, comparp);
+    if(res){
+        result = (*(PriorityDict**)res)->priority;
     }
     return result;
 }
 
 
 void
-set_priority_dict(void * p_i,double priority,struct PriorityDict *dict)
+set_priority_dict(void * p_i,double priority,PDict *dict)
 {
-    short loop = 1;
-
-    while(loop && dict != NULL)
-    {
-        if(dict-> point == p_i)
-        {
-            dict->priority = priority;
-            loop = 0;
-        }
-        else if( dict->point == NULL)
-        {
-            dict->point = p_i;
-            dict->priority = priority;
-            loop = 0;
-
-        }
-        else if(dict->next_entry  == NULL && loop )
-        {
-            struct PriorityDict * entry = create_PriorityDict();
-            entry->point = p_i;
-            entry->priority = priority;
-            dict->next_entry = entry;
-            loop = 0;
-        }
-        dict = dict->next_entry;
-    }
+   PriorityDict *find = malloc(sizeof(PriorityDict));
+   find->key = p_i;
+   find->priority = priority;
+   void * result = tfind(find, dict, comparp);
+   if(result){
+        (*(PriorityDict**)result)->priority = priority;
+   }
+   else{
+        tsearch(find, dict, comparp); /* insert */
+   }
 }
 
 
-void destroy_PriorityDict(struct PriorityDict *dict)
+void destroy_PriorityDict(PDict dict)
 {
-    while (dict != NULL)
-    {
-        struct PriorityDict *temp = dict;
-        dict = dict->next_entry;
-        free(temp);
-    }
+    tdestroy(dict,p_free);
 }
 
 
-void destroy_elem_PriorityDict(void * p_i,struct PriorityDict *dict)
+void destroy_elem_PriorityDict(void * p_i,PDict *dict)
 {
-
-    struct PriorityDict *temp = NULL;
-    struct PriorityDict *d = dict;
-    short loop = 1;
-    while (d != NULL && loop)
+    PriorityDict find;
+    find.key = p_i;
+    void * r = tfind(&find, dict, comparp);
+    if(r)
     {
-        if(d->point == p_i)
-        {
-            loop = 0;
-            if(temp != NULL)
-            {
-                temp->next_entry = d->next_entry;
-                free(d);
-            }
-            if(d == dict)
-            {
-                d->point = NULL;
-                d->priority = 0;
-                if(d->next_entry != NULL)
-                {
-                    temp = d->next_entry;
-                    d->point = temp->point ;
-                    d->priority = temp->priority ;
-                    d->next_entry = temp->next_entry;
-                    free(temp);
-                }
-            }
-        }
-        temp = dict;
-        d = d->next_entry;
+        PriorityDict * to_free = (*(PriorityDict**)r);
+        tdelete(&find,dict,comparp);
+        free(to_free);
     }
 }
