@@ -1,4 +1,5 @@
 
+
 /*
 
 SQUISH-E.c
@@ -61,7 +62,7 @@ SED(void *p_a,void *p_b,void *p_c,interpType interp ,bool hasz )
           pfree(DatumGetPointer(tmp_value));
       }
 
-  ////elog(NOTICE,"DISTANCE WITH Duration : %f \n DISTANCE WITH Point : %f",d,d_tmp);
+  //elog(NOTICE,"DISTANCE WITH Duration : %f \n DISTANCE WITH Point : %f",d,d_tmp);
   d = d_tmp;
 
   return d;
@@ -165,9 +166,10 @@ iteration_simplification_sqe(void *p_i , void *p_j ,
   //printPriorityQueue(Q);
   size_t size = size_queue(Q);
   //elog(NOTICE,"------------TEST iteration %i -- beta %i -- limit %i -- lambda %f \n ---- size %i",i,*beta,i/lambda,lambda,size);
-    //elog(NOTICE,"TEST SIZE QUEUE  %zu  ->  %zu /// %i  ///%f",size_before,size,*beta,lambda);
+
   if(size - *beta == 0 ){
     reduce(Q,pred,succ,p,syncdist, interp , hasz );
+    //elog(NOTICE,"ENTER IF SIZE QUEUE  %zu  ->  %zu /// %i  ///%f",size_before,size,*beta,lambda);
   }
   //elog(NOTICE,"-------------------");
 }
@@ -227,67 +229,43 @@ sq_iteration(TInstant * point,squish_variables *sq ,const double lambda, bool sy
   if(sq->i == 0)
   {
         sq->point = point;
-        ////elog(NOTICE,"POINT %p \n",sq->point);
+        //elog(NOTICE,"POINT %p \n",sq->point);
   }
   sq->p_j = sq->p_i;
   sq->p_i = point;
- /*
-  uint32_t i = 0;
-  uint32_t outn = size_queue(sq->Q);
-  TInstant * point1 = sq->point;
-   while(point1)
-   {
-     point1 = (TInstant *) get_point_dict(point1,&sq->succ);
-     i++;
-   }
-*/
   iteration_simplification_sqe(sq->p_i , sq->p_j ,&(sq->beta),lambda,sq->i,
                                  &sq->succ,&sq->pred,
                                  &sq->p,sq->Q, syncdist,interp,hasz, minpts);
-  //elog(NOTICE,"Iteration : %i  END \n",sq->i);
-/*
-  uint32_t ni = 0;
-    uint32_t noutn = size_queue(sq->Q);
-     point1 = sq->point;
-     while(point1)
-     {
-       point1 = (TInstant *) get_point_dict(point1,&sq->succ);
-       ni++;
-     }
-
-  if(ni != noutn){
-    elog(NOTICE,"BEFORE SIZE Q : %i   ... Succ %i\n",outn,i);
-    elog(NOTICE,"BEGIN CONSTRUCT SIZE Q : %i   ... Succ %i\n",noutn,ni);
-  }
-*/
   sq->i++;
 }
 
 TSequence *
-construct_simplify_path(squish_variables *sq)
+construct_simplify_path(squish_variables *sq,
+bool lower_inc,bool upper_inc, interpType interp, bool normalize)
 {
   /* Create a new temporal sequence */
   uint32_t i = 0;
   uint32_t outn = size_queue(sq->Q);
   const TInstant **instants = malloc(sizeof(TInstant *) * outn);
-  elog(NOTICE,"BEGIN CONSTRUCT SIZE Q : %i   \n",outn);
-  ////elog(NOTICE,"POINT %p \n",sq->point);
+  //elog(NOTICE,"BEGIN CONSTRUCT SIZE Q : %i   \n",outn);
+  //elog(NOTICE,"POINT %p \n",sq->point);
   TInstant * point = sq->point;
   while(point)
   {
     //elog(NOTICE,"POINT FROM SUCC : %p",point);
-    ////elog(NOTICE,"POINT FROM SUCC : %p \n",sq->point);
+    //elog(NOTICE,"POINT FROM SUCC : %p \n",sq->point);
     instants[i] = point;
     sq->p_j = sq->p_i;
     sq->p_i = point;
+
+    instants[i] = point;
     point = (TInstant *) get_point_dict(point,&sq->succ);
-    //elog(NOTICE,"-----------");
     i++;
   }
-  TSequence *result = tsequence_make(instants, i, true, true, LINEAR, false);
+  TSequence *result = tsequence_make(instants, i, lower_inc, upper_inc,  interp, normalize);
   free(instants);
 
-  elog(NOTICE,"END CONSTRUCT SIZE succ : %i \n",i);
+  //elog(NOTICE,"END CONSTRUCT SIZE succ : %i \n",i);
   return result;
 }
 
@@ -300,7 +278,6 @@ static TSequence *
 tsequence_simplify_sqe(const TSequence *seq, double dist, bool syncdist,
   uint32_t minpts)
 {
-  elog(NOTICE,"=== SQUISH-E Simplification ===");
 
   squish_variables SQ_variables;
   init_squish_variables(&SQ_variables);
@@ -313,13 +290,16 @@ tsequence_simplify_sqe(const TSequence *seq, double dist, bool syncdist,
 
   do
   {
+
     sq_iteration( (TInstant * )TSEQUENCE_INST_N(seq,SQ_variables.i)  ,&SQ_variables, dist,  syncdist,minpts);
   }
   while(SQ_variables.i < seq->count);
-  TSequence *result = result = construct_simplify_path(&SQ_variables);
+
+  TSequence *result = result = construct_simplify_path(&SQ_variables,seq->period.lower_inc,
+                                                                         seq->period.upper_inc, LINEAR, false);
   free_squish_variables(&SQ_variables);
 
-  ////elog(NOTICE,"=== SQUISH-E Simplification ===");
+  //elog(NOTICE,"=== SQUISH-E Simplification ===");
   return result;
 }
 
@@ -378,6 +358,8 @@ tsequenceset_simplify_sqe(const TSequenceSet *ss, double dist, bool syncdist,
 Temporal *
 temporal_simplify_sqe(const Temporal *temp, double dist, bool syncdist)
 {
+
+  //elog(NOTICE,"=== SQUISH-E Simplification ===");
   /* Ensure validity of the arguments */
   if (! ensure_not_null((void *) temp) ||
       ! ensure_tnumber_tgeo_type(temp->temptype) ||
@@ -385,6 +367,7 @@ temporal_simplify_sqe(const Temporal *temp, double dist, bool syncdist)
     return NULL;
 
   Temporal *result;
+
   assert(temptype_subtype(temp->subtype));
   if (temp->subtype == TINSTANT || ! MEOS_FLAGS_LINEAR_INTERP(temp->flags))
     result = temporal_copy(temp);

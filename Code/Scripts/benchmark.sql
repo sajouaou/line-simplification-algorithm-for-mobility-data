@@ -1,0 +1,1 @@
+SELECT SquishESimplify(trip, 2) from AISTrips;

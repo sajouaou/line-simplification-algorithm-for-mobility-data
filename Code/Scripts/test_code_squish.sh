@@ -4,6 +4,7 @@
 source creditentials
 export PGPASSWORD=$password
 
+
 #rm -rf ../BuildScript/MobilityDB/build
 #mkdir ../BuildScript/MobilityDB/build
 cd ../BuildScript
@@ -29,5 +30,7 @@ cd ../../../C
 #gcc -Wall -g -I/usr/local/include -I/usr/include/postgresql -o ais_stream asi_stream_db.c -L/usr/local/lib -lmeos -lpq
 ./ais_stream
 
-psql -h $host -p $port -U $dbowner -d $database -c "SELECT asText(SquishESimplify(trip, sqrt(3))) from AISTrips"
+psql -h $host -p $port -U $dbowner -d $database -c "SELECT NumInstants(SquishESimplify(trip, sqrt(3) )) from AISTrips"
+
+#psql -h $host -p $port -U $dbowner -d $database -c "SELECT asText(DouglasPeuckerSimplify(trip, sqrt(3))) from AISTrips"
 
