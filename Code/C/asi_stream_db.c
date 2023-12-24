@@ -188,7 +188,7 @@ main(int argc, char **argv)
   if (res_sql < 0)
     goto cleanup;
   res_sql = exec_sql(conn, "CREATE TABLE public.AISTrips("
-    "MMSI integer PRIMARY KEY, trip public.tgeogpoint);", PGRES_COMMAND_OK);
+    "MMSI integer PRIMARY KEY, trip public.tgeompoint);", PGRES_COMMAND_OK);
   if (res_sql < 0)
     goto cleanup;
 
