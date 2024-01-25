@@ -23,5 +23,6 @@ make install
 
 cd ../../../C
 gcc -Wall -g -I/usr/local/include -I/usr/include/postgresql -o asi_stream asi_stream_db.c -L/usr/local/lib -lmeos -lpq
+gcc -Wall -g -I/usr/local/include -I/usr/include/postgresql -o benchmark_db benchmark_db.c -L/usr/local/lib  -lpq
 #gcc -Wall -g -I/usr/local/include -I/usr/include/postgresql -o online_squish online_squish_e.c -L/usr/local/lib -lmeos -lpq
 #./online_squish
