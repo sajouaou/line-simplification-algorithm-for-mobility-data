@@ -147,7 +147,7 @@ iteration_simplification_sqe(void *p_i , void *p_j ,
                             PDict  *p,struct PriorityQueue *Q,
                              bool syncdist,interpType interp ,bool hasz ,uint32_t minpts)
 {
-  if( i/lambda >= *beta)
+  if( i * lambda >= *beta)
   {
       *beta += 1;
   }

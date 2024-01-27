@@ -1,5 +1,4 @@
 #!/bin/bash
-
 cd MobilityDB
 #git reset --hard HEAD~1
 cd ../

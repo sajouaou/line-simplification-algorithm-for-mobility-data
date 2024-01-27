@@ -1,17 +1,16 @@
 #!/bin/bash
-
 # A script to run the BerlinMOD generator with my personnal sql
 source creditentials
 export PGPASSWORD=$password
 
 
-#rm -rf ../BuildScript/MobilityDB/build
-#mkdir ../BuildScript/MobilityDB/build
+rm -rf ../BuildScript/MobilityDB/build
+mkdir ../BuildScript/MobilityDB/build
 cd ../BuildScript
 #./change_file.sh
 cd ../BuildScript/MobilityDB/build
 #cmake .. -DMEOS=on
-#cmake ..
+cmake ..
 make install
 
 

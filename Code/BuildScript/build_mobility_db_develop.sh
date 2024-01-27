@@ -2,7 +2,7 @@
 
 
 #./install_dependance.sh
-#git clone --branch develop https://github.com/MobilityDB/MobilityDB
+git clone --branch develop https://github.com/MobilityDB/MobilityDB
 
 
 

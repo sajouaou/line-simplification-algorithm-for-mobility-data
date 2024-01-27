@@ -1,5 +1,5 @@
 CREATE OR REPLACE
-FUNCTION public.trip(
+FUNCTION public.linesimpl(
             z integer, x integer, y  integer,s float)
 RETURNS bytea
 AS $$
@@ -7,15 +7,12 @@ AS $$
         SELECT ST_TileEnvelope(z,x,y) as geom
     ),
     vals AS (
-        SELECT mmsi, asMVTGeom(transform(SquishESimplify(trip,s),3857), (bounds.geom)::stbox)
-            as geom_times, asMVTGeom(transform(trip,3857), (bounds.geom)::stbox) as origin
-        FROM aistrips, bounds
+        SELECT sim,asMVTGeom(transform(trip,3857), (bounds.geom)::stbox)
+            as geom_times
+        FROM (Select 'F' as sim , * from aistrips UNION ALL (Select 'S' as sim,mmsi,SquishESimplify(trip, s) from aistrips)) as ego, bounds
     ),
     mvtgeom AS (
-        SELECT mmsi,(geom_times).geom,(geom_times).times
-        FROM vals
-        UNION ALL
-        SELECT mmsi,(origin).geom,(origin).times
+        SELECT (geom_times).geom, (geom_times).times,sim
         FROM vals
     )
 SELECT ST_AsMVT(mvtgeom) FROM mvtgeom
