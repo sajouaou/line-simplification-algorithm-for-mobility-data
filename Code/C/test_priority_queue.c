@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <time.h> // Ajouter en haut du fichier
 
 struct PriorityQueueElem
 {
@@ -18,8 +19,9 @@ typedef struct PriorityQueue
 // Définir vos fonctions ici
 void set_priority_queue(void *p_i, double priority, struct PriorityQueue *Q);
 struct PriorityQueueElem *remove_min(struct PriorityQueue *Q);
-
 void destroy_Queue(struct PriorityQueue *Q);
+static struct PriorityQueue *
+create_PriorityQueue();
 
 void printPriorityQueue(const struct PriorityQueue *queue)
 {
@@ -32,6 +34,28 @@ void printPriorityQueue(const struct PriorityQueue *queue)
     }
 }
 
+void perf_test(PriorityQueue *pq,int num_insertions,int ecart )
+{
+   clock_t start, end;
+   double cpu_time_used;
+   start = clock();
+   for (int i = 0; i < num_insertions; i++) {
+        int priority = rand() % 100; // Génère une priorité aléatoire entre 0 et 99
+        double *newElement = malloc(sizeof(double)); // Assurez-vous que votre type d'élément est correctement défini
+        // Initialisez votre nouvel élément ici, si nécessaire
+
+        set_priority_queue(newElement, priority,pq); // Remplacez cette fonction par votre fonction d'insertion
+
+        if (i%ecart == 0){
+            ecart = ecart *2;
+            end = clock();
+            cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+            printf("Insertion %d - Temps d'exécution : %f secondes\n", i+1, cpu_time_used);
+        }
+     }
+
+}
+
 
 int main()
 {
@@ -42,6 +66,9 @@ int main()
     double value1 = 3.14;
     double value2 = 2.718;
     double value3 = 1.618;
+    // Mesurer le temps pour set_priority_queue
+    clock_t start, end;
+    double cpu_time_used;
 
     printf("BEGIN TO SET ___ - \n");
     set_priority_queue(&value1, 3.14, queue);
@@ -69,10 +96,21 @@ int main()
     assert(queue != NULL);
     assert(queue->head->point == &value2 && queue->head->priority == 2.718);
 
+    //destroy_Queue(queue);
+
+    //queue = create_PriorityQueue();
+
     // Libérer la mémoire de la file de priorité
 
-    destroy_Queue(queue);
+    start = clock();
+    perf_test(queue,100000000,10);
+    end = clock();
+
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("Temps d'exécution : %f secondes\n", cpu_time_used);
+
     printf("Tous les tests ont réussi !\n");
+    destroy_Queue(queue);
 
     return 0;
 }

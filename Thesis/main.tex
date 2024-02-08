@@ -6,7 +6,6 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \setlength {\marginparwidth }{2.5cm}
-\usepackage[colorinlistoftodos]{todonotes}
 \usepackage[left=3cm,right=3cm,top=2.5cm]{geometry}
 \usepackage{float}
 \usepackage{titlesec}
@@ -17,7 +16,6 @@
 \usepackage{ftnxtra}
 \usepackage[fencedCode]{markdown}
 \usepackage[T1]{fontenc}
-
 \usepackage[colorinlistoftodos]{todonotes}
 \usepackage{minted}
 \usepackage{fnpos}
@@ -25,7 +23,6 @@
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
-\usepackage[fencedCode]{markdown}
 \usepackage{hyperref}
 \hypersetup{linktocpage}
 
@@ -199,7 +196,6 @@ Soufiane \textsc{AJOUAOU}\\  000459811\\
 
 \tableofcontents
 \newpage
-
 
 \chapter{Introduction}
 In the domain of cartography, the challenge of simplifying complex geographical data for clear and effective representation has grown increasingly important. As our reliance on automated cartography powered by computer technologies continues to expand, the demand for efficient algorithms becomes ever more critical, particularly in the realms of feature extraction and simplification. Among these algorithms, the Douglas-Peucker line simplification method has remained a foundational tool for representing linear features.
@@ -741,11 +737,46 @@ spatial database by adding a new dimension. It becomes more dynamics and respond
 of processing moving object data. 
 
 
+\chapter{Design}
+\section{SQUISH-E}
+In this section we introduce the SQUISH-E algorithm, present a pseudo-code and analyze its complexity. \\
 
+The SQUISH-E algorithm compresses a trajectory \(T\) by utilizing two parameters, \(\lambda\) and \(\mu\), to strategically minimize the Synchronized Euclidean Distance (SED) error while achieving a specified compression ratio (\(\lambda\)). It operates by compressing \(T\) until further compression would result in an increase in SED error above \(\mu\), with a notable case being SQUISH-E(\(\lambda\)) where setting \(\mu\) to 0 focuses on minimizing SED error to achieve the compression ratio of \(\lambda\). In contrast, SQUISH-E(\(\mu\)) highlights a scenario where \(\lambda\) is set to 1, aiming to maximize the compression ratio without exceeding the SED error threshold defined by \(\mu\). A pivotal aspect of SQUISH-E is its use of a priority queue \(Q\), in which the priority of each point is determined by an upper bound on the SED error that could be introduced by its removal. This mechanism allows SQUISH-E to efficiently identify and remove the point with the lowest priority, i.e., the point whose removal would result in the least increase in SED error, in \(O(\log |Q|)\) time. This process effectively controls the growth of SED error, ensuring the algorithm's efficiency in compressing trajectory data while maintaining the integrity of the spatial information \cite{muckell2014compression}. In order to have a fully online algorithm SQUISH-E(\(\mu\)) is not taken into account and we only take into account SQUISH-E(\(\lambda\)). The error function is the same but in our implementation it could be a nice idea to compare different error function to find the best ones for some situation.
+
+\subsection{Algorithm Pseudo-Code}
+In this section we will present the pseudo-code of SQUISH-E algorithm used in our work. \\
+
+\begin{algorithm}[H]
+	\DontPrintSemicolon
+	\KwIn{trajectory $T$, lower bound $\lambda$ on compression ratio}
+	\KwOut{trajectory $T'$}
+	$\beta \gets 4$ \tcp*{the initial capacity of $Q$ is 4}
+	\ForEach{point $P_i \in T$}{
+		\If{$\frac{i}{\lambda} \geq \beta$}{
+			$\beta \gets \beta + 1$ \tcp*{increase the capacity of $Q$}
+		}
+		set\_priority($P_i, \infty, Q$) \tcp*{enqueue $P_i$ with the priority of $P_i$ being $\infty$}
+		$\pi[P_i] \gets 0$\;
+		\If{$i > 1$}{
+			$succ[P_{i-1}] \gets P_i$ \tcp*{register $P_i$ as $P_{i-1}$'s closest successor}
+			$pred[P_i] \gets P_{i-1}$ \tcp*{register $P_{i-1}$ as $P_i$'s closest predecessor}
+			adjust\_priority($P_{i-1}, Q, pred, succ, \pi$) \tcp*{Algorithm 3}
+		}
+		\If{$|Q| = \beta$}{
+			reduce($Q, pred, succ, \pi$) \tcp*{Algorithm 2}
+		}
+	}
+	\Return{trajectory $T'$ comprising the points in $Q$ in the order reflected in the $succ$ map}
+	\caption{SQUISH-E($T, \lambda$)}
+	\label{alg:squish_e}
+\end{algorithm}
+
+In the algorithm \ref{alg:squish_e} we can analyze the time complexity. L'algorithme fonctionne de maniére itérationnelle en recevant un par un chaque point ce qui est pratique pour notre cas streaming. La complexité est donc au minima $O(n * max(O(set_priority),O(adjust_priority),O(reduce)) )$  
 
 \newpage
 \printbibliography
 %\bibliography{reference}
 %\bibliographystyle{abbrv}
+
 
 \end{document}
