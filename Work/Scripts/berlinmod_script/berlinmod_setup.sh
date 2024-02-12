@@ -2,7 +2,7 @@
 # A script to setup the BerlinMOD generator
 
 
-source creditentials
+source ../creditentials
 datapath=../../Data
 scriptpath=../../Data/MobilityDB-BerlinMOD/BerlinMOD
 

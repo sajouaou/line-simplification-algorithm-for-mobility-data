@@ -2,7 +2,7 @@
 # A script to run the BerlinMOD generator with my personnal sql
 
 
-source creditentials
+source ../creditentials
 scalefactor=0.005
 
 while getopts ":s:" option; do
