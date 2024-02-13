@@ -47,6 +47,6 @@ $$ LANGUAGE plpgsql;
 
 
 
-DROP TABLE precResult;
-SELECT precBenchmarkSQ(trip,0.1) from aistrips;
-SELECT * from precResult;
+--DROP TABLE precResult;
+--SELECT precBenchmarkSQ(trip,0.1) from aistrips;
+--SELECT * from precResult;

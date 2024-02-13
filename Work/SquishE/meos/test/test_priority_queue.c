@@ -20,7 +20,7 @@ typedef struct PriorityQueue
 void set_priority_queue(void *p_i, double priority, struct PriorityQueue *Q);
 struct PriorityQueueElem *remove_min(struct PriorityQueue *Q);
 void destroy_Queue(struct PriorityQueue *Q);
-static struct PriorityQueue *
+struct PriorityQueue *
 create_PriorityQueue();
 
 void printPriorityQueue(const struct PriorityQueue *queue)
@@ -96,14 +96,13 @@ int main()
     assert(queue != NULL);
     assert(queue->head->point == &value2 && queue->head->priority == 2.718);
 
-    //destroy_Queue(queue);
-
-    //queue = create_PriorityQueue();
+    destroy_Queue(queue);
+    queue = create_PriorityQueue();
 
     // Libérer la mémoire de la file de priorité
 
     start = clock();
-    perf_test(queue,100000000,10);
+    perf_test(queue,100000,10);
     end = clock();
 
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;

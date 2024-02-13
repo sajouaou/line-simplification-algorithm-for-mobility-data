@@ -1,13 +1,14 @@
 CC=gcc
-CFLAGS=-I. -O2
-DEPS = priority_queue.h
-OBJ = test_priority_queue.o priority_queue.o
+LDFLAGS=
+BIN=../bin
 
-%.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+all: test_priority_queue
 
-test_priority_queue: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS)
+test_priority_queue: test_priority_queue.c ../src/priority_queue.c
+	$(CC) test_priority_queue.c ../src/priority_queue.c -o $(BIN)/test_priority_queue
+
+.PHONY: clean
 
 clean:
-	rm -f *.o test_priority_queue
+	rm -f $(BIN)/*
+

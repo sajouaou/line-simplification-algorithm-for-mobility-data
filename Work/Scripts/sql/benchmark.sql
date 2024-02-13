@@ -1,4 +1,3 @@
-DROP FUNCTION perfBenchmarkSQ;
 CREATE OR REPLACE FUNCTION perfBenchmarkSQ(
 	trip tgeompoint, -- Path on what the benchmark is running
 	lambda float,
@@ -55,7 +54,7 @@ $$ LANGUAGE plpgsql;
 
 
 
-CREATE OR REPLACE FUNCTION perfBenchmarkSQ(
+CREATE  OR REPLACE FUNCTION perfBenchmarkSQ(
     _points integer[],
     _lambda float[],
 	N int DEFAULT 10, --Number of Iterations
@@ -78,4 +77,4 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-select perfBenchmarkSQ('{100,1000,10000,100000}'::integer[],'{0.01,0.25,0.5,0.75,1}'::float[] );
+-- select perfBenchmarkSQ('{100,1000,10000,100000}'::integer[],'{0.01,0.25,0.5,0.75,1}'::float[] );

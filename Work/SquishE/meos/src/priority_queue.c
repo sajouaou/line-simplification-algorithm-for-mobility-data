@@ -23,7 +23,7 @@ typedef struct PriorityQueue
 } PriorityQueue;
 
 
-static struct PriorityQueue *
+struct PriorityQueue *
 create_PriorityQueue(){
   struct PriorityQueue * result =  malloc(sizeof(struct PriorityQueue));
   result->head = NULL;

@@ -1,6 +1,7 @@
 #!/bin/bash
 cd MobilityDB
-#git reset --hard HEAD~1
+git reset
+git checkout .
 cd ../
 
 cat ../SquishE/meos/src/point_dict.c  >> MobilityDB/meos/src/general/temporal_analytics.c

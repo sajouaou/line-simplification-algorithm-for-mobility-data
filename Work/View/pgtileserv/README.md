@@ -63,7 +63,7 @@ To get more information about what is going on behind the scenes, run with the `
 
 ## Configuration File
 
-The [configuration file](config/pg_tileserv.toml.example) will be automatically read from the following locations, if it exists:
+The [configuration file](config/pg_tileserv.toml) will be automatically read from the following locations, if it exists:
 
 * Relative to the directory from which the program is run, `./config/pg_tileserv.toml`
 * In a root volume at `/config/pg_tileserv.toml`
