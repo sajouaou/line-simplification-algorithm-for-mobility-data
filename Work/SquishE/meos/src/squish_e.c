@@ -132,8 +132,6 @@ bool syncdist,interpType interp ,bool hasz )
   destroy_elem_PointDict(p_j,succ);
   destroy_elem_PointDict(p_j,pred);
 
-
-
 }
 
 

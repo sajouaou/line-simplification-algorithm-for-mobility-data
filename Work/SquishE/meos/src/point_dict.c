@@ -3,11 +3,11 @@
 #include <stdlib.h>
 #include <search.h>
 
-struct PointDict
+typedef struct PointDict
 {
     void *key;
     void *value;
-} typedef PointDict;
+} PointDict;
 
 
 typedef void* Dict;

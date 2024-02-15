@@ -26,6 +26,7 @@
 \usepackage{hyperref}
 \hypersetup{linktocpage}
 
+\usepackage{longtable}
 
 
 \urlstyle{same}
@@ -748,11 +749,11 @@ In this section we will present the pseudo-code of SQUISH-E algorithm used in ou
 
 \begin{algorithm}[H]
 	\DontPrintSemicolon
-	\KwIn{trajectory $T$, lower bound $\lambda$ on compression ratio}
+	\KwIn{trajectory $T$, lower bound $\lambda$ on compression ratio as a percentage value}
 	\KwOut{trajectory $T'$}
 	$\beta \gets 4$ \tcp*{the initial capacity of $Q$ is 4}
 	\ForEach{point $P_i \in T$}{
-		\If{$\frac{i}{\lambda} \geq \beta$}{
+		\If{$ i * lambda \geq \beta$}{
 			$\beta \gets \beta + 1$ \tcp*{increase the capacity of $Q$}
 		}
 		set\_priority($P_i, \infty, Q$) \tcp*{enqueue $P_i$ with the priority of $P_i$ being $\infty$}
@@ -771,36 +772,597 @@ In this section we will present the pseudo-code of SQUISH-E algorithm used in ou
 	\label{alg:squish_e}
 \end{algorithm}
 
-In the algorithm \ref{alg:squish_e} we can analyze the time complexity. L'algorithme fonctionne de maniére itérationnelle en recevant un par un chaque point ce qui est pratique pour notre cas streaming. La complexité est donc au minima $O(n * max(O(set_priority),O(adjust_priority),O(reduce)) )$  
+In the algorithm \ref{alg:squish_e} we can analyze the time complexity. L'algorithme fonctionne de maniére itérationnelle en recevant un par un chaque point ce qui est pratique pour notre cas streaming. La complexité est donc au minima $O(n * max(O(loop) ))$ . La variable lambda as également été modifié. Nous allons ensuite présenter les algorithmes suivants adjust priority \ref{alg:adjust_priority} et reduce \ref{alg:reduce}. 
+
+
+\begin{algorithm}[H]
+	\DontPrintSemicolon
+	
+	\KwIn{priority queue $Q$, maps $\text{pred}, \text{succ}$ and $\pi$ (refer to Table 2)}
+	$P_j \gets \text{remove\_min}(Q); \quad$ // the lowest priority point is removed from $Q$\;
+	
+	$\pi[succ[P_j]] \gets \text{max}(priority(P_j) , \pi[succ[P_j]]); \quad$  // update neighbor priority\;
+	$\pi[pred[P_j]] \gets \text{max}(priority(P_j) , \pi[pred[P_j]]); \quad$ // update neighbor priority\;
+	
+	
+	$succ[\text{pred}[P_j]] \gets succ[P_j]; \quad$ // update neighbor's neighbor of $P_j$ \;
+	$\text{pred}[succ[P_j]] \gets \text{pred}[P_j]; \quad$ // update neighbor's neighbor of $P_j$ \;
+	
+	
+	$\text{adjust\_priority}(\text{pred}[P_j], \text{pred}, \text{succ}, \pi); \quad$ // Algorithm 3\;
+	$\text{adjust\_priority}(succ[P_j], \text{pred}, \text{succ}, \pi); \quad$ // Algorithm 3\;
+	remove the entry for $P_j$ from $\text{pred}, \text{succ},$ and $\pi; \quad$ // garbage collection\;
+	
+	\caption{reduce($Q, \text{pred}, \text{succ}, \pi$)}
+	\label{alg:reduce}
+\end{algorithm}
+
+
+
+\begin{algorithm}[H]
+	\DontPrintSemicolon
+	
+	\KwIn{point $P_j$, priority queue $Q$, maps $\text{pred}, \text{succ}$ and $\pi$ (refer to Table 2)}
+	\If{$\text{pred}[P_j] \neq \text{null}$ and $\text{succ}[P_j] \neq \text{null}$}{
+		$p \gets \pi[\text{SED}(P_j,\text{pred}[P_j], \text{succ}[P_j])];$\;
+		$\text{set\_priority}(P_j, p, Q);$\;
+	}
+	
+	\caption{adjust\_priority($P_j, Q, \text{pred}, \text{succ}, \pi$)}
+	\label{alg:adjust_priority}
+\end{algorithm}
+
+
+Nous pouvons constater que pour obtenir la complexité optimale de cette algorithme il est impératif que l'opération la plus couteuse de cette boucle se fait en $O(log(n))$. La suite seras un focus sur les variables et leur méthodes afin de determiner les élèments d'implémentation requis. 
 
 \subsection{Variables}
 
+
+\begin{table}[h!]
+	\centering
+	\caption{List of Variables Used in Algorithms}
+	\label{tab:variables}
+	\begin{tabular}{ll}
+		\hline
+		\textbf{Variable} & \textbf{Description} \\
+		\hline
+		$Q$             & Priority queue \\
+		$p_{\pi}$       & Point with the lowest priority \\
+		$\text{pred}$   & Predecessor map \\
+		$\text{succ}$   & Successor map \\
+		$\pi$           & Priority map \\
+		$P_i$           & A point in the priority queue \\
+		$\text{SED}$    & Some distance function \\
+		\hline
+	\end{tabular}
+\end{table}
+
 \subsubsection{Map}
+
+As mentioned before we have 3 map two that has as pair key-value point-point and another with point-priority . 
+
+
 \paragraph{Method}
+The method that is necessary to implement for this map is the following
+
+\begin{itemize}
+	\item set(key,value,map)
+	\item remove(key,map)
+	\item get(key,map) -> value
+\end{itemize}
+
 \subsubsection{PriorityQueue}
+
+Nous avons également une autre structure étant une priority queue mais ayant des méthodes assez différentes. La priority queue stocke des élèments étant des paires point-priority et posséde une structure trié afin de pouvoir retirer le minimum. Cette structure pose un véritable challenge du à la nature et aux méthodes qui seront définis ci dessous. 
+
 \paragraph{Method}
+Les méthodes nécessaires afin d'implémenter la priorityqueue sont les suivants :
 
+\begin{itemize}
+	\item set\_priority(key,value,Q) this function can be expressed as the two following methods
+	\begin{itemize}
+		\item remove(key,Q)
+		\item push(key,value,Q)
+	\end{itemize}
+	\item remove\_min(Q)
+\end{itemize}
 
+La fonction set étant plus proche de la caractéristique d'un array que d'une priorityqueue cela pose un challenge si les ressources existantes ne permettent pas d'implémenter ces méthodes en $O(log(n))$ au maximum. 
 
 
 
 \chapter{Implementation}
+Ce chapitre se concentre sur l'implémentation des élèments précisé au chapitre précedent.
 
-\section{Algorithm Implementation}
+\section{SQUISH-E Implementation}
+
 
 \subsection{Algorithm 1}
+
+\begin{lstlisting}[language=C, % Spécifie le langage du code
+	caption={SQUISH-E}, % Légende du listing
+	label=lst:squish_c, % Étiquette pour référencer le listing
+	numbers=left, 
+	numberstyle=\tiny\color{gray}, 
+	stepnumber=1, 
+	frame=single,
+	breaklines=true, 
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+	showstringspaces=false 
+	]
+	
+	void
+	iteration_simplification_sqe(void *p_i , void *p_j ,
+	size_t *beta,const double lambda,int i,
+	Dict *succ,Dict *pred,
+	PDict  *p,struct PriorityQueue *Q,
+	bool syncdist,interpType interp ,bool hasz ,uint32_t minpts)
+	{
+		if( i * lambda >= *beta)
+		{
+			*beta += 1;
+		}
+		set_priority_queue(p_i,INF,Q);
+		set_priority_dict(p_i,0,p);
+		if(i >= 1)
+		{
+			set_point_dict(p_i,p_j,pred);
+			set_point_dict(p_j,p_i,succ);
+			adjust_priority(p_j,Q,pred,succ,p, syncdist, interp , hasz );
+		}
+		size_t size = size_queue(Q);
+		if(size - *beta == 0 ){
+			reduce(Q,pred,succ,p,syncdist, interp , hasz );
+		}
+	}
+\end{lstlisting}
+
 \subsection{Algorithm 2}
+\begin{lstlisting}[language=C, % Spécifie le langage du code
+	caption={reduce}, % Légende du listing
+	label=lst:reduce_c, % Étiquette pour référencer le listing
+	numbers=left, 
+	numberstyle=\tiny\color{gray}, 
+	stepnumber=1, 
+	frame=single,
+	breaklines=true, 
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+	showstringspaces=false 
+	]
+	
+	void
+	reduce(struct PriorityQueue *Q,Dict *pred,Dict *succ,PDict  *p,
+	bool syncdist,interpType interp ,bool hasz )
+	{
+		struct PriorityQueueElem *entry = remove_min(Q);
+		size_t size_before = size_queue(Q);
+		
+		
+		
+		void * p_j = entry->point;
+		double priority = entry->priority;
+		
+		void * p_i = get_point_dict(p_j,pred);
+		void * p_k = get_point_dict(p_j,succ);
+		
+		double pr_i = get_priority_dict(p_i,p); if(priority > pr_i){ pr_i = priority; }
+		double pr_k = get_priority_dict(p_k,p); if(priority > pr_k){ pr_k = priority; }
+		
+		set_priority_dict(p_k, pr_k ,p);
+		set_priority_dict(p_i, pr_i ,p);
+		
+		set_point_dict(p_i,p_k,succ);
+		set_point_dict(p_k,p_i,pred);
+		set_point_dict(p_k,p_i,pred);
+		
+		
+		
+		adjust_priority(p_k ,Q,pred,succ,p,syncdist, interp ,hasz );
+		adjust_priority(p_i ,Q,pred,succ,p,syncdist, interp ,hasz );
+		
+		
+		//Delete pointer
+		free(entry);
+		destroy_elem_PriorityDict(p_j,p);
+		destroy_elem_PointDict(p_j,succ);
+		destroy_elem_PointDict(p_j,pred);
+		
+	}
+	
+\end{lstlisting}
+
 \subsection{Algorithm 3}
 
+\begin{lstlisting}[language=C, % Spécifie le langage du code
+	caption={adjust\_priority}, % Légende du listing
+	label=lst:adjust_c, % Étiquette pour référencer le listing
+	numbers=left, 
+	numberstyle=\tiny\color{gray}, 
+	stepnumber=1, 
+	frame=single,
+	breaklines=true, 
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+	showstringspaces=false 
+	]
+	
+void
+adjust_priority(void *p_i,struct PriorityQueue *Q, Dict *pred,Dict *succ,PDict  *p,
+bool syncdist,interpType interp ,bool hasz )
+{
+	
+	void * p_h = get_point_dict(p_i,pred);
+	void * p_k = get_point_dict(p_i,succ);
+	if( p_h != NULL &&  p_k != NULL )
+	{
+		if(syncdist)
+		{
+			double priority = get_priority_dict(p_i,p) + SED(p_h,p_i,p_k, interp , hasz );
+			set_priority_queue(p_i,priority,Q);
+		}
+	}
+}	
+
+\end{lstlisting}
+
 \section{Variables Implementation}
+Dans cette section nous allons discuter de la manière dont les variables ont été implémenté et de leur efficacité ensuite discuter des performances et de la complexité atteinte. 
+
 \subsection{Map}
+Cette section se concentre sur l'implémentation du map
+
+\begin{lstlisting}[language=C, % Spécifie le langage du code
+	caption={Map C implementation}, % Légende du listing
+	label=lst:map_c, % Étiquette pour référencer le listing
+	numbers=left, 
+	numberstyle=\tiny\color{gray}, 
+	stepnumber=1, 
+	frame=single,
+	breaklines=true, 
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+	showstringspaces=false 
+	]
+	
+	#include <search.h>
+	
+	
+	typedef struct PriorityDict
+	{
+		void * key;
+		double priority;
+	} PriorityDict;
+	
+	
+	typedef struct PointDict
+	{
+		void *key;
+		void *value;
+	} PointDict;
+	
+	
+	typedef void* Dict;
+	typedef void* PDict;
+	
+\end{lstlisting}
+
+
 \subsubsection{Method}
+
+\begin{lstlisting}[language=C, % Spécifie le langage du code
+	caption={Point Map Methods}, % Légende du listing
+	label=lst:pmap_c, % Étiquette pour référencer le listing
+	numbers=left, 
+	numberstyle=\tiny\color{gray}, 
+	stepnumber=1, 
+	frame=single,
+	breaklines=true, 
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+	showstringspaces=false 
+	]
+	
+	
+	int compar(const void *l, const void *r)
+	{
+		const PointDict *lm = l;
+		const PointDict *lr = r;
+		return lm->key - lr->key;
+	}
+	
+	void pd_free(void *l)
+	{
+		free(l);
+	}
+	
+	
+	void *
+	get_point_dict(void *p_i,Dict *dict)
+	{
+		PointDict find;
+		find.key = p_i;
+		void * result = tfind(&find, dict, compar);
+		if(result){
+			result = (*(PointDict**)result)->value;
+		}
+		return result;
+	}
+	
+	
+	void
+	set_point_dict(void * p_i,void * p_j,Dict *dict)
+	{
+		PointDict *find = malloc(sizeof(PointDict));
+		find->key = p_i;
+		find->value = p_j;
+		void * result = tfind(find, dict, compar);
+		if(result){
+			(*(PointDict**)result)->value = p_j;
+		}
+		else{
+			tsearch(find, dict, compar); /* insert */
+		}
+	}
+	
+	
+	void destroy_PointDict(void *dict)
+	{
+		tdestroy(dict,pd_free);
+	}
+	
+	
+	void destroy_elem_PointDict(void * p_i,Dict *dict)
+	{
+		PointDict find;
+		find.key = p_i;
+		void * r = tfind(&find, dict, compar);
+		if(r)
+		{
+			PointDict * to_free = (*(PointDict**)r);
+			tdelete(&find,dict,compar);
+			free(to_free);
+		}
+	}
+	
+\end{lstlisting}
+
+\begin{lstlisting}[language=C, % Spécifie le langage du code
+	caption={Priority Map method}, % Légende du listing
+	label=lst:prmap_c, % Étiquette pour référencer le listing
+	numbers=left, 
+	numberstyle=\tiny\color{gray}, 
+	stepnumber=1, 
+	frame=single,
+	breaklines=true, 
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+	showstringspaces=false 
+	]
+	
+	
+	int comparp(const void *l, const void *r)
+	{
+		const PriorityDict *lm = l;
+		const PriorityDict *lr = r;
+		return lm->key - lr->key;
+	}
+	
+	void p_free(void *l)
+	{
+		free(l);
+	}
+	
+	
+	double
+	get_priority_dict(void *p_i,PDict *dict)
+	{
+		double result = -1;
+		PriorityDict find;
+		find.key = p_i;
+		void * res = tfind(&find, dict, comparp);
+		if(res){
+			result = (*(PriorityDict**)res)->priority;
+		}
+		return result;
+	}
+	
+	
+	void
+	set_priority_dict(void * p_i,double priority,PDict *dict)
+	{
+		PriorityDict *find = malloc(sizeof(PriorityDict));
+		find->key = p_i;
+		find->priority = priority;
+		void * result = tfind(find, dict, comparp);
+		if(result){
+			(*(PriorityDict**)result)->priority = priority;
+		}
+		else{
+			tsearch(find, dict, comparp); /* insert */
+		}
+	}
+	
+	
+	void destroy_PriorityDict(PDict dict)
+	{
+		tdestroy(dict,p_free);
+	}
+	
+	
+	void destroy_elem_PriorityDict(void * p_i,PDict *dict)
+	{
+		PriorityDict find;
+		find.key = p_i;
+		void * r = tfind(&find, dict, comparp);
+		if(r)
+		{
+			PriorityDict * to_free = (*(PriorityDict**)r);
+			tdelete(&find,dict,comparp);
+			free(to_free);
+		}
+	}
+	
+\end{lstlisting}
+
+Here we use function of GNU C Library that implement a binary tree. It has the property to have for each operation a maximal complexity of $O(log(n))$
+
 \subsubsection{Test}
 \subsubsection{Performance}
 \subsubsection{Discussion}
 
+
 \subsection{PriorityQueue}
+
+\begin{lstlisting}[language=C, % Spécifie le langage du code
+	caption={PriorityQueue}, % Légende du listing
+	label=lst:prqueue_c, % Étiquette pour référencer le listing
+	numbers=left, 
+	numberstyle=\tiny\color{gray}, 
+	stepnumber=1, 
+	frame=single,
+	breaklines=true, 
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+	showstringspaces=false 
+	]
+	
+	struct PriorityQueueElem
+	{
+		void * point;
+		double priority;
+		struct PriorityQueueElem *next_entry;
+	};
+	
+	typedef struct PriorityQueue
+	{
+		struct PriorityQueueElem *head;
+		size_t size;
+	} PriorityQueue;
+	
+\end{lstlisting}
+
 \subsubsection{Method}
+
+\begin{lstlisting}[language=C, % Spécifie le langage du code
+	caption={PriorityQueue Method}, % Légende du listing
+	label=lst:prqueueMethod_c, % Étiquette pour référencer le listing
+	numbers=left, 
+	numberstyle=\tiny\color{gray}, 
+	stepnumber=1, 
+	frame=single,
+	breaklines=true, 
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+	showstringspaces=false 
+	]
+	
+	struct PriorityQueue *
+	create_PriorityQueue(){
+		struct PriorityQueue * result =  malloc(sizeof(struct PriorityQueue));
+		result->head = NULL;
+		result->size = 0;
+		return result;
+	}
+	
+	
+	size_t size_queue(const PriorityQueue *Q)
+	{
+		return Q->size;
+	}
+	
+	struct PriorityQueueElem *remove_min(PriorityQueue *Q)
+	{
+		struct PriorityQueueElem *result = Q->head;
+		if(result != NULL){
+			Q->head = Q->head->next_entry;
+			Q->size--;
+		}
+		return result;
+	}
+	
+	struct PriorityQueueElem *
+	remove_elem(void *p_i ,PriorityQueue *Q)
+	{
+		struct PriorityQueueElem *before = NULL;
+		struct PriorityQueueElem *current = Q->head;
+		while(current != NULL){
+			if(current->point == p_i){
+				Q->size--;
+				if(before != NULL){
+					before->next_entry = current->next_entry;
+				}
+				else{
+					Q->head = current->next_entry;
+				}
+				return current;
+			}
+			before = current;
+			current = current->next_entry;
+		}
+		return current;
+	}
+	
+	
+	void
+	push(struct PriorityQueueElem * insert,PriorityQueue *Q)
+	{
+		Q->size++;
+		struct PriorityQueueElem *before = NULL;
+		struct PriorityQueueElem *current = Q->head;
+		while(current != NULL){
+			if(current->priority >= insert->priority)
+			{
+				insert->next_entry = current;
+				if(before != NULL)
+				{
+					before->next_entry = insert;
+				}
+				else
+				{
+					Q->head = insert;
+				}
+				return;
+			}
+			
+			before = current;
+			current = current->next_entry;
+		}
+		if(before != NULL)
+		{
+			before->next_entry = insert;
+		}
+		else
+		{
+			Q->head = insert;
+		}
+	}
+	
+	
+	void
+	set_priority_queue(void *p_i,double priority ,PriorityQueue *Q)
+	{
+		struct PriorityQueueElem * insert = remove_elem(p_i,Q);
+		if(insert == NULL){
+			insert = malloc(sizeof(struct PriorityQueueElem));
+			insert->point = p_i;
+			insert->priority = priority;
+			insert->next_entry = NULL;
+		}
+		push(insert,Q);
+	}
+	
+	void destroy_Queue(struct PriorityQueue *Q)
+	{
+		struct PriorityQueueElem *current = Q->head;
+		while (current != NULL)
+		{
+			struct PriorityQueueElem *temp = current;
+			current = current->next_entry;
+			free(temp);
+		}
+		free(Q);
+	}
+	
+	
+	
+\end{lstlisting}
+
+As you can see this is a simple implementation. It uses a linked list but it has a bad complexity of $O(n)$ in the worst case that makes the main algorithm complexity to $O(n^{2})$ .
+
 \subsubsection{Test}
 \subsubsection{Performance}
 \subsubsection{Discussion}
@@ -808,14 +1370,66 @@ In the algorithm \ref{alg:squish_e} we can analyze the time complexity. L'algori
 
 \section{Postgres Implementation}
 \subsection{SQL Code}
-
+\begin{lstlisting}[
+	language=SQL, % Setting the language for SQL
+	caption={SQUISHE SQL Code}, % Caption for the listing
+	label=lst:squish_sql, % Label for referencing the listing
+	basicstyle=\ttfamily\small, % Basic style
+	keywordstyle=\color{blue}\ttfamily, % Style for keywords
+	stringstyle=\color{red}\ttfamily, % Style for strings
+	commentstyle=\color{green}\ttfamily, % Style for comments
+	numbers=left, % Line numbers on the left
+	numberstyle=\tiny\color{gray}, % Style for line numbers
+	stepnumber=1, % Line numbers step
+	frame=single,
+	breaklines=true, % Automatic line breaking
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}, % Arrow for line breaks
+	showstringspaces=false % Don't show special spaces within strings
+	]
+	CREATE FUNCTION SquishESimplify(tfloat, float, boolean DEFAULT TRUE)
+	RETURNS tfloat
+	AS 'MODULE_PATHNAME', 'Temporal_simplify_sqe'
+	LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
+	CREATE FUNCTION SquishESimplify(tgeompoint, float, boolean DEFAULT TRUE)
+	RETURNS tgeompoint
+	AS 'MODULE_PATHNAME', 'Temporal_simplify_sqe'
+	LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
+\end{lstlisting}
 
 \subsection{Example}
 
+\begin{lstlisting}[
+	language=SQL, % Setting the language for SQL
+	caption={Example SQL Code}, % Caption for the listing
+	label=lst:example_sql, % Label for referencing the listing
+	basicstyle=\ttfamily\small, % Basic style
+	keywordstyle=\color{blue}\ttfamily, % Style for keywords
+	stringstyle=\color{red}\ttfamily, % Style for strings
+	commentstyle=\color{green}\ttfamily, % Style for comments
+	numbers=left, % Line numbers on the left
+	numberstyle=\tiny\color{gray}, % Style for line numbers
+	stepnumber=1, % Line numbers step
+	frame=single,
+	breaklines=true, % Automatic line breaking
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}, % Arrow for line breaks
+	showstringspaces=false % Don't show special spaces within strings
+	]
+	
+	SELECT SquishESimplify(tfloat '[1@2000-01-01, 2@2000-01-02, 3@2000-01-04,
+	4@2000-01-05]', '1 day');
+	-- [1@2000-01-01, 3@2000-01-04]
+	SELECT asText(SquishESimplify(tgeogpoint '[Point(1 1 1)@2000-01-01,
+	Point(2 2 2)@2000-01-02, Point(3 3 3)@2000-01-04, Point(5 5 5)@2000-01-05)', '1 day'));
+	-- [POINT Z (1 1 1)@2000-01-01, POINT Z (3 3 3)@2000-01-04]
+	
+\end{lstlisting}
+
 \subsection{Result}
 
+Here we will talk about the result of the function
 
 \chapter{Comparison}
+This chapter focus on the comparison of our implementation with existing other implementation in MobilityDB.
 
 \section{Douglas Peucker}
 \subsection{Performance}
