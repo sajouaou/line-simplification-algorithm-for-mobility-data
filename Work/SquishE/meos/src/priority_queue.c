@@ -7,28 +7,62 @@ USING STATIC STRUCTURE BY ADDING size_t allocated_size; and a table of PriorityQ
 */
 #include <stdio.h>
 #include <stdlib.h>
+#include <search.h>
 
-
-struct PriorityQueueElem
+typedef struct PriorityQueueElem
 {
   void * point;
   double priority;
-  struct PriorityQueueElem *next_entry;
-};
+  int index; //reference his own index
+} PriorityQueueElem;
+
+typedef void* IDict;
 
 typedef struct PriorityQueue
 {
-  struct PriorityQueueElem *head;
+  PriorityQueueElem **arr;
+  IDict dict;
   size_t size;
+  size_t capacity;
 } PriorityQueue;
 
+struct PriorityQueue *
+create_PriorityQueue(int capacity);
+size_t size_queue(const PriorityQueue *Q);
+void minHeapify(PriorityQueue* Q, int index);
+PriorityQueueElem *remove_min(PriorityQueue *Q);
+struct PriorityQueueElem *
+remove_elem(void *p_i ,PriorityQueue *Q);
+void insertHelper(PriorityQueue* Q, int index);
+void
+push(PriorityQueueElem * insert,PriorityQueue *Q);
+void
+set_priority_queue(void *p_i,double priority ,PriorityQueue *Q);
+void destroy_Queue(struct PriorityQueue *Q);
 
 struct PriorityQueue *
-create_PriorityQueue(){
-  struct PriorityQueue * result =  malloc(sizeof(struct PriorityQueue));
-  result->head = NULL;
-  result->size = 0;
-  return result;
+create_PriorityQueue(int capacity){
+    // Allocating memory to heap h
+    PriorityQueue* h = (PriorityQueue*)malloc(sizeof(PriorityQueue));
+
+    // Checking if memory is allocated to h or not
+    if (h == NULL) {
+        //printf("Memory error");
+        return NULL;
+    }
+    // set the values to size and capacity
+    h->size = 0;
+    h->capacity = capacity;
+
+    // Allocating memory to array
+    h->arr = (PriorityQueueElem**)malloc(capacity * sizeof(PriorityQueueElem*));
+
+    // Checking if memory is allocated to h or not
+    if (h->arr == NULL) {
+        //printf("Memory error");
+        return NULL;
+    }
+    return h;
 }
 
 
@@ -37,98 +71,198 @@ size_t size_queue(const PriorityQueue *Q)
     return Q->size;
 }
 
-struct PriorityQueueElem *remove_min(PriorityQueue *Q)
+void minHeapify(PriorityQueue* Q, int index)
 {
-  struct PriorityQueueElem *result = Q->head;
-  if(result != NULL){
-    Q->head = Q->head->next_entry;
-    Q->size--;
+    int left = index * 2 + 1;
+    int right = index * 2 + 2;
+    int min = index;
+
+    // Checking whether our left or child element
+    // is at right index or not to avoid index error
+    if (left >= Q->size || left < 0)
+        left = -1;
+    if (right >= Q->size || right < 0)
+        right = -1;
+
+    // store left or right element in min if
+    // any of these is smaller that its parent
+    if (left != -1 && Q->arr[left]->priority < Q->arr[index]->priority)
+        min = left;
+    if (right != -1 && Q->arr[right]->priority < Q->arr[index]->priority)
+        min = right;
+
+    // Swapping the nodes
+    if (min != index) {
+        PriorityQueueElem *temp = Q->arr[min];
+        Q->arr[min] = Q->arr[index];
+        Q->arr[index] = temp;
+
+        Q->arr[min]->index = min;
+        Q->arr[index]->index = index;
+
+        // recursively calling for their child elements
+        // to maintain min heap
+        minHeapify(Q, min);
+    }
+}
+
+
+int compar_index(const void *l, const void *r)
+{
+    const PriorityQueueElem *lm = l;
+    const PriorityQueueElem *lr = r;
+    return lm->point - lr->point;
+}
+
+PriorityQueueElem *remove_min(PriorityQueue *Q)
+{
+  PriorityQueueElem *result;
+  if (Q->size != 0) {
+        result = Q->arr[0];
+        // Replace the deleted node with the last node
+        Q->arr[0] = Q->arr[Q->size - 1];
+        Q->arr[Q->size - 1] = NULL;
+        if(Q->arr[0]){
+            Q->arr[0]->index = 0;
+        }
+
+        // Decrement the size of heap
+        Q->size--;
+
+        tdelete(result,&Q->dict,compar_index);
+        // Call minheapify_top_down for 0th index
+        // to maintain the heap property
+        minHeapify(Q, 0);
+
   }
   return result;
 }
 
+
+PriorityQueueElem *get_elem(void *p_i,IDict *dict)
+{
+    PriorityQueueElem find;
+    find.point = p_i;
+    PriorityQueueElem * result = tfind(&find, dict, compar_index);
+    if(result){
+        result = (*(PriorityQueueElem**)result);
+    }
+    return result;
+
+}
+
+
+
+
 struct PriorityQueueElem *
 remove_elem(void *p_i ,PriorityQueue *Q)
 {
-  struct PriorityQueueElem *before = NULL;
-  struct PriorityQueueElem *current = Q->head;
-  while(current != NULL){
-    if(current->point == p_i){
+  ////elog(NOTICE,"//////  GET ////////");
+  PriorityQueueElem *elem = get_elem(p_i,&Q->dict);
+  if(elem && elem->index != -1){
+    //remove
+    //printf("TEST ELEM %i , %i\n",elem->index,Q->size);
+    if(Q->size > elem->index ){
+        ////elog(NOTICE,"//////  Z ////////");
+        //printf("TEST %lf \n", Q->arr[elem->index]->priority);
+        Q->arr[elem->index] = Q->arr[Q->size - 1];
+        Q->arr[Q->size - 1] = NULL;
+
+        if(Q->arr[elem->index]){
+            Q->arr[elem->index]->index = elem->index;
+        }
+        //printf("TEST %lf \n", Q->arr[elem->index]->priority);
+        // to maintain the heap property
+        ////elog(NOTICE,"//////  minHeapify ////////");
         Q->size--;
-        if(before != NULL){
-            before->next_entry = current->next_entry;
-        }
-        else{
-            Q->head = current->next_entry;
-        }
-        return current;
+        minHeapify(Q, elem->index);
+        ////elog(NOTICE,"//////  minHeapify ////////");
     }
-    before = current;
-    current = current->next_entry;
+    elem->index = -1;
   }
-  return current;
+  //elog(NOTICE,"//////  RETURN ////////");
+  //printf("TEST END \n");
+  return elem;
+}
+
+void insertHelper(PriorityQueue* Q, int index)
+{
+    // Store parent of element at index
+    // in parent variable
+    int parent = (index - 1) / 2;
+
+    if (index > 0 && index < Q->size && parent >= 0 && parent < Q->size) {
+        if( Q->arr[parent]->priority > Q->arr[index]->priority){
+            // Swapping when child is smaller
+            // than parent element
+            PriorityQueueElem *temp = Q->arr[parent];
+            Q->arr[parent] = Q->arr[index];
+            Q->arr[index] = temp;
+
+            Q->arr[parent]->index = parent;
+            Q->arr[index]->index = index;
+
+            // Recursively calling insertHelper
+            insertHelper(Q, parent);
+        }
+    }
+
 }
 
 
 void
-push(struct PriorityQueueElem * insert,PriorityQueue *Q)
+push(PriorityQueueElem * insert,PriorityQueue *Q)
 {
   Q->size++;
-  struct PriorityQueueElem *before = NULL;
-  struct PriorityQueueElem *current = Q->head;
-  while(current != NULL){
-    if(current->priority >= insert->priority)
-    {
-        insert->next_entry = current;
-        if(before != NULL)
-        {
-            before->next_entry = insert;
-        }
-        else
-        {
-            Q->head = insert;
-        }
-        return;
-    }
-
-    before = current;
-    current = current->next_entry;
+  if(Q->size > Q->capacity){
+    Q->arr = realloc(Q->arr, Q->size * sizeof(PriorityQueueElem*));
   }
-  if(before != NULL)
-  {
-      before->next_entry = insert;
-  }
-  else
-  {
-      Q->head = insert;
-  }
+  Q->arr[Q->size-1] = insert;
+  insertHelper(Q, Q->size-1);
 }
 
 
 void
 set_priority_queue(void *p_i,double priority ,PriorityQueue *Q)
 {
+
+  //elog(NOTICE,"//////  set_priority_queue////////");
+  //printf("BEFORE REMOVE \n");
+  //printPriorityQueue(Q);
   struct PriorityQueueElem * insert = remove_elem(p_i,Q);
+  //printf("AFTER REMOVE \n");
+  //printPriorityQueue(Q);
+  //elog(NOTICE,"//////  AFTER REMOVE ELEM ////////");
   if(insert == NULL){
+  //elog(NOTICE,"//////  malloc ////////");
     insert = malloc(sizeof(struct PriorityQueueElem));
     insert->point = p_i;
-    insert->priority = priority;
-    insert->next_entry = NULL;
+    tsearch(insert, &Q->dict, compar_index); /* insert */
   }
+  insert->priority = priority;
+  //elog(NOTICE,"//////  push ////////");
   push(insert,Q);
+  //printf("AFTER PUSH \n");
+  //printPriorityQueue(Q);
+  //elog(NOTICE,"//////  after push ////////");
+  //elog(NOTICE,"//////  set_priority_queue////////");
+
+}
+
+void i_free(void *l)
+{
+    free(l);
 }
 
 void destroy_Queue(struct PriorityQueue *Q)
 {
-   struct PriorityQueueElem *current = Q->head;
-   while (current != NULL)
-   {
-        struct PriorityQueueElem *temp = current;
-        current = current->next_entry;
-        free(temp);
-   }
+   free(Q->arr);
+   tdestroy(Q->dict,i_free);
    free(Q);
 }
+
+
+
 
 
 
