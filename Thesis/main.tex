@@ -26,6 +26,8 @@
 \usepackage{hyperref}
 \hypersetup{linktocpage}
 
+\usepackage{booktabs} % Pour de meilleurs tableaux
+
 \usepackage{longtable}
 
 
@@ -861,7 +863,7 @@ Les méthodes nécessaires afin d'implémenter la priorityqueue sont les suivant
 \begin{itemize}
 	\item set\_priority(key,value,Q) this function can be expressed as the two following methods
 	\begin{itemize}
-		\item remove(key,Q)
+		\item remove(key,Q) or replace(key,Q) // depends on implementation
 		\item push(key,value,Q)
 	\end{itemize}
 	\item remove\_min(Q)
@@ -1221,17 +1223,21 @@ Here we use function of GNU C Library that implement a binary tree. It has the p
 	showstringspaces=false 
 	]
 	
-	struct PriorityQueueElem
+	typedef struct PriorityQueueElem
 	{
 		void * point;
 		double priority;
-		struct PriorityQueueElem *next_entry;
-	};
+		int index; //reference his own index
+	} PriorityQueueElem;
+	
+	typedef void* IDict;
 	
 	typedef struct PriorityQueue
 	{
-		struct PriorityQueueElem *head;
+		PriorityQueueElem **arr;
+		IDict dict;
 		size_t size;
+		size_t capacity;
 	} PriorityQueue;
 	
 \end{lstlisting}
@@ -1250,123 +1256,222 @@ Here we use function of GNU C Library that implement a binary tree. It has the p
 	showstringspaces=false 
 	]
 	
-	struct PriorityQueue *
-	create_PriorityQueue(){
-		struct PriorityQueue * result =  malloc(sizeof(struct PriorityQueue));
-		result->head = NULL;
-		result->size = 0;
-		return result;
+
+
+struct PriorityQueue *
+create_PriorityQueue(int capacity){
+	// Allocating memory to heap h
+	PriorityQueue* h = (PriorityQueue*)malloc(sizeof(PriorityQueue));
+	
+	// Checking if memory is allocated to h or not
+	if (h == NULL) {
+		//printf("Memory error");
+		return NULL;
 	}
+	// set the values to size and capacity
+	h->size = 0;
+	h->capacity = capacity;
 	
+	// Allocating memory to array
+	h->arr = (PriorityQueueElem**)malloc(capacity * sizeof(PriorityQueueElem*));
 	
-	size_t size_queue(const PriorityQueue *Q)
-	{
-		return Q->size;
+	// Checking if memory is allocated to h or not
+	if (h->arr == NULL) {
+		//printf("Memory error");
+		return NULL;
 	}
+	return h;
+}
+
+
+size_t size_queue(const PriorityQueue *Q)
+{
+	return Q->size;
+}
+
+void minHeapify(PriorityQueue* Q, int index)
+{
+	int left = index * 2 + 1;
+	int right = index * 2 + 2;
+	int min = index;
 	
-	struct PriorityQueueElem *remove_min(PriorityQueue *Q)
-	{
-		struct PriorityQueueElem *result = Q->head;
-		if(result != NULL){
-			Q->head = Q->head->next_entry;
-			Q->size--;
+	// Checking whether our left or child element
+	// is at right index or not to avoid index error
+	if (left >= Q->size || left < 0)
+	left = -1;
+	if (right >= Q->size || right < 0)
+	right = -1;
+	
+	// store left or right element in min if
+	// any of these is smaller that its parent
+	if (left != -1 && Q->arr[left]->priority < Q->arr[index]->priority)
+	min = left;
+	if (right != -1 && Q->arr[right]->priority < Q->arr[index]->priority)
+	min = right;
+	
+	// Swapping the nodes
+	if (min != index) {
+		PriorityQueueElem *temp = Q->arr[min];
+		Q->arr[min] = Q->arr[index];
+		Q->arr[index] = temp;
+		
+		Q->arr[min]->index = min;
+		Q->arr[index]->index = index;
+		
+		// recursively calling for their child elements
+		// to maintain min heap
+		minHeapify(Q, min);
+	}
+}
+
+
+int compar_index(const void *l, const void *r)
+{
+	const PriorityQueueElem *lm = l;
+	const PriorityQueueElem *lr = r;
+	return lm->point - lr->point;
+}
+
+PriorityQueueElem *remove_min(PriorityQueue *Q)
+{
+	PriorityQueueElem *result = NULL;
+	if (Q->size != 0) {
+		result = Q->arr[0];
+		// Replace the deleted node with the last node
+		Q->arr[0] = Q->arr[Q->size - 1];
+		Q->arr[Q->size - 1] = NULL;
+		if(Q->arr[0]){
+			Q->arr[0]->index = 0;
 		}
-		return result;
+		
+		// Decrement the size of heap
+		Q->size--;
+		
+		tdelete(result,&Q->dict,compar_index);
+		// Call minheapify_top_down for 0th index
+		// to maintain the heap property
+		minHeapify(Q, 0);
+		
 	}
+	return result;
+}
+
+
+PriorityQueueElem *get_elem(void *p_i,IDict *dict)
+{
+	PriorityQueueElem find;
+	find.point = p_i;
+	PriorityQueueElem * result = tfind(&find, dict, compar_index);
+	if(result){
+		result = (*(PriorityQueueElem**)result);
+	}
+	return result;
 	
-	struct PriorityQueueElem *
-	remove_elem(void *p_i ,PriorityQueue *Q)
-	{
-		struct PriorityQueueElem *before = NULL;
-		struct PriorityQueueElem *current = Q->head;
-		while(current != NULL){
-			if(current->point == p_i){
-				Q->size--;
-				if(before != NULL){
-					before->next_entry = current->next_entry;
-				}
-				else{
-					Q->head = current->next_entry;
-				}
-				return current;
-			}
-			before = current;
-			current = current->next_entry;
+}
+
+
+
+
+struct PriorityQueueElem *
+replace_elem(void *p_i,double priority ,PriorityQueue *Q)
+{
+	PriorityQueueElem *elem = get_elem(p_i,&Q->dict);
+	if(elem ){
+		//elog(NOTICE,"FOUND ELEM FOR SUR \n Index :  %i / SIZE : %i ",elem->index ,Q->size);
+		if(Q->size > elem->index && elem->index != -1){
+			//elog(NOTICE,"REPLACE ELEM FOR SUR");
+			Q->arr[elem->index]->priority = priority;
+			insertHelper(Q, elem->index);
+			minHeapify(Q, elem->index);
 		}
-		return current;
 	}
+	return elem;
+}
+
+void insertHelper(PriorityQueue* Q, int index)
+{
+	// Store parent of element at index
+	// in parent variable
+	int parent = (index - 1) / 2;
 	
-	
-	void
-	push(struct PriorityQueueElem * insert,PriorityQueue *Q)
-	{
-		Q->size++;
-		struct PriorityQueueElem *before = NULL;
-		struct PriorityQueueElem *current = Q->head;
-		while(current != NULL){
-			if(current->priority >= insert->priority)
-			{
-				insert->next_entry = current;
-				if(before != NULL)
-				{
-					before->next_entry = insert;
-				}
-				else
-				{
-					Q->head = insert;
-				}
-				return;
-			}
+	if (index > 0 && index < Q->size && parent >= 0 && parent < Q->size) {
+		if( Q->arr[parent]->priority > Q->arr[index]->priority){
+			// Swapping when child is smaller
+			// than parent element
+			PriorityQueueElem *temp = Q->arr[parent];
+			Q->arr[parent] = Q->arr[index];
+			Q->arr[index] = temp;
 			
-			before = current;
-			current = current->next_entry;
-		}
-		if(before != NULL)
-		{
-			before->next_entry = insert;
-		}
-		else
-		{
-			Q->head = insert;
+			Q->arr[parent]->index = parent;
+			Q->arr[index]->index = index;
+			
+			// Recursively calling insertHelper
+			insertHelper(Q, parent);
 		}
 	}
 	
-	
-	void
-	set_priority_queue(void *p_i,double priority ,PriorityQueue *Q)
-	{
-		struct PriorityQueueElem * insert = remove_elem(p_i,Q);
-		if(insert == NULL){
-			insert = malloc(sizeof(struct PriorityQueueElem));
-			insert->point = p_i;
-			insert->priority = priority;
-			insert->next_entry = NULL;
-		}
+}
+
+
+void
+push(PriorityQueueElem * insert,PriorityQueue *Q)
+{
+	Q->size++;
+	if(Q->size > Q->capacity){
+		Q->arr = realloc(Q->arr, Q->size * sizeof(PriorityQueueElem*));
+	}
+	Q->arr[Q->size-1] = insert;
+	Q->arr[Q->size-1]->index = Q->size-1;
+	insertHelper(Q, Q->size-1);
+}
+
+
+void
+set_priority_queue(void *p_i,double priority ,PriorityQueue *Q)
+{
+	struct PriorityQueueElem * insert = replace_elem(p_i,priority,Q);
+	if(insert == NULL){
+		//elog(NOTICE,"INSERT ELEM FOR SUR");
+		insert = malloc(sizeof(struct PriorityQueueElem));
+		insert->point = p_i;
+		insert->priority = priority;
+		insert->index = -1;
+		tsearch(insert, &Q->dict, compar_index); /* insert */
+	}
+	if(insert->index == -1){
 		push(insert,Q);
 	}
-	
-	void destroy_Queue(struct PriorityQueue *Q)
-	{
-		struct PriorityQueueElem *current = Q->head;
-		while (current != NULL)
-		{
-			struct PriorityQueueElem *temp = current;
-			current = current->next_entry;
-			free(temp);
-		}
-		free(Q);
-	}
-	
-	
+}
+
+void i_free(void *l)
+{
+	free(l);
+}
+
+void destroy_Queue(struct PriorityQueue *Q)
+{
+	free(Q->arr);
+	tdestroy(Q->dict,i_free);
+	free(Q);
+}
 	
 \end{lstlisting}
 
-As you can see this is a simple implementation. It uses a linked list but it has a bad complexity of $O(n)$ in the worst case that makes the main algorithm complexity to $O(n^{2})$ .
+From other implementation this one has the property to have at most a complexity of $O(log(n))$ the choice of a min heap to implement the priorityqueue fullfill the complexity limitation that we see in the design phase. The min heap is structure has a structure of a tree like we see in \ref{fig:min_heap} and has the property that each tree and sub tree has the property that the parent nodes is always lesser than the child nodes.
 
-\subsubsection{Test}
-\subsubsection{Performance}
+
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=1\linewidth]{figures/tree.png}
+	\caption{Min Heap Structure}
+	\label{fig:min_heap}
+\end{figure}
+
+
 \subsubsection{Discussion}
 
+The idea here is to use the min heap structure to obtain in a complexity of maximum $O(log(n))$  the point with the lowest priority. In the side we use a index map in order to replace point in the heap in an efficient way. Due to the fact that the design include the set of an element when it is already in the array. This structure has the advantage to benefit from static memory. The set works using the mapping to see if the point is already present in the map. If it is we replace it in the heap by changing his priority and apply a check with his ancestor then his descendant. If the point is not present we add a value at the end of the heap and check and update their ancestor to satisfy the condition of a min heap. So at the end the two operations needed for the algorithm reach a complexity of $O(log(n))$ 
 
 \section{Postgres Implementation}
 \subsection{SQL Code}
@@ -1427,6 +1532,28 @@ As you can see this is a simple implementation. It uses a linked list but it has
 \subsection{Result}
 
 Here we will talk about the result of the function
+
+\subsection{Performance}
+
+\begin{table}[htbp]
+	\centering
+	\caption{Average Execution Time by Number of Points and Lambda}
+	\label{tab:execution_time}
+	\begin{tabular}{@{}lccccc@{}}
+		\toprule
+		Number of Points & \multicolumn{5}{c}{Lambda} \\
+		\cmidrule{2-6}
+		& 1         & 0.75       & 0.5        & 0.25       & 0.01       \\
+		\midrule
+		100              & 00.001137 & 00.001965 & 00.002775 & 00.003328 & 00.004529 \\
+		1000             & 00.01498  & 00.014966 & 00.022183 & 00.024588 & 00.023035 \\
+		10000            & 00.164196 & 00.215692 & 00.214011 & 00.247379 & 00.218447 \\
+		100000           & 01.77365  & 02.171435 & 02.844324 & 02.617976 & 02.437037 \\
+		1000000          & 04.618455 & 05.371317 & 06.461961 & 06.021071 & 04.510934 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
 
 \chapter{Comparison}
 This chapter focus on the comparison of our implementation with existing other implementation in MobilityDB.

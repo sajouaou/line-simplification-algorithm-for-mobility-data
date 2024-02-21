@@ -79,24 +79,24 @@ adjust_priority(void *p_i,struct PriorityQueue *Q, Dict *pred,Dict *succ,PDict  
 bool syncdist,interpType interp ,bool hasz )
 {
 
-  //elog(NOTICE,"//////  ADJUST PRIORITY ////////");
+  ////elog(NOTICE,"//////  ADJUST PRIORITY ////////");
 
-  //elog(NOTICE,"get TEST BEGIN");
+  ////elog(NOTICE,"get TEST BEGIN");
   void * p_h = get_point_dict(p_i,pred);
   void * p_k = get_point_dict(p_i,succ);
-  //elog(NOTICE,"get TEST END");
+  ////elog(NOTICE,"get TEST END");
   if( p_h != NULL &&  p_k != NULL )
   {
     if(syncdist)
     {
       double priority = get_priority_dict(p_i,p) + SED(p_h,p_i,p_k, interp , hasz );
-  //elog(NOTICE,"//////  BEFORE SET PRIORITY ////////");
+  ////elog(NOTICE,"//////  BEFORE SET PRIORITY ////////");
       set_priority_queue(p_i,priority,Q);
-  //elog(NOTICE,"//////  AFTER SET PRIORITY ////////");
+  ////elog(NOTICE,"//////  AFTER SET PRIORITY ////////");
 
     }
   }
-  //elog(NOTICE,"//////  ADJUST PRIORITY ////////");
+  ////elog(NOTICE,"//////  ADJUST PRIORITY ////////");
 }
 
 void
@@ -111,7 +111,7 @@ bool syncdist,interpType interp ,bool hasz )
   void * p_j = entry->point;
   double priority = entry->priority;
 
-  //elog(NOTICE,"reduce TEST BEGIN POINT : %p PRIORITY : %d",p_j,priority);
+  ////elog(NOTICE,"reduce TEST BEGIN POINT : %p PRIORITY : %d",p_j,priority);
   void * p_i = get_point_dict(p_j,pred);
   void * p_k = get_point_dict(p_j,succ);
 
@@ -143,7 +143,7 @@ bool syncdist,interpType interp ,bool hasz )
 
 void printPriorityQueue(PriorityQueue *pq)
 {
-    //elog(NOTICE,"PRINT");
+    ////elog(NOTICE,"PRINT");
     for(int i=0;i < pq->size;i++)
     {
 
@@ -159,7 +159,7 @@ iteration_simplification_sqe(void *p_i , void *p_j ,
                             PDict  *p,struct PriorityQueue *Q,
                              bool syncdist,interpType interp ,bool hasz ,uint32_t minpts)
 {
-//elog(NOTICE,"/////////////////");
+////elog(NOTICE,"/////////////////");
   if( i * lambda >= *beta)
   {
       *beta += 1;
@@ -169,22 +169,23 @@ iteration_simplification_sqe(void *p_i , void *p_j ,
   set_priority_dict(p_i,0,p);
   if(i >= 1)
   {
-     //elog(NOTICE,"set_point_dict TEST BEGIN %p %p",p_i,p_j);
+     ////elog(NOTICE,"set_point_dict TEST BEGIN %p %p",p_i,p_j);
      set_point_dict(p_i,p_j,pred);
      set_point_dict(p_j,p_i,succ);
-     //elog(NOTICE,"set_point_dict TEST END");
+     ////elog(NOTICE,"set_point_dict TEST END");
      adjust_priority(p_j,Q,pred,succ,p, syncdist, interp , hasz );
-     //elog(NOTICE,"/////////////////");
+     ////elog(NOTICE,"/////////////////");
   }
   size_t size = size_queue(Q);
   //elog(NOTICE,"------------TEST iteration %i -- beta %i -- limit %i -- lambda %f \n ---- size %zu",i,*beta,i/lambda,lambda,size);
-
+    printPriorityQueue(Q);
     //elog(NOTICE,"BEFORE IF SIZE QUEUE  %zu  ->  %zu /// %i  ///%f",size_before,size,*beta,lambda);
   if(size - *beta == 0 ){
     reduce(Q,pred,succ,p,syncdist, interp , hasz );
     //elog(NOTICE,"ENTER IF SIZE QUEUE  %zu  ->  %zu /// %i  ///%f",size_before,size,*beta,lambda);
   }
   //elog(NOTICE,"/////////////////");
+  printPriorityQueue(Q);
 }
 
 
@@ -242,7 +243,7 @@ sq_iteration(TInstant * point,squish_variables *sq ,const double lambda, bool sy
   if(sq->i == 0)
   {
         sq->point = point;
-        //elog(NOTICE,"POINT %p \n",sq->point);
+        ////elog(NOTICE,"POINT %p \n",sq->point);
   }
   sq->p_j = sq->p_i;
   sq->p_i = point;
@@ -292,7 +293,7 @@ tsequence_simplify_sqe(const TSequence *seq, double dist, bool syncdist,
   uint32_t minpts)
 {
 
-  //elog(NOTICE,"=== SQUISH-E Simplification ===");
+  ////elog(NOTICE,"=== SQUISH-E Simplification ===");
   squish_variables SQ_variables;
   init_squish_variables(&SQ_variables);
 
@@ -309,7 +310,7 @@ tsequence_simplify_sqe(const TSequence *seq, double dist, bool syncdist,
 
   }
   while(SQ_variables.i < seq->count);
-  //elog(NOTICE,"=== SQUISH-E Simplification ===");
+  ////elog(NOTICE,"=== SQUISH-E Simplification ===");
 
   TSequence *result = result = construct_simplify_path(&SQ_variables,seq->period.lower_inc,
                     seq->period.upper_inc, LINEAR, false);
@@ -374,7 +375,7 @@ Temporal *
 temporal_simplify_sqe(const Temporal *temp, double dist, bool syncdist)
 {
 
-  //elog(NOTICE,"=== SQUISH-E Simplification ===");
+  ////elog(NOTICE,"=== SQUISH-E Simplification ===");
   /* Ensure validity of the arguments */
   if (! ensure_not_null((void *) temp) ||
       ! ensure_tnumber_tgeo_type(temp->temptype) ||

@@ -2,7 +2,8 @@ CREATE OR REPLACE FUNCTION perfBenchmarkSQ(
 	trip tgeompoint, -- Path on what the benchmark is running
 	lambda float,
 	N int DEFAULT 10, --Number of Iterations
-	sync boolean DEFAULT TRUE -- SED
+	sync boolean DEFAULT TRUE, -- SED
+    simpl text DEFAULT 'SQUISH-E' -- SQUISH-E / MINDIST / DOUGLAS
 )
 RETURNS VOID AS $$
 DECLARE
@@ -13,13 +14,21 @@ i int;
   itStartTime timestamptz; itEndTime timestamptz;
 
 BEGIN
-CREATE TABLE IF NOT EXISTS benchResult(i int,lambda float,nbPoint int,duration interval);
 SELECT clock_timestamp() INTO startTime;
 FOR i in 1..N LOOP
 SELECT clock_timestamp() INTO itStartTime;
+
+CASE simpl then
+when 'MINDIST' then
+PERFORM minDistSimplify(trip,lambda,sync);
+when 'DOUGLAS' then
+PERFORM DouglasPeuckerSimplify(trip,lambda,sync);
+else
 PERFORM SquishESimplify(trip,lambda,sync);
+end case;
+
 SELECT clock_timestamp() INTO itEndTime;
-INSERT INTO benchResult VALUES (i,lambda,numInstants(trip),itEndTime - itStartTime);
+INSERT INTO benchResult VALUES (i,lambda,numInstants(trip),itEndTime - itStartTime,simpl);
 END LOOP;
 SELECT clock_timestamp() INTO endTime;
 RAISE INFO '----------------------------------------------------------------------';
@@ -43,38 +52,49 @@ trip tgeompoint;
 BEGIN
 SELECT clock_timestamp() INTO t;
 deliveryTime = interval '1 min';
-SELECT tgeompoint '[Point(1 1 1)@2000-01-01,Point(2 2 2)@2000-01-02]' into trip;
-FOR i IN 1..N-2 LOOP
+SELECT c.trip FROM
+                  (SELECT MAX(points) as maxp FROM tripGenerated as b WHERE points <= N ) as a,tripGenerated as c WHERE points = maxp
+    into trip;
+
+t = t + numInstants(trip)*deliveryTime;
+FOR i IN 1..N-numInstants(trip) LOOP
     t = t + deliveryTime;
 	trip = appendInstant(trip, tgeompoint_inst(endvalue(instantn(trip,i)), t));
 END LOOP;
+
+INSERT INTO tripGenerated VALUES (numInstants(trip),trip)  on conflict (points) do nothing;
 return trip;
 END;
 $$ LANGUAGE plpgsql;
 
 
-
 CREATE  OR REPLACE FUNCTION perfBenchmarkSQ(
-    _points integer[],
+    __points integer[],
     _lambda float[],
 	N int DEFAULT 10, --Number of Iterations
-	sync boolean DEFAULT TRUE -- SED
+	sync boolean DEFAULT TRUE, -- SED
+    simpl text DEFAULT 'SQUISH-E' -- SQUISH-E / MINDIST / DOUGLAS
 )
 RETURNS VOID AS $$
 DECLARE
-points integer;
+_points integer;
 lambda float;
 trip tgeompoint;
 BEGIN
+CREATE TABLE IF NOT EXISTS benchResult(i int,lambda float,nbPoint int,duration interval,simpl text);
+CREATE TABLE IF NOT EXISTS tripGenerated(points int PRIMARY KEY,trip tgeompoint);
+INSERT INTO tripGenerated VALUES (2,tgeompoint '[Point(1 1 1)@2000-01-01,Point(2 2 2)@2000-01-02]') on conflict (points) do nothing;
 
-FOREACH points in array _points LOOP
-SELECT generateTrip(points) into trip;
+
+FOREACH _points in array __points LOOP
+SELECT generateTrip(_points) into trip;
 FOREACH lambda in array _lambda LOOP
-    	PERFORM perfBenchmarkSQ(trip,lambda,N,sync);
+    	PERFORM perfBenchmarkSQ(trip,lambda,N,sync,simpl);
 END LOOP;
 END LOOP;
 END;
 $$ LANGUAGE plpgsql;
 
 
--- select perfBenchmarkSQ('{100,1000,10000,100000}'::integer[],'{0.01,0.25,0.5,0.75,1}'::float[] );
+
+--select perfBenchmarkSQ('{100,1000,10000,100000}'::integer[],'{0.01,0.25,0.5,0.75,1}'::float[] ,simpl:= 'DOUGLAS');

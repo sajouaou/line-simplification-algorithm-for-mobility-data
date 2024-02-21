@@ -32,7 +32,7 @@ size_t size_queue(const PriorityQueue *Q);
 void minHeapify(PriorityQueue* Q, int index);
 PriorityQueueElem *remove_min(PriorityQueue *Q);
 struct PriorityQueueElem *
-remove_elem(void *p_i ,PriorityQueue *Q);
+replace_elem(void *p_i,double priority ,PriorityQueue *Q);
 void insertHelper(PriorityQueue* Q, int index);
 void
 push(PriorityQueueElem * insert,PriorityQueue *Q);
@@ -116,7 +116,7 @@ int compar_index(const void *l, const void *r)
 
 PriorityQueueElem *remove_min(PriorityQueue *Q)
 {
-  PriorityQueueElem *result;
+  PriorityQueueElem *result = NULL;
   if (Q->size != 0) {
         result = Q->arr[0];
         // Replace the deleted node with the last node
@@ -155,33 +155,18 @@ PriorityQueueElem *get_elem(void *p_i,IDict *dict)
 
 
 struct PriorityQueueElem *
-remove_elem(void *p_i ,PriorityQueue *Q)
+replace_elem(void *p_i,double priority ,PriorityQueue *Q)
 {
-  ////elog(NOTICE,"//////  GET ////////");
   PriorityQueueElem *elem = get_elem(p_i,&Q->dict);
-  if(elem && elem->index != -1){
-    //remove
-    //printf("TEST ELEM %i , %i\n",elem->index,Q->size);
-    if(Q->size > elem->index ){
-        ////elog(NOTICE,"//////  Z ////////");
-        //printf("TEST %lf \n", Q->arr[elem->index]->priority);
-        Q->arr[elem->index] = Q->arr[Q->size - 1];
-        Q->arr[Q->size - 1] = NULL;
-
-        if(Q->arr[elem->index]){
-            Q->arr[elem->index]->index = elem->index;
-        }
-        //printf("TEST %lf \n", Q->arr[elem->index]->priority);
-        // to maintain the heap property
-        ////elog(NOTICE,"//////  minHeapify ////////");
-        Q->size--;
+  if(elem ){
+    //elog(NOTICE,"FOUND ELEM FOR SUR \n Index :  %i / SIZE : %i ",elem->index ,Q->size);
+    if(Q->size > elem->index && elem->index != -1){
+    //elog(NOTICE,"REPLACE ELEM FOR SUR");
+        Q->arr[elem->index]->priority = priority;
+        insertHelper(Q, elem->index);
         minHeapify(Q, elem->index);
-        ////elog(NOTICE,"//////  minHeapify ////////");
     }
-    elem->index = -1;
   }
-  //elog(NOTICE,"//////  RETURN ////////");
-  //printf("TEST END \n");
   return elem;
 }
 
@@ -218,6 +203,7 @@ push(PriorityQueueElem * insert,PriorityQueue *Q)
     Q->arr = realloc(Q->arr, Q->size * sizeof(PriorityQueueElem*));
   }
   Q->arr[Q->size-1] = insert;
+  Q->arr[Q->size-1]->index = Q->size-1;
   insertHelper(Q, Q->size-1);
 }
 
@@ -225,28 +211,18 @@ push(PriorityQueueElem * insert,PriorityQueue *Q)
 void
 set_priority_queue(void *p_i,double priority ,PriorityQueue *Q)
 {
-
-  //elog(NOTICE,"//////  set_priority_queue////////");
-  //printf("BEFORE REMOVE \n");
-  //printPriorityQueue(Q);
-  struct PriorityQueueElem * insert = remove_elem(p_i,Q);
-  //printf("AFTER REMOVE \n");
-  //printPriorityQueue(Q);
-  //elog(NOTICE,"//////  AFTER REMOVE ELEM ////////");
+  struct PriorityQueueElem * insert = replace_elem(p_i,priority,Q);
   if(insert == NULL){
-  //elog(NOTICE,"//////  malloc ////////");
+    //elog(NOTICE,"INSERT ELEM FOR SUR");
     insert = malloc(sizeof(struct PriorityQueueElem));
     insert->point = p_i;
+    insert->priority = priority;
+    insert->index = -1;
     tsearch(insert, &Q->dict, compar_index); /* insert */
   }
-  insert->priority = priority;
-  //elog(NOTICE,"//////  push ////////");
-  push(insert,Q);
-  //printf("AFTER PUSH \n");
-  //printPriorityQueue(Q);
-  //elog(NOTICE,"//////  after push ////////");
-  //elog(NOTICE,"//////  set_priority_queue////////");
-
+  if(insert->index == -1){
+    push(insert,Q);
+  }
 }
 
 void i_free(void *l)

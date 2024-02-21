@@ -36,6 +36,16 @@ void
 set_priority_queue(void *p_i,double priority ,PriorityQueue *Q);
 void destroy_Queue(struct PriorityQueue *Q);
 
+void printPriorityQueue(PriorityQueue *pq)
+{
+    printf("PRINT---------\n");
+    for(int i=0;i < pq->size;i++)
+    {
+
+        struct PriorityQueueElem *current = pq->arr[i];
+        printf("Point: %p, Priority: %lf\n", current->point, current->priority);
+    }
+}
 
 void perf_test(PriorityQueue *pq,int num_insertions,int ecart_ )
 {
@@ -93,7 +103,7 @@ int main()
     set_priority_queue(&value1, 3.14, queue);
     set_priority_queue(&value2, 2.718, queue);
     set_priority_queue(&value3, 1.618, queue);
-    //printPriorityQueue(queue);
+    printPriorityQueue(queue);
     printf("END TO SET ___ - \n");
     assert(queue->size == 3);
     assert(size_queue(queue) == 3);
@@ -113,12 +123,14 @@ int main()
     assert(queue->arr[0]->point == &value2 && queue->arr[0]->priority == 2.718);
 
     set_priority_queue(&value2, 8.5, queue);
-    //printPriorityQueue(queue);
+    printPriorityQueue(queue);
     assert(queue->arr[0]->point == &value1 && queue->arr[0]->priority == 3.14);
 
     free(min_entry);
 
-    //printPriorityQueue(queue);
+    set_priority_queue(&value2, 1.5, queue);
+    printPriorityQueue(queue);
+    assert(queue->arr[0]->point == &value2 && queue->arr[0]->priority == 1.5);
 
     // Vérifier que la file de priorité est mise à jour après la suppression de l'élément minimum
     assert(queue != NULL);
@@ -129,7 +141,7 @@ int main()
     // Libérer la mémoire de la file de priorité
 
     start = clock();
-    perf_test(queue,10000,10);
+    perf_test(queue,1000000,10);
     end = clock();
 
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
