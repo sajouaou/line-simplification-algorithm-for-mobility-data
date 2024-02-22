@@ -918,6 +918,7 @@ Ce chapitre se concentre sur l'implémentation des élèments précisé au chapi
 		}
 	}
 \end{lstlisting}
+This algorithm follow the pseudo code of SQUISH-E it called the set function of the priority queue and the set function of the point map and priority map that will be describe in the section about implementation of variable. Then the reduce function and adjust priority is called in order to reduce if the size meet the treshold and the adjustment for each point that has a predecessor and a successor in order to know the error that it will produce by removing the corresponding point. 
 
 \subsection{Algorithm 2}
 \begin{lstlisting}[language=C, % Spécifie le langage du code
@@ -972,6 +973,8 @@ Ce chapitre se concentre sur l'implémentation des élèments précisé au chapi
 	}
 	
 \end{lstlisting}
+
+This algorithm describe the reduction method as mentionned above in the design it d	
 
 \subsection{Algorithm 3}
 
@@ -1527,9 +1530,10 @@ This section show some examples of usages of the pgsql function describe in \ref
 	SELECT SquishESimplify(tfloat '[1@2000-01-01, 2@2000-01-02, 3@2000-01-04,
 	4@2000-01-05]', '1 day');
 	-- [1@2000-01-01, 3@2000-01-04]
+	
 	SELECT asText(SquishESimplify(tgeompoint '[Point(1 1 1)@2000-01-01,
 	Point(2 2 2)@2000-01-02, Point(3 3 3)@2000-01-04, Point(5 5 5)@2000-01-05)', 0.5));
-	-- [POINT Z (1 1 1)@2000-01-01 00:00:00+01, POINT Z (3 3 3)@2000-01-04 00:00:00+01, POINT Z (5 5 5)@2000-01-05 00:00:00+01)
+	-- [POINT Z (1 1 1)@2000-01-01, POINT Z (3 3 3)@2000-01-04,POINT Z (5 5 5)@2000-01-05)
 	
 \end{lstlisting}
 
