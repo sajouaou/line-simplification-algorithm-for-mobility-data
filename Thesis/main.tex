@@ -1527,9 +1527,9 @@ This section show some examples of usages of the pgsql function describe in \ref
 	SELECT SquishESimplify(tfloat '[1@2000-01-01, 2@2000-01-02, 3@2000-01-04,
 	4@2000-01-05]', '1 day');
 	-- [1@2000-01-01, 3@2000-01-04]
-	SELECT asText(SquishESimplify(tgeogpoint '[Point(1 1 1)@2000-01-01,
-	Point(2 2 2)@2000-01-02, Point(3 3 3)@2000-01-04, Point(5 5 5)@2000-01-05)', '1 day'));
-	-- [POINT Z (1 1 1)@2000-01-01, POINT Z (3 3 3)@2000-01-04]
+	SELECT asText(SquishESimplify(tgeompoint '[Point(1 1 1)@2000-01-01,
+	Point(2 2 2)@2000-01-02, Point(3 3 3)@2000-01-04, Point(5 5 5)@2000-01-05)', 0.5));
+	-- [POINT Z (1 1 1)@2000-01-01 00:00:00+01, POINT Z (3 3 3)@2000-01-04 00:00:00+01, POINT Z (5 5 5)@2000-01-05 00:00:00+01)
 	
 \end{lstlisting}
 

@@ -1,13 +1,13 @@
 CREATE OR REPLACE
 FUNCTION public.linesimpl(
-            z integer, x integer, y  integer,s float,mmsi integer)
+            z integer, x integer, y  integer,s float,mmsi_ integer)
 RETURNS bytea
 AS $$
     WITH bounds AS (
         SELECT ST_TileEnvelope(z,x,y) as geom
     ),
 	trips_ AS (
-		SELECT * from aistrips as a where a.mmsi = mmsi or mmsi = -1
+		SELECT * from aistrips as a where a.mmsi = mmsi_ or mmsi_ = -1
 	)
 	,
     vals AS (

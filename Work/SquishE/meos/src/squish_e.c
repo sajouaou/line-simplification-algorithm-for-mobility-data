@@ -178,7 +178,6 @@ iteration_simplification_sqe(void *p_i , void *p_j ,
   }
   size_t size = size_queue(Q);
   //elog(NOTICE,"------------TEST iteration %i -- beta %i -- limit %i -- lambda %f \n ---- size %zu",i,*beta,i/lambda,lambda,size);
-    printPriorityQueue(Q);
     //elog(NOTICE,"BEFORE IF SIZE QUEUE  %zu  ->  %zu /// %i  ///%f",size_before,size,*beta,lambda);
   if(size - *beta == 0 ){
     reduce(Q,pred,succ,p,syncdist, interp , hasz );
