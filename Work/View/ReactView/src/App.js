@@ -17,6 +17,7 @@ const INITIAL_VIEW_STATE = {
 function App() {
 
   const [trajectoryParameter, setTrajectoryParameter] = useState('');
+  const [trajectoryMMSIParameter, setTrajectoryMMSIParameter] = useState('-1');
   const [trajectoryURL, setTrajectoryURL] = useState('');
   const [trajectoryLayerVisibility, setTrajectoryLayerVisibility] = useState(true);
 
@@ -43,8 +44,9 @@ function App() {
 
   // Handle input changes and button clicks
   const handleTrajectoryInputChange = (e) => setTrajectoryParameter(e.target.value);
+  const handleTrajectoryMMSIInputChange = (e) => setTrajectoryMMSIParameter(e.target.value);
   const toggleTrajectoryLayerVisibility = () => setTrajectoryLayerVisibility(!trajectoryLayerVisibility);
-  const updateTrajectoryParameter = () => setTrajectoryURL(TRAJECTORY_URL + `?s=` + trajectoryParameter);
+  const updateTrajectoryParameter = () => setTrajectoryURL(TRAJECTORY_URL + `?s=` + trajectoryParameter + '&mmsi_=' + trajectoryMMSIParameter );
 
 
 
@@ -60,13 +62,17 @@ function App() {
         </DeckGL>
         <div style={{ position: 'absolute', top: 0, left: 0, padding: '10px' }}>
 
-          <div style={{ marginTop: '10px' }}>
-            <input type="number" value={trajectoryParameter} onChange={handleTrajectoryInputChange} />
+          <div style={{marginTop: '10px'}}>
+            <input type="number" value={trajectoryParameter} onChange={handleTrajectoryInputChange}/>
             <button onClick={updateTrajectoryParameter}>Update s</button>
+            <input type="number" value={trajectoryMMSIParameter} onChange={handleTrajectoryMMSIInputChange}/>
+            <button onClick={updateTrajectoryParameter}>Update MMSI</button>
+
             <button onClick={toggleTrajectoryLayerVisibility}>
               {trajectoryLayerVisibility ? 'Hide trajectory Layer' : 'Show trajecotry Layer'}
             </button>
           </div>
+
         </div>
       </div>
   );

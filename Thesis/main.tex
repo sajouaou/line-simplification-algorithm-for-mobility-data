@@ -1476,7 +1476,9 @@ The idea here is to use the min heap structure to obtain in a complexity of maxi
 
 \section{Postgres Implementation}
 
+In this section we describe how the algorithm is implemented into the mobilityDB sql functions. 
 \subsection{SQL Code}
+
 \begin{lstlisting}[
 	language=SQL, % Setting the language for SQL
 	caption={SQUISHE SQL Code}, % Caption for the listing
@@ -1504,7 +1506,7 @@ The idea here is to use the min heap structure to obtain in a complexity of maxi
 \end{lstlisting}
 
 \subsection{Example}
-
+This section show some examples of usages of the pgsql function describe in \ref{lst:squish_sql}. This allowed to use the algorithm in an offline settings using request. 
 \begin{lstlisting}[
 	language=SQL, % Setting the language for SQL
 	caption={Example SQL Code}, % Caption for the listing
@@ -1533,10 +1535,10 @@ The idea here is to use the min heap structure to obtain in a complexity of maxi
 
 \subsection{Result}
 
-Here we will talk about the result of the function
+Here we will talk about the result of the function and see the precision and the performance of the requests. We will also compare it with the C implementation in real time using the same data to compare the offline implementation with the online one. 
 
 \subsection{Performance}
-
+This section will recolt and discuss the performance of the sql function by varying the lambda parameter and the number of points. 
 \begin{table}[htbp]
 	\centering
 	\caption{Average Execution Time by Number of Points and Lambda}
@@ -1555,6 +1557,17 @@ Here we will talk about the result of the function
 		\bottomrule
 	\end{tabular}
 \end{table}
+
+In order to get those results we benchmark the request 10 times for each requests and retrieve the average of those executions. As standalone results it has no real meaning outside but we can notice that the speed of the algorithm increase around $0.5$ and decrease outside those values of lambda. We can also state that maybe there is another value as maximum execution time between $0.75$ and $0.25$ . We can state that this is maybe because the number of instruction that mix setting in a priority queue and the instructions of reduction is around $0.5$. Because when lambda is equal to 1 there is no reduction and only setting in the maximal size of a priority queue and adjust priority operation and when lambda go towards $0$ there is a lot of reduction operation and setting in the minimal size of a priority queue. That is an explanation that could befit those data. When the size of the input is multiplying by $10$ the execution time is around $2$ times longer. 
+
+\subsubsection{Comparison with C}
+In order to have meaning to those result we will compare it with the C implementation using the real time approach and to see between the offline and the online approach the difference that happen.
+
+
+\subsection{Precision}
+This section will focus on the precision of the simplification using the same parameter as before in order to have an idea of the quality of the simplification in a function of lambda and types of path. We will discuss on trajectory based on AIS dataset. As stated in \cite{abam2007streaming} there is different type of path as convex and concave. As a reminder this work focus on the simplification of lines and do not take into account land or see restriction during the simplification process. In this section we will analyze different trajectory defines them and see with differents lambda and metrics evaluation the quality of the simplification. At the end we will run in a big datasets and see the results as a graph and discuss them. 
+
+\subsubsection{} 
 
 
 \chapter{Comparison}
