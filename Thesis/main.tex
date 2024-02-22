@@ -1046,6 +1046,7 @@ Cette section se concentre sur l'implémentation du map
 	
 \end{lstlisting}
 
+This structure is a Map that link a point to a corresponding value like priority or another point. We just need to define a struct with two values the key and the value. The typedef void* is using for the GNU Library to avoid using void** and add more clarity to the code. 
 
 \subsubsection{Method}
 
@@ -1202,12 +1203,10 @@ Cette section se concentre sur l'implémentation du map
 	
 \end{lstlisting}
 
-Here we use function of GNU C Library that implement a binary tree. It has the property to have for each operation a maximal complexity of $O(log(n))$
+Here we use function of GNU C Library that implement a binary tree. It has the property to have for each operation a maximal complexity of $O(log(n))$ The two mapping use the same implementation in reality it would be a good idea to resolve this duplication case using a template or thing that can resolve it but the C language limit the capability. 
 
-\subsubsection{Test}
-\subsubsection{Performance}
 \subsubsection{Discussion}
-
+As mentioned in the previous sub section the map use GNU C Library binary tree structure to perform search and set. Those algorithm have a complexity of $O(log(n))$ as mentioned before and it has the property to be have a dynamic allocation of memory. 
 
 \subsection{PriorityQueue}
 
@@ -1241,6 +1240,8 @@ Here we use function of GNU C Library that implement a binary tree. It has the p
 	} PriorityQueue;
 	
 \end{lstlisting}
+
+This structure implements the function of a priority queue using the structure of a min heap. It has as value PriorityQueueElem which have the point and the corresponding priority and a reference to this index in the heap. The main structure is using an array of pointer of PriorityQueueElem as long as an index map, a int that represent the number of points in the queue and lastly the numbers points allocated. 
 
 \subsubsection{Method}
 
@@ -1457,7 +1458,7 @@ void destroy_Queue(struct PriorityQueue *Q)
 	
 \end{lstlisting}
 
-From other implementation this one has the property to have at most a complexity of $O(log(n))$ the choice of a min heap to implement the priorityqueue fullfill the complexity limitation that we see in the design phase. The min heap is structure has a structure of a tree like we see in \ref{fig:min_heap} and has the property that each tree and sub tree has the property that the parent nodes is always lesser than the child nodes.
+From other implementation this one has the property to have at most a complexity of $O(log(n))$ the choice of a min heap to implement the priorityqueue fullfill the complexity limitation that we see in the design phase. The min heap is structure has a structure of a tree like we see in \ref{fig:min_heap} and has the property that each tree and sub tree has the property that the parent nodes is always lesser than the child nodes. The min heap implementation is inspired from this website \ref{GfG_2023}.
 
 
 
@@ -1474,6 +1475,7 @@ From other implementation this one has the property to have at most a complexity
 The idea here is to use the min heap structure to obtain in a complexity of maximum $O(log(n))$  the point with the lowest priority. In the side we use a index map in order to replace point in the heap in an efficient way. Due to the fact that the design include the set of an element when it is already in the array. This structure has the advantage to benefit from static memory. The set works using the mapping to see if the point is already present in the map. If it is we replace it in the heap by changing his priority and apply a check with his ancestor then his descendant. If the point is not present we add a value at the end of the heap and check and update their ancestor to satisfy the condition of a min heap. So at the end the two operations needed for the algorithm reach a complexity of $O(log(n))$ 
 
 \section{Postgres Implementation}
+
 \subsection{SQL Code}
 \begin{lstlisting}[
 	language=SQL, % Setting the language for SQL
