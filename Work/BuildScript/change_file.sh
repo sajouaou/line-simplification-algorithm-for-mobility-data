@@ -1,4 +1,5 @@
 #!/bin/bash
+
 cd MobilityDB
 git reset
 git checkout .

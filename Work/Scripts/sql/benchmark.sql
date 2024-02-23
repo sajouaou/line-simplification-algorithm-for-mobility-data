@@ -98,3 +98,8 @@ $$ LANGUAGE plpgsql;
 
 
 --select perfBenchmarkSQ('{100,1000,10000,100000}'::integer[],'{0.01,0.25,0.5,0.75,1}'::float[] ,simpl:= 'DOUGLAS');
+
+--SELECT AVG(duration) as average,nbpoint,lambda
+--FROM public.benchresult
+--WHERE simpl like 'DOUGLAS'
+--GROUP BY nbpoint,lambda ORDER BY nbpoint,average;

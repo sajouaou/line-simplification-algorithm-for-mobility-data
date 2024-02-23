@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # A script to run the BerlinMOD generator with my personnal sql
 
 source creditentials

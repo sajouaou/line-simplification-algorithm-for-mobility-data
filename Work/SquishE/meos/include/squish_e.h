@@ -1,5 +1,7 @@
 #pragma once
-
+#include "point_dict.h"
+#include "priority_dict.h"
+#include "priority_queue.h"
 double
 SED(void *p_a,void *p_b,void *p_c,interpType interp ,bool hasz );
 

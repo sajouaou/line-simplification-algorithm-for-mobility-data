@@ -1,3 +1,5 @@
+#!/bin/bash
+
 can_remove=false
 is_meos=false
 while getopts "rm" option; do
