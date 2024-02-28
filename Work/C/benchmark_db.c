@@ -136,6 +136,12 @@ main(int argc, char **argv)
         }
     }
 
+
+    for (int temp= 0; temp < nbpoints[size_nbpoints-1];temp++){
+         free(points[temp]);
+    }
+    free(points);
+
   /* State that the program executed successfully */
   exit_value = 0;
 
