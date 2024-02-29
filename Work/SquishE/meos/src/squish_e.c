@@ -10,64 +10,65 @@ SQUISH-E.c
 
 
 
+
 double
-SED(void *p_a,void *p_b,void *p_c,interpType interp ,bool hasz )
+SED(void *p_a,void *p_b,void *p_c,interpType interp ,bool hasz,bool syncdist )
 {
   POINT2D *p2k, *p2_sync, *p2a, *p2b;
   POINT3DZ *p3k, *p3_sync, *p3a, *p3b;
 
+  Datum value;
+  double d = -1;
+  double d_tmp;
 
   const TInstant *start =  (const TInstant *) p_a;
   const TInstant *end = (const TInstant *) p_c;
   const TInstant *inst = (const TInstant *) p_b;
 
-    if (hasz)
+  if (hasz)
+  {
+    p3a = (POINT3DZ *) DATUM_POINT3DZ_P(tinstant_value(start));
+    p3k = (POINT3DZ *) DATUM_POINT3DZ_P(tinstant_value(inst));
+    p3b = (POINT3DZ *) DATUM_POINT3DZ_P(tinstant_value(end));
+    if (syncdist)
     {
-      p3a = (POINT3DZ *) DATUM_POINT3DZ_P(tinstant_value(start));
-      p3k = (POINT3DZ *) DATUM_POINT3DZ_P(tinstant_value(inst));
-      p3b = (POINT3DZ *) DATUM_POINT3DZ_P(tinstant_value(end));
+      value = tsegment_value_at_timestamptz(start, end, interp, inst->t);
+      p3_sync = (POINT3DZ *) DATUM_POINT3DZ_P(value);
+      d_tmp = dist3d_pt_pt(p3k, p3_sync);
+      pfree(DatumGetPointer(value));
     }
     else
     {
-      p2a = (POINT2D *) DATUM_POINT2D_P(tinstant_value(start));
-      p2k = (POINT2D *) DATUM_POINT2D_P(tinstant_value(inst));
-      p2b = (POINT2D *) DATUM_POINT2D_P(tinstant_value(end));
+      d_tmp = dist3d_pt_seg(p3k, p3a, p3b);
     }
+  }
+  else
+  {
+    p2a = (POINT2D *) DATUM_POINT2D_P(tinstant_value(start));
+    p2k = (POINT2D *) DATUM_POINT2D_P(tinstant_value(inst));
+    p2b = (POINT2D *) DATUM_POINT2D_P(tinstant_value(end));
+    if (syncdist)
+    {
+      value = tsegment_value_at_timestamptz(start, end, interp, inst->t);
+      p2_sync = (POINT2D *) DATUM_POINT2D_P(value);
+      d_tmp = dist2d_pt_pt(p2k, p2_sync);
+      pfree(DatumGetPointer(value));
+    }
+    else{
+      d_tmp = dist2d_pt_seg(p2k, p2a, p2b);
 
-  double startval = DatumGetFloat8(tinstant_value(start));
-  double endval = DatumGetFloat8(tinstant_value(end));
-  double value = DatumGetFloat8(tinstant_value(inst));
+    }
+  }
 
-  Datum tmp_value;
-
-  double duration2 = (double) (end->t - start->t);
-  double duration1 = (double) (inst->t - start->t);
-
-  double ratio = duration1 / duration2;
-  double value_interp = startval + (endval - startval) * ratio;
-  double d = fabs(value - value_interp);
-  double d_tmp;
-
-   if (hasz)
-      {
-          tmp_value = tsegment_value_at_timestamptz(start, end, interp, inst->t);
-          p3_sync = (POINT3DZ *) DATUM_POINT3DZ_P(tmp_value);
-          d_tmp = dist3d_pt_pt(p3k, p3_sync);
-          pfree(DatumGetPointer(tmp_value));
-      }
-      else
-      {
-          tmp_value = tsegment_value_at_timestamptz(start, end, interp, inst->t);
-          p2_sync = (POINT2D *) DATUM_POINT2D_P(tmp_value);
-          d_tmp = dist2d_pt_pt(p2k, p2_sync);
-          pfree(DatumGetPointer(tmp_value));
-      }
-
-  //elog(NOTICE,"DISTANCE WITH Duration : %f \n DISTANCE WITH Point : %f",d,d_tmp);
+  //elog(NOTICE,"------- SQUISH-E -------------");
+  //elog(NOTICE,"DISTANCE : %f \n ",d_tmp);
   d = d_tmp;
 
   return d;
 }
+
+
+
 
 
 
@@ -89,7 +90,7 @@ bool syncdist,interpType interp ,bool hasz )
   {
     if(syncdist)
     {
-      double priority = get_priority_dict(p_i,p) + SED(p_h,p_i,p_k, interp , hasz );
+      double priority = get_priority_dict(p_i,p) + SED(p_h,p_i,p_k, interp , hasz,syncdist );
   ////elog(NOTICE,"//////  BEFORE SET PRIORITY ////////");
       set_priority_queue(p_i,priority,Q);
   ////elog(NOTICE,"//////  AFTER SET PRIORITY ////////");
@@ -98,6 +99,7 @@ bool syncdist,interpType interp ,bool hasz )
   }
   ////elog(NOTICE,"//////  ADJUST PRIORITY ////////");
 }
+s
 
 void
 reduce(struct PriorityQueue *Q,Dict *pred,Dict *succ,PDict  *p,

@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import DeckGL from '@deck.gl/react';
-import {MVTLayer} from '@deck.gl/geo-layers';
+import {MVTLayer, TripsLayer} from '@deck.gl/geo-layers';
 import {StaticMap} from "react-map-gl";
+import TimeSlider from "./Slider";
 
-const TRAJECTORY_URL = 'http://localhost:7800/public.linesimpl/{z}/{x}/{y}.pbf';
+const TRAJECTORY_URL = 'http://localhost:7800/public.linesimplanim/{z}/{x}/{y}.pbf';
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json';
 var RGBvalues = (function() {
 
@@ -69,7 +70,10 @@ const INITIAL_VIEW_STATE = {
   maxZoom: 23,
 };
 
-function App() {
+function App({
+               trailLength = 180,
+               animationSpeed = 5
+             }) {
 
   const [trajectoryMMSIParameter, setTrajectoryMMSIParameter] = useState('-1');
   const [trajectoryURL, setTrajectoryURL] = useState('');
@@ -79,16 +83,130 @@ function App() {
   const [color, setColor] = useState(["#e66465"]);
   const [algo, setAlgo] = useState(['-1']);
 
+  const [time, setTime] = useState(0);
+  const [animation] = useState({});
+  const [isAnimated,setIsAnimated] = useState(false)
+  const [minTimestamp, setMinTimestamp] = useState(0);
+  const [maxTimestamp, setMaxTimestamp] = useState(0);
+  const [minTimeURL, setMinTimeURL] = useState('');
+  const [maxTimeURL, setMaxTimeURL] = useState('');
+  const [loopLength,setLoopLength] = useState(1);
+
+  function convertDateTime(input) {
+    // Parse the input string into a Date object
+    const date = new Date(input);
+
+    // Inline function to pad numbers to two digits
+    const pad = number => number < 10 ? '0' + number : number.toString();
+
+    // Construct each part of the format using pad function inline
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1); // getMonth() is zero-indexed
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = '00'; // Seconds are not in the input, assumed to be '00'
+
+    // Combine parts into the desired format with the timezone offset +01
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+  }
+
+  const animate = () => {
+    if (isAnimated){
+      setTime(t => (t + animationSpeed) % loopLength);
+      animation.id = window.requestAnimationFrame(animate);
+    }
+  };
+
+  useEffect(
+      () => {
+        console.log("useEffect : ",isAnimated);
+        if  (isAnimated){
+          animation.id = window.requestAnimationFrame(animate);
+        }
+        return () => window.cancelAnimationFrame(animation.id);
+      },
+      [animation,isAnimated]
+  );
+
+  const onTileLoad = (tile) => {
+    const features = [];
+    console.log("--- Begin Load ----");
+    console.log(tile);
+    console.log("---------------")
+    if (tile.content && tile.content.length > 0) {
+      console.log("--- If passed ----");
+      for (const feature of tile.content) {
+        console.log("--- For If passed ----");
+        const ts = feature.properties.times;
+        const ts_final = ts.substring(1, ts.length - 1).split(",").map(t => parseInt(t, 10)-minTimestamp);
+
+        // slice Multi into individual features
+        if (feature.geometry.type === "MultiLineString") {
+          console.log("--- If For If passed ----");
+          let index = 0;
+          for (const coords of feature.geometry.coordinates) {
+            console.log("--- For If For If passed ----");
+            const ts_segment = ts_final.slice(index, index + coords.length)
+            features.push({
+              ...feature,
+              geometry: {type: "LineString", coordinates: coords},
+              // properties: {...feature.properties, timestamps: ts_segment}
+              properties: {timestamps: ts_segment}
+            });
+            console.log("--- PUUUSH ----");
+
+            index = coords.length;
+          }
+        } else {
+          console.log("--- Other Push ----");
+          // features.push({...feature, properties: {...feature.properties, timestamps: ts_final}});
+          features.push({...feature, properties: {tripid: feature.properties.tripid, timestamps: ts_final}});
+        }
+      }
+    }
+    tile.content = features;
+  };
+
+
 
 
 
   const layers = [
     new MVTLayer({
       id: 'trajectoryLayer',
+      data : trajectoryURL,
+      minZoom: 0,
+      maxZoom: 23,
+      lineWidthMinPixels: 200,
+      currentTime: time, // it has to be here, not inside the TripsLayer
+      // loadOptions: {mode: 'no-cors'},
+      renderSubLayers: props => {
+        return new TripsLayer(props, {
+          data: props.data,
+          getPath: d => d.geometry.coordinates,
+          getTimestamps: d => d.properties.timestamps,
+          getColor: (d) => {
+            console.log("----------------  ",d.properties.mmsi," ---------------");
+            console.log(d.properties.index);
+            console.log(d.properties.size);
+            return RGBvalues.color(color[d.properties.index]);
+          },
+          opacity: 0.5,
+          widthMinPixels: 200,
+          caprounded: true,
+          trailLength,
+        });
+      }
+    }),
+
+    new MVTLayer({
+      id: 'trajectoryLayer2',
       data: trajectoryURL,
       minZoom: 0,
       maxZoom: 22,
       getLineColor: (d) => {
+        console.log("----------------  ",d.properties.mmsi,"  FIX LAYER ---------------")
         console.log(d.properties.index);
         console.log(d.properties.size);
 
@@ -98,6 +216,7 @@ function App() {
       lineWidthMinPixels : 2,
       visible: trajectoryLayerVisibility,
     })
+
   ];
 
 
@@ -130,9 +249,12 @@ function App() {
     // Construire la chaîne des valeurs de s
     const sValues = trajectoryParameter.join(',');
     const aValues = algo.join(',');
+    const start = convertDateTime(minTimeURL);
+    const end = convertDateTime(maxTimeURL);
 
     // Mettre à jour la trajectoire avec toutes les valeurs
-    setTrajectoryURL(TRAJECTORY_URL + `?s={${sValues}}&mmsi_=${trajectoryMMSIParameter}&algo={${aValues}}`);
+
+    setTrajectoryURL(TRAJECTORY_URL + `?s={${sValues}}&mmsi_=${trajectoryMMSIParameter}&algo={${aValues}}&p_start=${start}&p_end=${end}`);
   };
 
   const removeTrajectory = (index) => {
@@ -157,6 +279,34 @@ function App() {
     setAlgo([...algo,'SQUISH-E']);
   };
 
+  const startAnimation = () => {
+    setTime(0);
+    if (!isAnimated){
+      setIsAnimated(true);
+    }
+  }
+
+
+  const updateIsAnimated = () => setIsAnimated(!isAnimated);
+  const handleMinTimeURLInputChange = (e) => setMinTimeURL(e.target.value);
+  const handleMaxTimeURLInputChange = (e) => setMaxTimeURL(e.target.value);
+  const  updateBothTimestamp = () => {
+    console.log("UPDATE BOTH");
+    if (minTimeURL !== '' && maxTimeURL !== '' ) {
+
+      updateTrajectoryParameter();
+      setMinTimestamp(new Date(minTimeURL).getTime()/1000);
+      setMaxTimestamp(new Date(maxTimeURL).getTime()/1000);
+      console.log(minTimestamp,maxTimestamp);
+      setLoopLength(maxTimestamp-minTimestamp);
+      updateTrajectoryParameter();
+    }
+    console.log('Loop Length : ',loopLength);
+  };
+
+  const setTimeFromSlider = (newTime) => {
+    setTime(newTime)
+  }
 
 
   return (
@@ -170,7 +320,14 @@ function App() {
         </DeckGL>
         <div style={{ position: 'absolute', top: 0, left: 0, padding: '10px' }}>
 
-
+          <div>
+            <TimeSlider
+                setTimeApp={setTimeFromSlider}
+                timeFromApp={time}
+                maxfromApp={loopLength}
+                dateFromApp={new Date((minTimestamp+time)*1000)}
+            />
+          </div>
 
           {trajectoryParameter.map((lambda, index) => (
               <div key={index}>
@@ -189,7 +346,7 @@ function App() {
                             onChange={(e) => handleColor(index, e.target.value)}
                         />
                         <button onClick={toggleTrajectoryLayerVisibility}>
-                          {trajectoryLayerVisibility ? 'Hide trajectory Layer test 1' : 'Show trajecotry Layer'}
+                          {trajectoryLayerVisibility ? 'Hide trajectory Layer' : 'Show trajecotry Layer'}
                         </button>
                       </>
                   ) : (
@@ -219,6 +376,20 @@ function App() {
 
               </div>
           ))}
+
+
+
+          <div>
+            <input type="datetime-local" value={minTimeURL} onChange={handleMinTimeURLInputChange} />
+            <input type="datetime-local" value={maxTimeURL} onChange={handleMaxTimeURLInputChange} />
+            <button onClick={updateBothTimestamp}>Update Life Time</button>
+          </div>
+          <div>
+            <button onClick={startAnimation}>Start Animation</button>
+            <button onClick={updateIsAnimated}>
+              {isAnimated ? 'Stop Animation' : 'Replay Animation'}
+            </button>
+          </div>
 
           <datalist id="algos" autocomplete="off" mlns="http://www.w3.org/1999/xhtml">
             <option>DOUGLAS</option>
