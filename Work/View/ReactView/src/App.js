@@ -5,6 +5,61 @@ import {StaticMap} from "react-map-gl";
 
 const TRAJECTORY_URL = 'http://localhost:7800/public.linesimpl/{z}/{x}/{y}.pbf';
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json';
+var RGBvalues = (function() {
+
+  var _hex2dec = function(v) {
+    return parseInt(v, 16)
+  };
+
+  var _splitHEX = function(hex) {
+    var c;
+    if (hex.length === 4) {
+      c = (hex.replace('#','')).split('');
+      return [
+         _hex2dec((c[0] + c[0])),
+         _hex2dec((c[1] + c[1])),
+        _hex2dec((c[2] + c[2]))
+      ];
+    } else {
+      return [
+        _hex2dec(hex.slice(1,3)),
+         _hex2dec(hex.slice(3,5)),
+         _hex2dec(hex.slice(5))
+      ];
+    }
+  };
+
+  var _splitRGB = function(rgb) {
+    var c = (rgb.slice(rgb.indexOf('(')+1, rgb.indexOf(')'))).split(',');
+    var flag = false, obj;
+    c = c.map(function(n,i) {
+      return (i !== 3) ? parseInt(n, 10) : flag = true, parseFloat(n);
+    });
+    obj = {
+      r: c[0],
+      g: c[1],
+      b: c[2]
+    };
+    if (flag) obj.a = c[3];
+    return obj;
+  };
+
+  var color = function(col) {
+    var slc = col.slice(0,1);
+    if (slc === '#') {
+      return _splitHEX(col);
+    } else if (slc.toLowerCase() === 'r') {
+      return _splitRGB(col);
+    } else {
+      console.log('!Ooops! RGBvalues.color('+col+') : HEX, RGB, or RGBa strings only');
+    }
+  };
+
+  return {
+    color: color
+  };
+}());
+
 
 const INITIAL_VIEW_STATE = {
   longitude: 4.383406,
@@ -16,10 +71,15 @@ const INITIAL_VIEW_STATE = {
 
 function App() {
 
-  const [trajectoryParameter, setTrajectoryParameter] = useState('');
   const [trajectoryMMSIParameter, setTrajectoryMMSIParameter] = useState('-1');
   const [trajectoryURL, setTrajectoryURL] = useState('');
   const [trajectoryLayerVisibility, setTrajectoryLayerVisibility] = useState(true);
+
+  const [trajectoryParameter, setTrajectoryParameter] = useState(['-1']);
+  const [color, setColor] = useState(["#e66465"]);
+  const [algo, setAlgo] = useState(['-1']);
+
+
 
 
   const layers = [
@@ -29,12 +89,10 @@ function App() {
       minZoom: 0,
       maxZoom: 22,
       getLineColor: (d) => {
-        console.log(d);
-        if (d.properties.sim === 'S'){
-          return [255,0,0]
-        }  else {
-          return [0,0,255]
-        }
+        console.log(d.properties.index);
+        console.log(d.properties.size);
+
+        return RGBvalues.color(color[d.properties.index]);
       },
       getLineWidth : 2,
       lineWidthMinPixels : 2,
@@ -42,12 +100,62 @@ function App() {
     })
   ];
 
+
+
   // Handle input changes and button clicks
-  const handleTrajectoryInputChange = (e) => setTrajectoryParameter(e.target.value);
+
+  const handleTrajectoryInputChange = (index, value) => {
+    // Mettre à jour la valeur de lambda à l'index donné
+    const newLambdaArray = [...trajectoryParameter];
+    newLambdaArray[index] = value;
+    setTrajectoryParameter(newLambdaArray);
+  };
+
+  const handleColor = (index, value) => {
+    // Mettre à jour la couleur à l'index donné
+    const newColorArray = [...color];
+    newColorArray[index] = value;
+    setColor(newColorArray);
+  };
+
+  const handleAlgo = (index, value) => {
+    // Mettre à jour la couleur à l'index donné
+    const newAlgoArray = [...algo];
+    newAlgoArray[index] = value;
+    setAlgo(newAlgoArray);
+  };
   const handleTrajectoryMMSIInputChange = (e) => setTrajectoryMMSIParameter(e.target.value);
   const toggleTrajectoryLayerVisibility = () => setTrajectoryLayerVisibility(!trajectoryLayerVisibility);
-  const updateTrajectoryParameter = () => setTrajectoryURL(TRAJECTORY_URL + `?s=` + trajectoryParameter + '&mmsi_=' + trajectoryMMSIParameter );
+  const updateTrajectoryParameter = () => {
+    // Construire la chaîne des valeurs de s
+    const sValues = trajectoryParameter.join(',');
+    const aValues = algo.join(',');
 
+    // Mettre à jour la trajectoire avec toutes les valeurs
+    setTrajectoryURL(TRAJECTORY_URL + `?s={${sValues}}&mmsi_=${trajectoryMMSIParameter}&algo={${aValues}}`);
+  };
+
+  const removeTrajectory = (index) => {
+    // Retirer l'élément associé à l'index de chaque array
+    const newLambdaArray = [...trajectoryParameter];
+    newLambdaArray.splice(index, 1);
+    setTrajectoryParameter(newLambdaArray);
+
+    const newColorArray = [...color];
+    newColorArray.splice(index, 1);
+    setColor(newColorArray);
+
+    const newAlgoArray = [...algo];
+    newAlgoArray.splice(index, 1);
+    setAlgo(newAlgoArray);
+  };
+
+  const addTrajectory =  () => {
+    // Ajouter un élément vide à chaque array
+    setTrajectoryParameter([...trajectoryParameter, '']);
+    setColor([...color, '#000000']); // couleur par défaut
+    setAlgo([...algo,'SQUISH-E']);
+  };
 
 
 
@@ -62,17 +170,64 @@ function App() {
         </DeckGL>
         <div style={{ position: 'absolute', top: 0, left: 0, padding: '10px' }}>
 
-          <div style={{marginTop: '10px'}}>
-            <input type="number" value={trajectoryParameter} onChange={handleTrajectoryInputChange}/>
-            <button onClick={updateTrajectoryParameter}>Update s</button>
-            <input type="number" value={trajectoryMMSIParameter} onChange={handleTrajectoryMMSIInputChange}/>
-            <button onClick={updateTrajectoryParameter}>Update MMSI</button>
 
-            <button onClick={toggleTrajectoryLayerVisibility}>
-              {trajectoryLayerVisibility ? 'Hide trajectory Layer' : 'Show trajecotry Layer'}
-            </button>
-          </div>
 
+          {trajectoryParameter.map((lambda, index) => (
+              <div key={index}>
+                {
+                  index === 0 ? (
+                      <>
+                        <input
+                            type="number"
+                            value={trajectoryMMSIParameter}
+                            onChange={handleTrajectoryMMSIInputChange}
+                        />
+                        <button onClick={updateTrajectoryParameter}>Refresh</button>
+                        <input
+                            type="color"
+                            value={color[index]}
+                            onChange={(e) => handleColor(index, e.target.value)}
+                        />
+                        <button onClick={toggleTrajectoryLayerVisibility}>
+                          {trajectoryLayerVisibility ? 'Hide trajectory Layer test 1' : 'Show trajecotry Layer'}
+                        </button>
+                      </>
+                  ) : (
+                      <>
+                        <input
+                            type="number"
+                            value={lambda}
+                            onChange={(e) => handleTrajectoryInputChange(index, e.target.value)}
+                        />
+                        <input
+                            type="color"
+                            value={color[index]}
+                            onChange={(e) => handleColor(index, e.target.value)}
+                        />
+                        <input
+                            type="text"
+                            value={algo[index]}
+                            list="algos"
+                            autocomplete="off"
+                            onChange={(e) => handleAlgo(index, e.target.value)}
+                        />
+                        <button onClick={() => removeTrajectory(index)}>-</button>
+                      </>
+                  )
+                }
+
+
+              </div>
+          ))}
+
+          <datalist id="algos" autocomplete="off" mlns="http://www.w3.org/1999/xhtml">
+            <option>DOUGLAS</option>
+            <option>SQUISH-E</option>
+            <option>MINDIST</option>
+          </datalist>
+          <button onClick={addTrajectory}>
+            +
+          </button>
         </div>
       </div>
   );
