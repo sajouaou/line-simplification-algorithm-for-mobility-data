@@ -23,7 +23,7 @@ export default function TimeSlider({setTimeApp, dateFromApp, timeFromApp, maxfro
 
     return (
         <div>
-            <h1 style={{color: "white"}}>{ formatDateFromApp(dateFromApp) }</h1>
+            <h1 style={{color: "black"}}>{ formatDateFromApp(dateFromApp) }</h1>
             <Box sx={{ width: 200 }}>
                 <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
                     <Slider  min={0} max={maxfromApp} value={timeFromApp} onChange={handleChange} />

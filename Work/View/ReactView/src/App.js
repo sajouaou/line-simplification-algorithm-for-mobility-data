@@ -71,14 +71,14 @@ const INITIAL_VIEW_STATE = {
 };
 
 function App({
-               trailLength = 180,
-               animationSpeed = 5
+               trailLength = 180
              }) {
 
   const [trajectoryMMSIParameter, setTrajectoryMMSIParameter] = useState('-1');
   const [trajectoryURL, setTrajectoryURL] = useState('');
-  const [trajectoryLayerVisibility, setTrajectoryLayerVisibility] = useState(true);
+  const [animationSpeed, setAnimationSpeed] = useState(5);
 
+  const [trajectoryLayerVisibility, setTrajectoryLayerVisibility] = useState([true]);
   const [trajectoryParameter, setTrajectoryParameter] = useState(['-1']);
   const [color, setColor] = useState(["#e66465"]);
   const [algo, setAlgo] = useState(['-1']);
@@ -88,8 +88,8 @@ function App({
   const [isAnimated,setIsAnimated] = useState(false)
   const [minTimestamp, setMinTimestamp] = useState(0);
   const [maxTimestamp, setMaxTimestamp] = useState(0);
-  const [minTimeURL, setMinTimeURL] = useState('');
-  const [maxTimeURL, setMaxTimeURL] = useState('');
+  const [minTimeURL, setMinTimeURL] = useState('2021-01-08T00:08');
+  const [maxTimeURL, setMaxTimeURL] = useState('2021-01-08T07:01');
   const [loopLength,setLoopLength] = useState(1);
 
   function convertDateTime(input) {
@@ -113,7 +113,7 @@ function App({
 
   const animate = () => {
     if (isAnimated){
-      setTime(t => (t + animationSpeed) % loopLength);
+      setTime(t => (Number(t) + Number(animationSpeed)) % loopLength);
       animation.id = window.requestAnimationFrame(animate);
     }
   };
@@ -131,22 +131,15 @@ function App({
 
   const onTileLoad = (tile) => {
     const features = [];
-    console.log("--- Begin Load ----");
-    console.log(tile);
-    console.log("---------------")
     if (tile.content && tile.content.length > 0) {
-      console.log("--- If passed ----");
       for (const feature of tile.content) {
-        console.log("--- For If passed ----");
         const ts = feature.properties.times;
         const ts_final = ts.substring(1, ts.length - 1).split(",").map(t => parseInt(t, 10)-minTimestamp);
 
         // slice Multi into individual features
         if (feature.geometry.type === "MultiLineString") {
-          console.log("--- If For If passed ----");
           let index = 0;
           for (const coords of feature.geometry.coordinates) {
-            console.log("--- For If For If passed ----");
             const ts_segment = ts_final.slice(index, index + coords.length)
             features.push({
               ...feature,
@@ -154,70 +147,18 @@ function App({
               // properties: {...feature.properties, timestamps: ts_segment}
               properties: {timestamps: ts_segment}
             });
-            console.log("--- PUUUSH ----");
 
             index = coords.length;
           }
         } else {
-          console.log("--- Other Push ----");
           // features.push({...feature, properties: {...feature.properties, timestamps: ts_final}});
-          features.push({...feature, properties: {tripid: feature.properties.tripid, timestamps: ts_final}});
+          features.push({...feature, properties: {...feature.properties,tripid: feature.properties.tripid, timestamps: ts_final}});
         }
       }
     }
     tile.content = features;
   };
 
-
-
-
-
-  const layers = [
-    new MVTLayer({
-      id: 'trajectoryLayer',
-      data : trajectoryURL,
-      minZoom: 0,
-      maxZoom: 23,
-      lineWidthMinPixels: 200,
-      currentTime: time, // it has to be here, not inside the TripsLayer
-      // loadOptions: {mode: 'no-cors'},
-      renderSubLayers: props => {
-        return new TripsLayer(props, {
-          data: props.data,
-          getPath: d => d.geometry.coordinates,
-          getTimestamps: d => d.properties.timestamps,
-          getColor: (d) => {
-            console.log("----------------  ",d.properties.mmsi," ---------------");
-            console.log(d.properties.index);
-            console.log(d.properties.size);
-            return RGBvalues.color(color[d.properties.index]);
-          },
-          opacity: 0.5,
-          widthMinPixels: 200,
-          caprounded: true,
-          trailLength,
-        });
-      }
-    }),
-
-    new MVTLayer({
-      id: 'trajectoryLayer2',
-      data: trajectoryURL,
-      minZoom: 0,
-      maxZoom: 22,
-      getLineColor: (d) => {
-        console.log("----------------  ",d.properties.mmsi,"  FIX LAYER ---------------")
-        console.log(d.properties.index);
-        console.log(d.properties.size);
-
-        return RGBvalues.color(color[d.properties.index]);
-      },
-      getLineWidth : 2,
-      lineWidthMinPixels : 2,
-      visible: trajectoryLayerVisibility,
-    })
-
-  ];
 
 
 
@@ -244,7 +185,12 @@ function App({
     setAlgo(newAlgoArray);
   };
   const handleTrajectoryMMSIInputChange = (e) => setTrajectoryMMSIParameter(e.target.value);
-  const toggleTrajectoryLayerVisibility = () => setTrajectoryLayerVisibility(!trajectoryLayerVisibility);
+  const toggleTrajectoryLayerVisibility = (index) => {
+    // Mettre à jour la valeur de lambda à l'index donné
+    const newtrajectoryLayerVisibilityArray = [...trajectoryLayerVisibility];
+    newtrajectoryLayerVisibilityArray[index] = !newtrajectoryLayerVisibilityArray[index];
+    setTrajectoryLayerVisibility(newtrajectoryLayerVisibilityArray);
+  }
   const updateTrajectoryParameter = () => {
     // Construire la chaîne des valeurs de s
     const sValues = trajectoryParameter.join(',');
@@ -270,6 +216,11 @@ function App({
     const newAlgoArray = [...algo];
     newAlgoArray.splice(index, 1);
     setAlgo(newAlgoArray);
+
+
+    const newtrajectoryLayerVisibilityArray = [...trajectoryLayerVisibility];
+    newtrajectoryLayerVisibilityArray.splice(index, 1);
+    setTrajectoryLayerVisibility(newtrajectoryLayerVisibilityArray);
   };
 
   const addTrajectory =  () => {
@@ -277,6 +228,7 @@ function App({
     setTrajectoryParameter([...trajectoryParameter, '']);
     setColor([...color, '#000000']); // couleur par défaut
     setAlgo([...algo,'SQUISH-E']);
+    setTrajectoryLayerVisibility([...trajectoryLayerVisibility, true]);
   };
 
   const startAnimation = () => {
@@ -288,25 +240,77 @@ function App({
 
 
   const updateIsAnimated = () => setIsAnimated(!isAnimated);
-  const handleMinTimeURLInputChange = (e) => setMinTimeURL(e.target.value);
-  const handleMaxTimeURLInputChange = (e) => setMaxTimeURL(e.target.value);
+  const handleMinTimeURLInputChange = (e) => {setMinTimeURL(e.target.value);
+                                                    updateBothTimestamp();}
+  const handleAnimation = (e) =>{setAnimationSpeed(Number(e.target.value));}
+  const handleMaxTimeURLInputChange = (e) => {setMaxTimeURL(e.target.value);
+                          updateBothTimestamp();}
   const  updateBothTimestamp = () => {
-    console.log("UPDATE BOTH");
+    //console.log("UPDATE BOTH -- ",maxTimeURL, ' -- ',minTimeURL);
     if (minTimeURL !== '' && maxTimeURL !== '' ) {
-
-      updateTrajectoryParameter();
       setMinTimestamp(new Date(minTimeURL).getTime()/1000);
       setMaxTimestamp(new Date(maxTimeURL).getTime()/1000);
-      console.log(minTimestamp,maxTimestamp);
+      //console.log(minTimestamp,maxTimestamp);
       setLoopLength(maxTimestamp-minTimestamp);
       updateTrajectoryParameter();
     }
-    console.log('Loop Length : ',loopLength);
+    //console.log('Loop Length : ',loopLength);
   };
 
   const setTimeFromSlider = (newTime) => {
     setTime(newTime)
   }
+
+
+
+  const layers = [
+    new MVTLayer({
+      id: 'trajectoryLayer2',
+      data: trajectoryURL,
+      minZoom: 0,
+      maxZoom: 22,
+      getLineColor: (d) => {
+        console.log("----------------  ",d.properties.mmsi,"  FIX LAYER ---------------")
+        console.log(d.properties.index);
+        console.log(d.properties.size);
+
+        return RGBvalues.color(color[d.properties.index]);
+      },
+      getLineWidth : 2,
+      lineWidthMinPixels : 2,
+      visible: trajectoryLayerVisibility[0]
+    }),
+
+    new MVTLayer({
+      id: 'trips',
+      data : trajectoryURL,
+      binary: false,
+      minZoom: 0,
+      maxZoom: 23,
+      onTileLoad: onTileLoad,
+      currentTime: time,
+      renderSubLayers: props => {
+        return new TripsLayer(props, {
+          parameters: {},
+          data: props.data,
+          getPath: d => d.geometry.coordinates,
+          getTimestamps: d => d.properties.timestamps,
+          getColor: (d) => {
+            //console.log("----------------  ",d.properties.mmsi,"  SUB LAYER ---------------")
+            //console.log(d.properties.index);
+            //console.log(d.properties.size);
+
+            return RGBvalues.color(color[d.properties.index]);
+          },
+          widthMinPixels: 4,
+          jointRounded: true,
+          capRounded:true,
+          trailLength:trailLength
+        });
+      }
+    })
+  ];
+
 
 
   return (
@@ -324,9 +328,25 @@ function App({
             <TimeSlider
                 setTimeApp={setTimeFromSlider}
                 timeFromApp={time}
-                maxfromApp={loopLength}
+                maxfromApp={ loopLength }
                 dateFromApp={new Date((minTimestamp+time)*1000)}
             />
+            <div>
+              <button onClick={startAnimation}>{'Rewind'}</button>
+              <button onClick={updateIsAnimated}>
+                {isAnimated ? 'Pause' : 'Play'}
+              </button>
+              <input
+                  type="number"
+                  value={animationSpeed}
+                  onChange={handleAnimation}
+              />
+            </div>
+            <div>
+              <input type="datetime-local" value={minTimeURL} onChange={handleMinTimeURLInputChange} />
+              <input type="datetime-local" value={maxTimeURL} onChange={handleMaxTimeURLInputChange} />
+              <button onClick={updateBothTimestamp}>Update Life Time</button>
+            </div>
           </div>
 
           {trajectoryParameter.map((lambda, index) => (
@@ -339,14 +359,15 @@ function App({
                             value={trajectoryMMSIParameter}
                             onChange={handleTrajectoryMMSIInputChange}
                         />
-                        <button onClick={updateTrajectoryParameter}>Refresh</button>
                         <input
                             type="color"
                             value={color[index]}
                             onChange={(e) => handleColor(index, e.target.value)}
                         />
-                        <button onClick={toggleTrajectoryLayerVisibility}>
-                          {trajectoryLayerVisibility ? 'Hide trajectory Layer' : 'Show trajecotry Layer'}
+
+                        <button onClick={updateTrajectoryParameter}>Refresh</button>
+                        <button onClick={() => toggleTrajectoryLayerVisibility(index)}>
+                          {trajectoryLayerVisibility[index] ? 'Hide trajectory Layer' : 'Show trajecotry Layer'}
                         </button>
                       </>
                   ) : (
@@ -379,17 +400,7 @@ function App({
 
 
 
-          <div>
-            <input type="datetime-local" value={minTimeURL} onChange={handleMinTimeURLInputChange} />
-            <input type="datetime-local" value={maxTimeURL} onChange={handleMaxTimeURLInputChange} />
-            <button onClick={updateBothTimestamp}>Update Life Time</button>
-          </div>
-          <div>
-            <button onClick={startAnimation}>Start Animation</button>
-            <button onClick={updateIsAnimated}>
-              {isAnimated ? 'Stop Animation' : 'Replay Animation'}
-            </button>
-          </div>
+
 
           <datalist id="algos" autocomplete="off" mlns="http://www.w3.org/1999/xhtml">
             <option>DOUGLAS</option>
