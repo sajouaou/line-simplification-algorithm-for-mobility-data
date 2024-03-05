@@ -34,7 +34,7 @@ var RGBvalues = (function() {
     var c = (rgb.slice(rgb.indexOf('(')+1, rgb.indexOf(')'))).split(',');
     var flag = false, obj;
     c = c.map(function(n,i) {
-      return (i !== 3) ? parseInt(n, 10) : flag = true, parseFloat(n);
+      return (i !== 3) ? parseInt(n, 10) : flag = true , parseFloat(n);
     });
     obj = {
       r: c[0],
@@ -62,17 +62,15 @@ var RGBvalues = (function() {
 }());
 
 
-const INITIAL_VIEW_STATE = {
-  longitude: 4.383406,
-  latitude: 50.815338,
-  zoom: 11,
-  minZoom: 0,
-  maxZoom: 23,
-};
-
 function App({
                trailLength = 180
              }) {
+
+  const [viewState, setViewState] = useState({
+    latitude: 57.52909085922354,
+    longitude: 7.268443195635391,
+    zoom: 7
+  });
 
   const [trajectoryMMSIParameter, setTrajectoryMMSIParameter] = useState('-1');
   const [trajectoryURL, setTrajectoryURL] = useState('');
@@ -144,6 +142,7 @@ function App({
             features.push({
               ...feature,
               geometry: {type: "LineString", coordinates: coords},
+              // properties: {...feature.properties, timestamps: ts_segment}
               // properties: {...feature.properties, timestamps: ts_segment}
               properties: {timestamps: ts_segment}
             });
@@ -317,7 +316,11 @@ function App({
       <div style={{ position: 'relative', height: '100vh' }}>
         <DeckGL
             layers={layers}
-            initialViewState={INITIAL_VIEW_STATE}
+            initialViewState={viewState}
+            onViewStateChange={e => {
+              //console.log(e.viewState);
+              setViewState(e.viewState);
+            }}
             controller={true}
         >
           <StaticMap mapStyle={MAP_STYLE} />
