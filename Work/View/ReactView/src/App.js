@@ -144,7 +144,7 @@ function App({
               geometry: {type: "LineString", coordinates: coords},
               // properties: {...feature.properties, timestamps: ts_segment}
               // properties: {...feature.properties, timestamps: ts_segment}
-              properties: {timestamps: ts_segment}
+              properties: {timestamps: ts_segment,index: feature.properties.index, mmsi:feature.mmsi}
             });
 
             index = coords.length;
@@ -295,9 +295,9 @@ function App({
           getPath: d => d.geometry.coordinates,
           getTimestamps: d => d.properties.timestamps,
           getColor: (d) => {
-            //console.log("----------------  ",d.properties.mmsi,"  SUB LAYER ---------------")
-            //console.log(d.properties.index);
-            //console.log(d.properties.size);
+            console.log("----------------  ",d.properties.mmsi,"  SUB LAYER ---------------")
+            console.log(d.properties.index);
+            console.log(d);
 
             return RGBvalues.color(color[d.properties.index]);
           },
