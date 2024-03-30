@@ -35,26 +35,64 @@ typedef struct
   long int MMSI;   /* Identifier of the trip */
   TSequence *trip; /* Latest observations of the trip */
 } trip_record;
-
-
-struct PriorityQueue
+typedef struct PriorityQueueElem
 {
   void * point;
   double priority;
-  struct PriorityQueue *next_entry;
+  int index; //reference his own index
+} PriorityQueueElem;
+
+typedef void* IDict;
+
+typedef struct PriorityQueue
+{
+  PriorityQueueElem **arr;
+  IDict dict;
   size_t size;
-};
+  size_t capacity;
+} PriorityQueue;
+
+struct PriorityQueue *
+create_PriorityQueue(int capacity);
+size_t size_queue(const PriorityQueue *Q);
+void minHeapify(PriorityQueue* Q, int index);
+PriorityQueueElem *remove_min(PriorityQueue *Q);
+struct PriorityQueueElem *
+replace_elem(void *p_i,double priority ,PriorityQueue *Q);
+void insertHelper(PriorityQueue* Q, int index);
+void
+push(PriorityQueueElem * insert,PriorityQueue *Q);
+void
+set_priority_queue(void *p_i,double priority ,PriorityQueue *Q);
+void destroy_Queue(struct PriorityQueue *Q);
+typedef struct PointDict
+{
+    void *key;
+    void *value;
+} PointDict;
+
+
+typedef void* Dict;
+
+typedef struct PriorityDict
+{
+  void * key;
+  double priority;
+} PriorityDict;
+
+
+typedef void* PDict;
 
 typedef struct
 {
   uint32_t i;
   long int MMSI;
 
-  int beta;
-  struct PointDict *succ;
-  struct PointDict *pred;
-  struct PriorityDict *p;
-  struct PriorityQueue *Q;
+  size_t beta;
+  Dict succ;
+  Dict pred;
+  PDict  *p;
+  PriorityQueue *Q;
 
   TInstant * p_i;
   TInstant * p_j;
@@ -62,23 +100,17 @@ typedef struct
 
 } squish_variables;
 
-
 void
 init_squish_variables(squish_variables *sq);
-
-
-
-
 void
 free_squish_variables(squish_variables *sq);
-
 void
-sq_iteration(TInstant * point,squish_variables *sq , double lambda, bool syncdist,
+sq_iteration(TInstant * point,squish_variables *sq ,const double lambda, bool syncdist,
                                                       uint32_t minpts);
 
-
-
-
+TSequence *
+construct_simplify_path(squish_variables *sq,
+bool lower_inc,bool upper_inc, interpType interp, bool normalize);
 
 
 /**
@@ -114,7 +146,7 @@ main(int argc, char **argv)
   /* Allocate space to build the trips */
   trip_record trips[MAX_TRIPS] = {0};
   squish_variables variables[MAX_TRIPS] = {0};
-  double lambda = 2;
+  double lambda = 0.5;
   bool syncdist = 1;
 
 
@@ -171,7 +203,7 @@ main(int argc, char **argv)
   if (res_sql < 0)
     goto cleanup;
   res_sql = exec_sql(conn, "CREATE TABLE public.AISTripsSQ("
-    "MMSI integer PRIMARY KEY, trip public.tgeogpoint);", PGRES_COMMAND_OK);
+    "MMSI integer,lambda float, trip public.tgeompoint,PRIMARY KEY (MMSI, lambda));", PGRES_COMMAND_OK);
   if (res_sql < 0)
     goto cleanup;
 
@@ -251,9 +283,7 @@ main(int argc, char **argv)
         goto cleanup;
       }
       variables[j].MMSI = rec.MMSI;
-      printf("BEGIN INIT VARIABLES / Iteration %i for MMSI %i \n",variables[j].i,variables[j].MMSI);
       init_squish_variables(& variables[j]);
-      printf("END INIT VARIABLES / Iteration %i for MMSI %i \n",variables[j].i,variables[j].MMSI);
 
     }
 
@@ -273,15 +303,13 @@ main(int argc, char **argv)
     if (variables[j].Q && size_queue(variables[j].Q) == NO_INSTANTS_BATCH)
     {
       /* Construct the query to be sent to the database */
-      printf("PUSH TO DATABASE / Iteration %i for MMSI %i \n",variables[j].i,variables[j].MMSI);
-      TSequence * trip = construct_simplify_path(&variables[j]);
-      printf("TRIP CONSTRUCTED \n");
+      TSequence * trip = construct_simplify_path(&variables[j],true,true, LINEAR, false);
       char *temp_out = tsequence_out(trip, 15);
       char *query_buffer = malloc(sizeof(char) * (strlen(temp_out) + 256));
-      sprintf(query_buffer, "INSERT INTO public.AISTripsSQ(MMSI, trip) "
-        "VALUES (%ld, '%s') ON CONFLICT (MMSI) DO "
+      sprintf(query_buffer, "INSERT INTO public.AISTripsSQ(MMSI,lambda, trip) "
+        "VALUES (%ld,%f, '%s') ON CONFLICT (MMSI,lambda) DO "
         "UPDATE SET trip = public.update(AISTripsSQ.trip, EXCLUDED.trip, true);",
-        variables[j].MMSI, temp_out);
+        variables[j].MMSI,lambda, temp_out);
 
       res_sql = exec_sql(conn, query_buffer, PGRES_COMMAND_OK);
       if (res_sql < 0)
@@ -290,10 +318,9 @@ main(int argc, char **argv)
       /* Free memory */
       free(temp_out);
       free(query_buffer);
-
-      free_squish_variables(&variables[j]);
       TInstant *point = variables[j].p_i;
-      init_squish_variables(& variables[j]);
+      free_squish_variables(&variables[j]);
+      init_squish_variables(&variables[j]);
       sq_iteration( point ,&variables[j], lambda,  syncdist,NO_INSTANTS_KEEP);
 
       no_writes++;

@@ -385,6 +385,9 @@ the free space corresponds to parametrizations of P and Q such that the distance
 between the two is at most $ \delta $  at any time, i.e. the Fréchet distance is at most $ \delta $ .
 For additional details we refer to the paper by Alt and Godau \cite{AltGodau}.
 
+\subsection{Dynamic Time Warping Distance}
+%TO DO% Describe the dynamic time warping distance similarities
+
 \section{Line Simplification Algorithm}
 Line simplification deals with the simplification of arbitrary lines, which can be straight or curved. The goal is to reduce the complexity of lines while still ensuring that the simplified representation captures the main features of the original lines. This algorithm address the problem of Line simplification this problem who is relevant for GPU computing and Spatial Data processing
 
@@ -994,7 +997,7 @@ This algorithm follow the pseudo code of SQUISH-E it called the set function of 
 	
 \end{lstlisting}
 
-This algorithm describe the reduction method as mentionned above in the design it d	
+This algorithm describe the reduction method as mentioned above remove the lowest priority points from the queue and it update the neighbors. Because we use C langage we free memory of the useless data. 
 
 \subsection{Algorithm 3}
 
@@ -1587,11 +1590,85 @@ In order to get those results we benchmark the request 10 times for each request
 \subsubsection{Comparison with C}
 In order to have meaning to those result we will compare it with the C implementation using the real time approach and to see between the offline and the online approach the difference that happen.
 
+\begin{table}[htbp]
+	\centering
+	\label{tab:execution_time_c}
+	\begin{tabular}{@{}lccccc@{}}
+		\toprule
+		Number of Points & \multicolumn{5}{c}{Lambda} \\
+		\cmidrule{2-6}
+		& 1         & 0.75       & 0.5        & 0.25       & 0.01       \\
+		\midrule
+		100              & 00.000094 & 00.000092 & 00.00009 & 00.000098 & 00.000096 \\
+		1000             & 00.00081  & 00.000822 & 00.000943 & 00.000876 & 00.000788 \\
+		10000            & 00.008889 & 00.008852 & 00.008663 & 00.008263 & 00.00818 \\
+		100000           & 00.090018  & 00.088485 & 00.089533 & 00.089064 & 00.088728 \\
+		1000000          & 00.892172 & 00.864116 & 00.870661 & 00.937186 & 00.920517 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Average Execution Time (C) by Number of Points and Lambda}
+\end{table}
+
+As we can see, executing C code is much faster than executing sql queries, which makes execution and simplification using steam processing techniques in C both viable and possible. The speed is such that even for 1 million points the average execution time is less than 1 second. 
 
 \subsection{Precision}
-This section will focus on the precision of the simplification using the same parameter as before in order to have an idea of the quality of the simplification in a function of lambda and types of path. We will discuss on trajectory based on AIS dataset. As stated in \cite{abam2007streaming}, there is different type of path as convex and concave. As a reminder this work focus on the simplification of lines and do not take into account land or see restriction during the simplification process. In this section we will analyze different trajectory defines them and see with differents lambda and metrics evaluation the quality of the simplification. At the end we will run in a big datasets and see the results as a graph and discuss them. 
+This section will focus on the precision of the simplification using the same parameter as before in order to have an idea of the quality of the simplification in a function of lambda and types of path. We will discuss on trajectory based on AIS dataset. As stated in \cite{abam2007streaming}, there is different type of path as convex and concave. As a reminder this work focus on the simplification of lines and do not take into account land or see restriction during the simplification process. In this section we will analyze different trajectory defines them and see with different lambda and metrics evaluation the quality of the simplification. At the end we will run in a big datasets and see the results as a graph and discuss them. 
 
-\subsubsection{} 
+\subsubsection{Trajectory 1}
+ 
+ \begin{figure}[!h]
+ 	\centering
+ 	\includegraphics[width=0.5\linewidth]{figures/Stats/traj_1.jpg}
+ 	\caption{Trajectory 1}
+ 	\label{fig:traj_1}
+ \end{figure}
+
+This trajectory is composed of 20865 points and begin at 1am the 8/1/2021 with a duration of 1 day. This trajectory have convex and concave path in order to analyze the effect of the simplification in those specific moment. The precision of the trajectory will be computed based on the current metrics proposed in the state of the art such as frechet distance and hausdorff distances. We will not discuss the precision of lambda 1 because it does not reduce any points from the original trajectory. 
+
+
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{figures/Stats/squish_1.jpg}
+	\caption{Trajectory 1 - SQUISH-E}
+	\label{fig:traj_1_squish}
+\end{figure}
+
+The path is looks really similar and is close to the original path in \ref{fig:traj_1_squish}. In order to see the differences we can zoom and move the slider in order to see the moving objects in relation with the current time. 
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{figures/Stats/squish_1_zoom.jpg}
+	\caption{Trajectory 1 - ZOOM }
+	\label{fig:traj_1_sqzoom}
+\end{figure}
+
+In this we can see the path being simplified where there is curves and having less precision as lambda decreases.  
+
+\begin{table}[htbp]
+	\centering
+	\label{tab:precision_metrics}
+	\begin{tabular}{@{}lcccc@{}}
+		\toprule
+		 & \multicolumn{4}{c}{Lambda} \\
+		\cmidrule{2-5}
+		& 0.75       & 0.5        & 0.25       & 0.01       \\
+		\midrule
+		Number of points           & 15646 & 10431 & 5215 & 208 \\
+		Frechet Distance              & 0.012 & 0.012 & 0.012 & 0.066 \\
+		Hausdorff Distance             & 0.012 & 0.012 & 0.012 & 0.066 \\
+		DynTimeWarp Distance            & 1.045 & 3.028 & 8.190 & 281.413\\
+		\bottomrule
+	\end{tabular}
+	\caption{Precision metrics per Lambda for Trajectory 1 }
+\end{table}
+
+This table gives a view of the precision of squish-e on the first trajectory. The data shows that it is consistent and precise and that errors is increasing when lambda decreases. Dynamic Time Warping Distance gives also an overview of the loss of precision when we remove more points. 
+
+\subsubsection{Comparison With C}
+This section will outline the differences between the SQL and C execution since the SQL represents an offline execution and C represents the online the differences here is to underline the possible loss of accuracy in the process. In order to keep this part concise a table with all variables above will be given and choose the differences of the distances between the offline and the online trajectories. 
+
+
 
 
 \chapter{Comparison}

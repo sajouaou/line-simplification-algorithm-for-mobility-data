@@ -99,7 +99,7 @@ bool syncdist,interpType interp ,bool hasz )
   }
   ////elog(NOTICE,"//////  ADJUST PRIORITY ////////");
 }
-s
+
 
 void
 reduce(struct PriorityQueue *Q,Dict *pred,Dict *succ,PDict  *p,
