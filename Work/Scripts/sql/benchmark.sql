@@ -20,7 +20,7 @@ SELECT clock_timestamp() INTO itStartTime;
 
 CASE simpl then
 when 'MINDIST' then
-PERFORM minDistSimplify(trip,lambda,sync);
+PERFORM minDistSimplify(trip,lambda);
 when 'DOUGLAS' then
 PERFORM DouglasPeuckerSimplify(trip,lambda,sync);
 else

@@ -5,6 +5,7 @@ import {StaticMap} from "react-map-gl";
 import TimeSlider from "./Slider";
 
 const TRAJECTORY_URL = 'http://localhost:7800/public.linesimplanim/{z}/{x}/{y}.pbf';
+const TRAJECTORY_C_URL = 'http://localhost:7800/public.simplanim/{z}/{x}/{y}.pbf';
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json';
 var RGBvalues = (function() {
 
@@ -74,6 +75,7 @@ function App({
 
   const [trajectoryMMSIParameter, setTrajectoryMMSIParameter] = useState('-1');
   const [trajectoryURL, setTrajectoryURL] = useState('');
+  const [trajectoryCURL, setTrajectoryCURL] = useState('');
   const [animationSpeed, setAnimationSpeed] = useState(5);
 
   const [trajectoryLayerVisibility, setTrajectoryLayerVisibility] = useState([true]);
@@ -200,6 +202,7 @@ function App({
     // Mettre à jour la trajectoire avec toutes les valeurs
 
     setTrajectoryURL(TRAJECTORY_URL + `?s={${sValues}}&mmsi_=${trajectoryMMSIParameter}&algo={${aValues}}&p_start=${start}&p_end=${end}`);
+    setTrajectoryCURL(TRAJECTORY_C_URL + `?&mmsi_=${trajectoryMMSIParameter}&p_start=${start}&p_end=${end}`);
   };
 
   const removeTrajectory = (index) => {
@@ -307,7 +310,44 @@ function App({
           trailLength:trailLength
         });
       }
-    })
+    }),
+  /*
+    new MVTLayer({
+      id: 'trajectoryCLayer2',
+      data: trajectoryCURL,
+      minZoom: 0,
+      maxZoom: 22,
+      getLineColor: (d) => {
+        return RGBvalues.color("#000000");
+      },
+      getLineWidth : 2,
+      lineWidthMinPixels : 2,
+      visible: trajectoryLayerVisibility[0]
+    }),
+    new MVTLayer({
+      id: 'Ctrips',
+      data : trajectoryCURL,
+      binary: false,
+      minZoom: 0,
+      maxZoom: 23,
+      onTileLoad: onTileLoad,
+      currentTime: time,
+      renderSubLayers: props => {
+        return new TripsLayer(props, {
+          parameters: {},
+          data: props.data,
+          getPath: d => d.geometry.coordinates,
+          getTimestamps: d => d.properties.timestamps,
+          getColor: (d) => {
+            return RGBvalues.color("#000000");
+          },
+          widthMinPixels: 4,
+          jointRounded: true,
+          capRounded:true,
+          trailLength:trailLength
+        });
+      }
+    })*/
   ];
 
 

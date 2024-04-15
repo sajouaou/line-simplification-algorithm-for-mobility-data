@@ -85,3 +85,38 @@ SELECT ST_AsMVT(mvtgeom) FROM mvtgeom
     LANGUAGE 'sql'
 STABLE
 PARALLEL SAFE;
+
+DROP FUNCTION public.simplAnim;
+CREATE OR REPLACE
+FUNCTION public.simplAnim(
+            z integer, x integer, y  integer,mmsi_ integer,p_start text, p_end text)
+RETURNS bytea
+AS $$
+    WITH bounds AS (
+        SELECT ST_TileEnvelope(z,x,y) as geom
+    ),
+	trips_ AS (
+		SELECT *,generate_series(1, array_length(s, 1)) - 1 AS index from aistripssq as a where a.mmsi = mmsi_ or mmsi_ = -1
+	)
+	,
+    vals AS (
+        SELECT mmsi,index,numInstants(trip) as size,asMVTGeom(transform(attime(trip,span(p_start::timestamptz, p_end::timestamptz, true, true)),3857), transform((bounds.geom)::stbox,3857))
+            as geom_times
+        FROM (
+			SELECT
+			mmsi,index,
+			trip AS trip
+			FROM
+			trips_
+
+		) as ego, bounds
+    ),
+    mvtgeom AS (
+        SELECT (geom_times).geom, (geom_times).times,index,size,mmsi
+        FROM vals
+    )
+SELECT ST_AsMVT(mvtgeom) FROM mvtgeom
+                                  $$
+    LANGUAGE 'sql'
+STABLE
+PARALLEL SAFE;

@@ -34,7 +34,7 @@ SELECT clock_timestamp() INTO startTime;
 
 CASE simpl then
 when 'MINDIST' then
-SELECT minDistSimplify(trip,lambda,sync) into s_trip;
+SELECT minDistSimplify(trip,lambda) into s_trip;
 when 'DOUGLAS' then
 SELECT DouglasPeuckerSimplify(trip,lambda,sync) into s_trip;
 else

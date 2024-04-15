@@ -156,7 +156,7 @@
 %----------------------------------------------------------------------------------------
 
 \HRule \\[0.4cm]
-{ \huge D \bfseries }\\[0.4cm] % Title of your document
+{ \huge Line Simplification Algorithm \bfseries }\\[0.4cm] % Title of your document
 \HRule \\[1.2cm]
  
 %----------------------------------------------------------------------------------------
@@ -1565,7 +1565,7 @@ This section show some examples of usages of the pgsql function describe in \ref
 Here we will talk about the result of the function and see the precision and the performance of the requests. We will also compare it with the C implementation in real time using the same data to compare the offline implementation with the online one. 
 
 \subsection{Performance}
-This section will recolt and discuss the performance of the sql function by varying the lambda parameter and the number of points. 
+This section will analyze and discuss the performance of the sql function by varying the lambda parameter and the number of points. 
 \begin{table}[htbp]
 	\centering
 	\label{tab:execution_time}
@@ -1668,6 +1668,26 @@ This table gives a view of the precision of squish-e on the first trajectory. Th
 \subsubsection{Comparison With C}
 This section will outline the differences between the SQL and C execution since the SQL represents an offline execution and C represents the online the differences here is to underline the possible loss of accuracy in the process. In order to keep this part concise a table with all variables above will be given and choose the differences of the distances between the offline and the online trajectories. 
 
+\paragraph{Trajectory 1}
+
+\begin{table}[htbp]
+	\centering
+	\label{tab:precision_metrics_c}
+	\begin{tabular}{@{}lcccc@{}}
+		\toprule
+		& \multicolumn{4}{c}{Lambda} \\
+		\cmidrule{2-5}
+		& 0.75       & 0.5        & 0.25       & 0.01       \\
+		\midrule
+		Difference of points           & 15646 & 350 & 197 & 9 \\
+		Difference of Frechet Distance              & 0.012 & 0.012 & 0.137 & 0.084 \\
+		Difference of Hausdorff Distance             & 0.012 & 0.012 & 0.137 & 0.084 \\
+		Difference of DynTimeWarp Distance            & 1.045 & 3.028 & 3.732 & -10.550\\
+		\bottomrule
+	\end{tabular}
+	\caption{Precision metrics per Lambda for Trajectory 1 }
+\end{table}
+
 
 
 
@@ -1676,10 +1696,81 @@ This chapter focus on the comparison of our implementation with existing other i
 
 \section{Douglas Peucker}
 \subsection{Performance}
+
+
+\begin{table}[htbp]
+	\centering
+	\label{tab:execution_time_douglas}
+	\begin{tabular}{@{}lccccc@{}}
+		\toprule
+		Number of Points & \multicolumn{5}{c}{Lambda} \\
+		\cmidrule{2-6}
+		& 5         & 2       & 0.02        & 0.002       & 0.0002       \\
+		\midrule
+		100              & 00.000075 & 00.000107 & 00.000691 & 00.000581 & 00.000606 \\
+		1000             & 00.00019  & 00.000194 & 00.056759 & 00.055591 & 00.056859 \\
+		10000            & 00.001531 & 00.001675 & 05.721065 & 05.798434 & 05.600994 \\
+		100000           & 00.017149  & 00.013302  & EOF & EOF & EOF \\
+		1000000          & 00.169507 & 00.147934 & EOF & EOF & EOF \\
+		\bottomrule
+	\end{tabular}
+	\caption{Average Execution Time by Number of Points and Distance}
+\end{table}
+
 \subsection{Similarity}
+\begin{table}[htbp]
+	\centering
+	\label{tab:douglas_vs_squish_comparison}
+	\begin{tabular}{@{}lcccccc@{}}
+		\toprule
+		& \multicolumn{5}{c}{\textbf{Douglas}} \\
+		\cmidrule(l){2-6}
+		\textbf{SquishE} & 5 & 2 & 0.02 & 0.002 & 0.0002 \\
+		\midrule
+		\textbf{1x} & 0 & 0 & 0 & 0 & 0 \\
+		Frechet & 0 & 0 & 0 & 0 & 0 \\
+		Hausdorff & 0 & 0 & 0 & 0 & 0 \\
+		DTW & 0 & 0 & 0 & 0 & 0 \\ \midrule
+		\textbf{2x} & 0 & 0 & 0 & 0 & 0 \\
+		Frechet & 0 & 0 & 0 & 0 & 0 \\
+		Hausdorff & 0 & 0 & 0 & 0 & 0 \\
+		DTW & 0 & 0 & 0 & 0 & 0 \\ \midrule
+		\textbf{3x} & 0 & 0 & 0 & 0 & 0 \\
+		Frechet & 0 & 0 & 0 & 0 & 0 \\
+		Hausdorff & 0 & 0 & 0 & 0 & 0 \\
+		DTW & 0 & 0 & 0 & 0 & 0 \\ \midrule
+		\textbf{4x} & 0 & 0 & 0 & 0 & 0 \\
+		Frechet & 0 & 0 & 0 & 0 & 0 \\
+		Hausdorff & 0 & 0 & 0 & 0 & 0 \\
+		DTW & 0 & 0 & 0 & 0 & 0 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Comparaison des différences entre Douglas et SquishE (Frechet, Hausdorff, DTW)}
+\end{table}
 
 \section{MinDist}
 \subsection{Performance}
+
+\begin{table}[htbp]
+	\centering
+	\label{tab:execution_time_mindist}
+	\begin{tabular}{@{}lccccc@{}}
+		\toprule
+		Number of Points & \multicolumn{5}{c}{Lambda} \\
+		\cmidrule{2-6}
+		& 5         & 2       & 0.02        & 0.002       & 0.0002       \\
+		\midrule
+		100              & 00.000021 & 00.000006 & 00.000023 & 00.000014 & 00.000016 \\
+		1000             & 00.000041  & 00.000036 & 00.00012 & 00.00012 & 00.000123 \\
+		10000            & 00.000291 & 00.000293 & 00.001307 & 00.00134 & 00.001449 \\
+		100000           & 00.003088  & 00.003044  & 00.015219 & 00.015609 & 00.016354 \\
+		1000000          & 00.034338 & 00.036202 & 00.152152 & 00.163061 & 00.178996 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Average Execution Time by Number of Points and Distance}
+\end{table}
+
+
 \subsection{Similarity}
 
 \chapter{Conclusion}

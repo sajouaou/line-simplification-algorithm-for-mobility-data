@@ -161,7 +161,8 @@ iteration_simplification_sqe(void *p_i , void *p_j ,
                             PDict  *p,struct PriorityQueue *Q,
                              bool syncdist,interpType interp ,bool hasz ,uint32_t minpts)
 {
-////elog(NOTICE,"/////////////////");
+  elog(NOTICE,"//// %i >= %i  /////",i * lambda , *beta);
+  lambda = 0.5;
   if( i * lambda >= *beta)
   {
       *beta += 1;
@@ -244,7 +245,7 @@ sq_iteration(TInstant * point,squish_variables *sq ,const double lambda, bool sy
   if(sq->i == 0)
   {
         sq->point = point;
-        ////elog(NOTICE,"POINT %p \n",sq->point);
+        //elog(NOTICE,"POINT %p \n",sq->point);
   }
   sq->p_j = sq->p_i;
   sq->p_i = point;
@@ -262,8 +263,8 @@ bool lower_inc,bool upper_inc, interpType interp, bool normalize)
   uint32_t i = 0;
   uint32_t outn = size_queue(sq->Q);
   const TInstant **instants = malloc(sizeof(TInstant *) * outn);
-  //elog(NOTICE,"BEGIN CONSTRUCT SIZE Q : %i   \n",outn);
-  //elog(NOTICE,"POINT %p \n",sq->point);
+  elog(NOTICE,"BEGIN CONSTRUCT SIZE Q : %i   \n",outn);
+  elog(NOTICE,"POINT %p \n",sq->point);
   TInstant * point = sq->point;
   while(point)
   {
@@ -277,7 +278,7 @@ bool lower_inc,bool upper_inc, interpType interp, bool normalize)
     //elog(NOTICE,"POINT FROM SUCC : %p",point);
     i++;
   }
-  //elog(NOTICE,"END CONSTRUCT SIZE succ : %i \n",i);
+  elog(NOTICE,"END CONSTRUCT SIZE succ : %i \n",i);
   TSequence *result = tsequence_make(instants, i, lower_inc, upper_inc,  interp, normalize);
   free(instants);
 

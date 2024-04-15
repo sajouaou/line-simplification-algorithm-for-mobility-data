@@ -146,7 +146,8 @@ main(int argc, char **argv)
   /* Allocate space to build the trips */
   trip_record trips[MAX_TRIPS] = {0};
   squish_variables variables[MAX_TRIPS] = {0};
-  double lambda = 0.5;
+  uint32_t i_; size_t beta;
+  double lambda = 1;
   bool syncdist = 1;
 
 
@@ -196,14 +197,14 @@ main(int argc, char **argv)
   if (res_sql < 0)
     goto cleanup;
 
-  /* Create the table that will hold the data */
+  /* Create the table that will hold the data*/
   printf("Creating the table AISTripsSQ in the database\n");
   res_sql = exec_sql(conn, "DROP TABLE IF EXISTS public.AISTripsSQ;",
       PGRES_COMMAND_OK);
   if (res_sql < 0)
     goto cleanup;
   res_sql = exec_sql(conn, "CREATE TABLE public.AISTripsSQ("
-    "MMSI integer,lambda float, trip public.tgeompoint,PRIMARY KEY (MMSI, lambda));", PGRES_COMMAND_OK);
+    "MMSI integer,lambda float,buffer_size int, trip public.tgeompoint,PRIMARY KEY (MMSI, lambda,buffer_size));", PGRES_COMMAND_OK);
   if (res_sql < 0)
     goto cleanup;
 
@@ -303,13 +304,14 @@ main(int argc, char **argv)
     if (variables[j].Q && size_queue(variables[j].Q) == NO_INSTANTS_BATCH)
     {
       /* Construct the query to be sent to the database */
+        printf("BEGIN WRITING / i_ %i for beta %i MMSI %i / SIZE QUEUE %i \n",variables[j].i,variables[j].beta,variables[j].MMSI,size_queue(variables[j].Q));
       TSequence * trip = construct_simplify_path(&variables[j],true,true, LINEAR, false);
       char *temp_out = tsequence_out(trip, 15);
       char *query_buffer = malloc(sizeof(char) * (strlen(temp_out) + 256));
-      sprintf(query_buffer, "INSERT INTO public.AISTripsSQ(MMSI,lambda, trip) "
-        "VALUES (%ld,%f, '%s') ON CONFLICT (MMSI,lambda) DO "
+      sprintf(query_buffer, "INSERT INTO public.AISTripsSQ(MMSI,lambda,buffer_size, trip) "
+        "VALUES (%ld,%f,%i, '%s') ON CONFLICT (MMSI,lambda,buffer_size) DO "
         "UPDATE SET trip = public.update(AISTripsSQ.trip, EXCLUDED.trip, true);",
-        variables[j].MMSI,lambda, temp_out);
+        variables[j].MMSI,lambda,NO_INSTANTS_BATCH , temp_out);
 
       res_sql = exec_sql(conn, query_buffer, PGRES_COMMAND_OK);
       if (res_sql < 0)
@@ -319,8 +321,11 @@ main(int argc, char **argv)
       free(temp_out);
       free(query_buffer);
       TInstant *point = variables[j].p_i;
+      TInstant *point_j = variables[j].p_j;
       free_squish_variables(&variables[j]);
       init_squish_variables(&variables[j]);
+        //printf("END WRITING / i_ %i for beta %i MMSI %i / SIZE QUEUE %i \n",variables[j].i,variables[j].beta,variables[j].MMSI,size_queue(variables[j].Q));
+      sq_iteration( point_j ,&variables[j], lambda,  syncdist,NO_INSTANTS_KEEP);
       sq_iteration( point ,&variables[j], lambda,  syncdist,NO_INSTANTS_KEEP);
 
       no_writes++;
@@ -340,12 +345,42 @@ main(int argc, char **argv)
 
 
   } while (! feof(file));
-
   /* Close the file */
   fclose(file);
 
+
+    for (j = 0; j < MAX_TRIPS; j++)
+    {
+        if (variables[j].Q && size_queue(variables[j].Q) > 0){
+            /* Construct the query to be sent to the database */
+              TSequence * trip = construct_simplify_path(&variables[j],true,true, LINEAR, false);
+              char *temp_out = tsequence_out(trip, 15);
+              char *query_buffer = malloc(sizeof(char) * (strlen(temp_out) + 256));
+
+              sprintf(query_buffer, "INSERT INTO public.AISTripsSQ(MMSI,lambda,buffer_size, trip) "
+                "VALUES (%ld,%f,%i, '%s') ON CONFLICT (MMSI,lambda,buffer_size) DO "
+                "UPDATE SET trip = public.update(AISTripsSQ.trip, EXCLUDED.trip, true);",
+                variables[j].MMSI,lambda,NO_INSTANTS_BATCH , temp_out);
+
+              res_sql = exec_sql(conn, query_buffer, PGRES_COMMAND_OK);
+              if (res_sql < 0)
+                goto cleanup;
+
+              /* Free memory */
+              free(temp_out);
+              free(query_buffer);
+              free_squish_variables(&variables[j]);
+              no_writes++;
+              printf("*");
+              fflush(stdout);
+
+        }
+    }
+
   printf("\n%d records read\n%d incomplete records ignored\n"
     "%d writes to the database\n", no_records, no_nulls, no_writes);
+
+
 
   sprintf(text_buffer,
     "SELECT MMSI, public.numInstants(trip) FROM public.AISTripsSQ;");
