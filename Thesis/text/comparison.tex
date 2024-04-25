@@ -1,0 +1,121 @@
+
+
+\chapter{Comparison}
+This chapter focus on the comparison of our implementation with existing other implementation in MobilityDB.
+
+\section{Douglas Peucker}
+\subsection{Performance}
+
+
+\begin{table}[htbp]
+    \centering
+    \label{tab:execution_time_douglas}
+    \begin{tabular}{@{}lccccc@{}}
+        \toprule
+        Number of Points & \multicolumn{5}{c}{Lambda} \\
+        \cmidrule{2-6}
+        & 5         & 2       & 0.02        & 0.002       & 0.0002       \\
+        \midrule
+        100              & 00.000075 & 00.000107 & 00.000691 & 00.000581 & 00.000606 \\
+        1000             & 00.00019  & 00.000194 & 00.056759 & 00.055591 & 00.056859 \\
+        10000            & 00.001531 & 00.001675 & 05.721065 & 05.798434 & 05.600994 \\
+        100000           & 00.017149  & 00.013302  & EOF & EOF & EOF \\
+        1000000          & 00.169507 & 00.147934 & EOF & EOF & EOF \\
+        \bottomrule
+    \end{tabular}
+    \caption{Average Execution Time by Number of Points and Distance}
+\end{table}
+
+\subsection{Similarity}
+\begin{table}[htbp]
+	\centering
+	\label{tab:douglas_vs_squish_comparison}
+	\begin{tabular}{@{}lccc@{}}
+		\toprule
+		& \multicolumn{3}{c}{\textbf{Douglas}} \\
+		\cmidrule(l){2-4}
+		\textbf{SquishE} & 0.02 & 0.002 & 0.0002 \\
+		\midrule
+		\textbf{1x} 	& 18 	& 67 & 768 \\
+		Frechet 		& -3015 & -3215 & -617.274 \\
+		Hausdorff 		& -3015 	& -3215 & -617.274 \\
+		DTW 			& -90073593 	& -15597514 & -5325534 \\
+		Temporal 		& 1899 	& 129.712 & 1.397 \\ \midrule
+		\textbf{2x} 	& 36 & 134 & 1536 \\
+		Frechet 		& -28363 & -6034 & -617.274 \\
+		Hausdorff 		& -28363 & -6034 & -617.274 \\
+		DTW  		& -262452925 & -47034601 & -8163405 \\
+		Temporal 	& 102 & 19.191 & -1.590 \\ \midrule
+		\textbf{3x} 	& 54 & 201 & 2304 \\
+		Frechet 		& -34532 & -8073 & -617.274 \\
+		Hausdorff 		& -34532 & -8073 & -617.274 \\
+		DTW 		& -299629282 & -60327008 & -9036166 \\
+		Temporal 			& -149 & -12.72 & -1.933 \\ \midrule
+		\textbf{4x} 	& 72 & 268 & 3072 \\
+		Frechet 		& -36615 & -10146 & -617.274 \\
+		Hausdorff 		& -36615 & -10146 & -617.274 \\
+		DTW 		& -325049247 & -65978902 & -9504295 \\
+		Temporal 			& -278 & -22.036 & -2.315 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Comparison of differences between Douglas and SquishE (Frechet, Hausdorff, DTW)}
+\end{table}
+
+\section{MinDist}
+\subsection{Performance}
+
+\begin{table}[htbp]
+    \centering
+    \label{tab:execution_time_mindist}
+    \begin{tabular}{@{}lccccc@{}}
+        \toprule
+        Number of Points & \multicolumn{5}{c}{Lambda} \\
+        \cmidrule{2-6}
+        & 5         & 2       & 0.02        & 0.002       & 0.0002       \\
+        \midrule
+        100              & 00.000021 & 00.000006 & 00.000023 & 00.000014 & 00.000016 \\
+        1000             & 00.000041  & 00.000036 & 00.00012 & 00.00012 & 00.000123 \\
+        10000            & 00.000291 & 00.000293 & 00.001307 & 00.00134 & 00.001449 \\
+        100000           & 00.003088  & 00.003044  & 00.015219 & 00.015609 & 00.016354 \\
+        1000000          & 00.034338 & 00.036202 & 00.152152 & 00.163061 & 00.178996 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Average Execution Time by Number of Points and Distance of MinDist Algorithm}
+\end{table}
+
+
+\subsection{Similarity}
+\begin{table}[htbp]
+	\centering
+	\label{tab:mindist_vs_squish_comparison}
+	\begin{tabular}{@{}lccc@{}}
+		\toprule
+		& \multicolumn{3}{c}{\textbf{Mindist}} \\
+		\cmidrule(l){2-4}
+		\textbf{SquishE} & 0.02 & 0.002 & 0.0002 \\
+		\midrule
+		\textbf{1x} 	& 418 	& 3652 & 16919 \\
+		Frechet 		& 2842.859 & 582.269 & 33.645 \\
+		Hausdorff 		& 2842.859 	& 582.269 & 33.645 \\
+		DTW 			& 1834655 	& 95109 & 21682 \\
+		Temporal 		& 1.54 	& 0.158 & 0.091 \\ \midrule
+		\textbf{2x} 	& 836 & 134 & ALL \\
+		Frechet 		& 598.393 & 582.269 & -66.409 \\
+		Hausdorff 		& 598.393 & 582.269 & -66.409 \\
+		DTW  		& -3452102 & -463775 & -36834 \\
+		Temporal 	& -3.687 & -0.563 & -0.647 \\ \midrule
+		\textbf{3x} 	& 1254 & 201 & // \\
+		Frechet 		& 598.393 & 582.269 &  // \\
+		Hausdorff 		& 598.393 & 582.269 &  // \\
+		DTW 		& -5014557 & -655462 &  // \\
+		Temporal 			& -4.926 & -1.192 & // \\ \midrule
+		\textbf{4x} 	& 1672 & 268 &  // \\
+		Frechet 		& 598.393 & 582.269 &  // \\
+		Hausdorff 		& 598.393 & 582.269 &  // \\
+		DTW 		& -5960279 & -768674 &  // \\
+		Temporal 			& -5.538 & -1.764 &  // \\
+		\bottomrule
+	\end{tabular}
+	\caption{Comparison of differences between MinDist and SquishE (Frechet, Hausdorff, DTW)}
+\end{table}
+

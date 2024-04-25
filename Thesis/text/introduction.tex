@@ -1,0 +1,65 @@
+
+\chapter{Introduction}
+In the domain of cartography, the challenge of simplifying complex geographical data for clear and effective representation has grown increasingly important. As our reliance on automated cartography powered by computer technologies continues to expand, the demand for efficient algorithms becomes ever more critical, particularly in the realms of feature extraction and simplification. Among these algorithms, the Douglas-Peucker line simplification method has remained a foundational tool for representing linear features.
+
+This research is dedicated to extending the frontiers of cartographic representation, with a primary focus on POSTGIS and MobilityDB \cite{zimanyi2019mobilitydb}, by transforming the Douglas-Peucker algorithm into a streaming paradigm. Unlike the traditional application of Douglas-Peucker on static datasets, a streaming algorithm processes data dynamically and continuously, making it ideally suited for real-time or rapidly evolving input. This dynamic adaptability is crucial in modern applications such as GPS navigation, real-time geospatial data analysis, and the constant monitoring of geospatial data streams, all of which are integral to the POSTGIS and MobilityDB ecosystem.
+
+In this study, our paramount objective is the simplification of line representations of mobility data within the POSTGIS and MobilityDB environment. This entails processing an ordered set of n+1 points in a plane, forming a polygonal path comprised of line segments, and deriving a streamlined path with fewer segments while retaining the essential characteristics of the original path. The key distinction here is that our research focuses on the streaming nature of the data, aligning seamlessly with the principles and capabilities of POSTGIS and MobilityDB.
+
+An underlying assumption for this work is the simplicity of the provided path, with an absence of self-intersections. The presence of self-intersections in cartographic data often indicates issues related to digitization errors. While we aspire to maintain the simplicity of the resultant approximation, the question of computational feasibility within the POSTGIS and MobilityDB environment remains a central theme.
+
+The concept of "representing well" encompasses a variety of dimensions, including maintaining proximity between the original and simplified paths, minimizing the area between them, integrating critical points from the original path into the simplified version, and optimizing other measures of curve discrepancy. This study builds upon the established foundations of the Douglas-Peucker algorithm and pioneers the integration of stream data processing into the POSTGIS and MobilityDB framework. This innovation opens new horizons in real-time and dynamic cartographic applications, with a key focus on mobility data.
+
+In summary, this thesis embarks on a pioneering journey to generalize the Douglas-Peucker algorithm for streaming line simplification, with a primary emphasis on the POSTGIS and MobilityDB ecosystem. The motivation behind this endeavor is rooted in the ever-growing demand for adapting cartographic methods to real-time data streams, particularly in the context of dynamic geospatial mobility data.
+
+\iffalse
+\subsection{Definitions and Key Concepts}
+In this subsection, we will establish a foundational understanding of key terms and concepts central to the research presented in this thesis. These definitions are essential for comprehending the context and significance of the study.
+
+\subsubsection{Moving Objects}
+
+Moving objects refer to entities or points that continuously change their positions in a given space over time. In the context of this research, moving objects represent dynamic or mobile assets, including vehicles, individuals, or any entities with ever-changing spatial coordinates. Understanding the behavior of moving objects is fundamental for the stream algorithm proposed in this study.
+
+\subsubsection{Stream Data}
+
+Stream data pertains to the continuous and real-time flow of data that arrives sequentially. In the context of this research, stream data represents the dynamic nature of the information being processed. Stream data includes data points, such as the changing positions of moving objects, which are received and processed as they become available over time.
+
+
+\subsubsection{Polygonal Path}
+
+A polygonal path is a sequence of line segments connected end-to-end, forming a coherent trajectory or route. In the context of this research, a polygonal path represents the course taken by moving objects, represented as a series of line segments, which is the primary focus of the stream algorithm for simplification.
+
+
+\subsubsection{Restricted Version}
+
+A restricted version in this context signifies a specialized or limited form of an algorithm or problem. It is tailored to accommodate specific constraints or requirements pertinent to the application. For example, a restricted version of a line simplification algorithm may be designed to address particular limitations associated with moving objects and streaming data.
+
+
+
+\subsubsection{Function Error}
+
+Function error indicates the degree of discrepancy between an ideal or reference function and an approximation or simplified representation. In the context of line simplification, it quantifies the degree to which the simplified line retains the essential characteristics of the original polygonal path.
+
+\subsubsection{Fréchet Distance}
+
+The Fréchet distance is a distance metric that quantifies the similarity between two curves or paths. It measures the likeness between the original polygonal path and a simplified path by considering the minimum separation distance between a moving object on each path as they traverse from start to end.
+
+
+\subsubsection{The Hausdorff Distance}
+
+The Hausdorff distance is another distance metric used to measure the similarity or dissimilarity between two sets or paths. It calculates the maximum distance from each point in one set to the nearest point in the other set, providing a measure of the dissimilarity between paths.
+
+
+\subsubsection{Convex Paths}
+
+Convex paths represent polygonal paths with the property that any line segment connecting two points lies entirely within the convex hull of the points. Convex paths exhibit certain geometric properties that can be advantageous in the context of simplification algorithms.
+
+\subsubsection{XY-Monotone Paths}
+
+An XY-monotone path is a polygonal path with the characteristic of being monotonic in both the x and y directions. Such paths move in one direction along the x and y axes without backtracking.
+
+\subsubsection{General Paths}
+
+General paths encompass polygonal paths without specific constraints on their geometry. They may exhibit complex shapes, including non-monotonic behavior, sharp turns, and diverse geometric characteristics.
+
+\fi

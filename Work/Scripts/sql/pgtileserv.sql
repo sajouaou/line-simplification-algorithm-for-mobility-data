@@ -1,4 +1,3 @@
-DROP FUNCTION public.linesimpl;
 CREATE OR REPLACE
 FUNCTION public.linesimpl(
             z integer, x integer, y  integer,s float[],algo text[],mmsi_ integer)
@@ -42,7 +41,6 @@ SELECT ST_AsMVT(mvtgeom) FROM mvtgeom
 STABLE
 PARALLEL SAFE;
 
-DROP FUNCTION public.linesimplAnim;
 CREATE OR REPLACE
 FUNCTION public.linesimplanim(
             z integer, x integer, y  integer,s float[],algo text[],mmsi_ integer,p_start text, p_end text)
@@ -86,7 +84,6 @@ SELECT ST_AsMVT(mvtgeom) FROM mvtgeom
 STABLE
 PARALLEL SAFE;
 
-DROP FUNCTION public.simplAnim;
 CREATE OR REPLACE
 FUNCTION public.simplAnim(
             z integer, x integer, y  integer,mmsi_ integer,p_start text, p_end text)
@@ -96,7 +93,7 @@ AS $$
         SELECT ST_TileEnvelope(z,x,y) as geom
     ),
 	trips_ AS (
-		SELECT *,generate_series(1, array_length(s, 1)) - 1 AS index from aistripssq as a where a.mmsi = mmsi_ or mmsi_ = -1
+		SELECT *,1 AS index from aistripssq as a where a.mmsi = mmsi_ or mmsi_ = -1
 	)
 	,
     vals AS (

@@ -1,0 +1,136 @@
+
+\chapter{Design}
+\section{SQUISH-E}
+In this section we introduce the SQUISH-E algorithm, present a pseudo-code and analyze its complexity. \\
+
+The SQUISH-E algorithm compresses a trajectory \(T\) by utilizing two parameters, \(\lambda\) and \(\mu\), to strategically minimize the Synchronized Euclidean Distance (SED) error while achieving a specified compression ratio (\(\lambda\)). It operates by compressing \(T\) until further compression would result in an increase in SED error above \(\mu\), with a notable case being SQUISH-E(\(\lambda\)) where setting \(\mu\) to 0 focuses on minimizing SED error to achieve the compression ratio of \(\lambda\). In contrast, SQUISH-E(\(\mu\)) highlights a scenario where \(\lambda\) is set to 1, aiming to maximize the compression ratio without exceeding the SED error threshold defined by \(\mu\). A pivotal aspect of SQUISH-E is its use of a priority queue \(Q\), in which the priority of each point is determined by an upper bound on the SED error that could be introduced by its removal. This mechanism allows SQUISH-E to efficiently identify and remove the point with the lowest priority, i.e., the point whose removal would result in the least increase in SED error, in \(O(\log |Q|)\) time. This process effectively controls the growth of SED error, ensuring the algorithm's efficiency in compressing trajectory data while maintaining the integrity of the spatial information \cite{muckell2014compression}. In order to have a fully online algorithm SQUISH-E(\(\mu\)) is not taken into account and we only take into account SQUISH-E(\(\lambda\)). The error function is the same but in our implementation it could be a nice idea to compare different error function to find the best ones for some situation.
+
+\subsection{Algorithm Pseudo-Code}
+In this section we will present the pseudo-code of SQUISH-E algorithm used in our work. \\
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \KwIn{trajectory $T$, lower bound $\lambda$ on compression ratio as a percentage value}
+    \KwOut{trajectory $T'$}
+    $\beta \gets 4$ \tcp*{the initial capacity of $Q$ is 4}
+    \ForEach{point $P_i \in T$}{
+        \If{$ i * lambda \geq \beta$}{
+            $\beta \gets \beta + 1$ \tcp*{increase the capacity of $Q$}
+        }
+        set\_priority($P_i, \infty, Q$) \tcp*{enqueue $P_i$ with the priority of $P_i$ being $\infty$}
+        $\pi[P_i] \gets 0$\;
+        \If{$i > 1$}{
+            $succ[P_{i-1}] \gets P_i$ \tcp*{register $P_i$ as $P_{i-1}$'s closest successor}
+            $pred[P_i] \gets P_{i-1}$ \tcp*{register $P_{i-1}$ as $P_i$'s closest predecessor}
+            adjust\_priority($P_{i-1}, Q, pred, succ, \pi$) \tcp*{Algorithm 3}
+        }
+        \If{$|Q| = \beta$}{
+            reduce($Q, pred, succ, \pi$) \tcp*{Algorithm 2}
+        }
+    }
+    \Return{trajectory $T'$ comprising the points in $Q$ in the order reflected in the $succ$ map}
+    \caption{SQUISH-E($T, \lambda$)}
+    \label{alg:squish_e}
+\end{algorithm}
+
+In the algorithm \ref{alg:squish_e} we can analyze the time complexity. The algorithm works iteratively, receiving each point one by one, which is convenient for our streaming case. Complexity is therefore at least $O(n * max(O(loop) ))$ .The lambda variable has also been modified. Next, the following adjust priority \ref{alg:adjust_priority} and reduce  \ref{alg:reduce} algorithms are presented.
+
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+
+    \KwIn{priority queue $Q$, maps $\text{pred}, \text{succ}$ and $\pi$ (refer to Table 2)}
+    $P_j \gets \text{remove\_min}(Q); \quad$ // the lowest priority point is removed from $Q$\;
+
+    $\pi[succ[P_j]] \gets \text{max}(priority(P_j) , \pi[succ[P_j]]); \quad$  // update neighbor priority\;
+    $\pi[pred[P_j]] \gets \text{max}(priority(P_j) , \pi[pred[P_j]]); \quad$ // update neighbor priority\;
+
+
+    $succ[\text{pred}[P_j]] \gets succ[P_j]; \quad$ // update neighbor's neighbor of $P_j$ \;
+    $\text{pred}[succ[P_j]] \gets \text{pred}[P_j]; \quad$ // update neighbor's neighbor of $P_j$ \;
+
+
+    $\text{adjust\_priority}(\text{pred}[P_j], \text{pred}, \text{succ}, \pi); \quad$ // Algorithm 3\;
+    $\text{adjust\_priority}(succ[P_j], \text{pred}, \text{succ}, \pi); \quad$ // Algorithm 3\;
+    remove the entry for $P_j$ from $\text{pred}, \text{succ},$ and $\pi; \quad$ // garbage collection\;
+
+    \caption{reduce($Q, \text{pred}, \text{succ}, \pi$)}
+    \label{alg:reduce}
+\end{algorithm}
+
+
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+
+    \KwIn{point $P_j$, priority queue $Q$, maps $\text{pred}, \text{succ}$ and $\pi$ (refer to Table 2)}
+    \If{$\text{pred}[P_j] \neq \text{null}$ and $\text{succ}[P_j] \neq \text{null}$}{
+        $p \gets \pi[\text{SED}(P_j,\text{pred}[P_j], \text{succ}[P_j])];$\;
+        $\text{set\_priority}(P_j, p, Q);$\;
+    }
+
+    \caption{adjust\_priority($P_j, Q, \text{pred}, \text{succ}, \pi$)}
+    \label{alg:adjust_priority}
+\end{algorithm}
+
+
+To achieve the optimum complexity of this algorithm, it is imperative that the most expensive operation in the loop is $O(log(n))$. Next, the focus will be on variables and their methods, in order to determine the required implementation elements.
+
+\subsection{Variables}
+
+
+\begin{table}[h!]
+    \centering
+    \label{tab:variables}
+    \begin{tabular}{ll}
+        \hline
+        \textbf{Variable} & \textbf{Description} \\
+        \hline
+        $Q$             & Priority queue \\
+        $p_{\pi}$       & Point with the lowest priority \\
+        $\text{pred}$   & Predecessor map \\
+        $\text{succ}$   & Successor map \\
+        $\pi$           & Priority map \\
+        $P_i$           & A point in the priority queue \\
+        $\text{SED}$    & Some distance function \\
+        \hline
+    \end{tabular}
+    \caption{List of Variables Used in Algorithms}
+\end{table}
+
+\paragraph{Map}
+
+As mentioned before we have 3 map two that has as pair key-value point-point and another with point-priority .
+
+
+\subparagraph{Method}
+
+The method that is necessary to implement for this map is the following
+
+\begin{itemize}
+    \item set(key,value,map)
+    \item remove(key,map)
+    \item get(key,map) -> value
+\end{itemize}
+
+
+\paragraph{PriorityQueue}
+Another structure is a priority queue, but with quite different methods.
+The priority queue stores elements that are point-priority pairs, and has a sorted structure so that the minimum can be removed. This structure poses a real challenge, due to its nature and the methods we'll define below.
+
+
+\subparagraph{Method}
+The methods required to implement priorityqueue are as follows:
+\begin{itemize}
+    \item set\_priority(key,value,Q) this function can be expressed as the two following methods
+    \begin{itemize}
+        \item remove(key,Q) or replace(key,Q) // depends on implementation
+        \item push(key,value,Q)
+    \end{itemize}
+    \item remove\_min(Q)
+\end{itemize}
+
+As the set function is closer to the characteristics of an array than a priorityqueue, this poses a challenge if existing resources don't allow these methods to be implemented in $O(log(n))$ at most.
+
+
+

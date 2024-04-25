@@ -108,8 +108,9 @@ void
 sq_iteration(TInstant * point,squish_variables *sq ,const double lambda, bool syncdist,
                                                       uint32_t minpts);
 
+
 TSequence *
-construct_simplify_path(squish_variables *sq,
+construct_simplify_path_C(squish_variables *sq,TInstant **r,int no_keep,
 bool lower_inc,bool upper_inc, interpType interp, bool normalize);
 
 
@@ -146,8 +147,9 @@ main(int argc, char **argv)
   /* Allocate space to build the trips */
   trip_record trips[MAX_TRIPS] = {0};
   squish_variables variables[MAX_TRIPS] = {0};
+  TInstant **r[MAX_TRIPS] = {0};
   uint32_t i_; size_t beta;
-  double lambda = 1;
+  double lambda = 0.01;
   bool syncdist = 1;
 
 
@@ -179,7 +181,7 @@ main(int argc, char **argv)
   if (argc > 1)
     conninfo = argv[1];
   else
-    conninfo = "host=localhost user=postgres dbname=brussels password=1234";
+    conninfo = "host=localhost user=postgres dbname=brusselsPrec password=1234";
 
   /* Make a connection to the database */
   conn = PQconnectdb(conninfo);
@@ -197,7 +199,7 @@ main(int argc, char **argv)
   if (res_sql < 0)
     goto cleanup;
 
-  /* Create the table that will hold the data*/
+  /* Create the table that will hold the data *
   printf("Creating the table AISTripsSQ in the database\n");
   res_sql = exec_sql(conn, "DROP TABLE IF EXISTS public.AISTripsSQ;",
       PGRES_COMMAND_OK);
@@ -207,7 +209,7 @@ main(int argc, char **argv)
     "MMSI integer,lambda float,buffer_size int, trip public.tgeompoint,PRIMARY KEY (MMSI, lambda,buffer_size));", PGRES_COMMAND_OK);
   if (res_sql < 0)
     goto cleanup;
-
+/* */
   /***************************************************************************
    * Section 2: Initialize MEOS and open the input AIS file
    ***************************************************************************/
@@ -301,11 +303,11 @@ main(int argc, char **argv)
 
     /* Send the trip to the database when its size reaches the maximum size */
     // This code caused a segmentation fault search for it
-    if (variables[j].Q && size_queue(variables[j].Q) == NO_INSTANTS_BATCH)
+    if (variables[j].Q && ((size_queue(variables[j].Q) == NO_INSTANTS_BATCH && !r[j]) ||(size_queue(variables[j].Q) == NO_INSTANTS_BATCH - NO_INSTANTS_KEEP && r[j])) )
     {
       /* Construct the query to be sent to the database */
-        printf("BEGIN WRITING / i_ %i for beta %i MMSI %i / SIZE QUEUE %i \n",variables[j].i,variables[j].beta,variables[j].MMSI,size_queue(variables[j].Q));
-      TSequence * trip = construct_simplify_path(&variables[j],true,true, LINEAR, false);
+       TSequence * trip = construct_simplify_path_C(&variables[j],r[j],NO_INSTANTS_KEEP,true,true, LINEAR, false);
+      //printf("COMPLETED\n");
       char *temp_out = tsequence_out(trip, 15);
       char *query_buffer = malloc(sizeof(char) * (strlen(temp_out) + 256));
       sprintf(query_buffer, "INSERT INTO public.AISTripsSQ(MMSI,lambda,buffer_size, trip) "
@@ -320,13 +322,18 @@ main(int argc, char **argv)
       /* Free memory */
       free(temp_out);
       free(query_buffer);
-      TInstant *point = variables[j].p_i;
-      TInstant *point_j = variables[j].p_j;
+      if(r[j] == 0){
+        r[j] =  malloc(sizeof(TInstant *) * NO_INSTANTS_KEEP );
+      }
+      r[j][0] = variables[j].p_j;
+      r[j][1] = variables[j].p_i;
+
+      //TInstant *point = variables[j].p_i;
+      //TInstant *point_j = variables[j].p_j;
       free_squish_variables(&variables[j]);
       init_squish_variables(&variables[j]);
-        //printf("END WRITING / i_ %i for beta %i MMSI %i / SIZE QUEUE %i \n",variables[j].i,variables[j].beta,variables[j].MMSI,size_queue(variables[j].Q));
-      sq_iteration( point_j ,&variables[j], lambda,  syncdist,NO_INSTANTS_KEEP);
-      sq_iteration( point ,&variables[j], lambda,  syncdist,NO_INSTANTS_KEEP);
+      //sq_iteration( point_j ,&variables[j], lambda,  syncdist,NO_INSTANTS_KEEP);
+      //sq_iteration( point ,&variables[j], lambda,  syncdist,NO_INSTANTS_KEEP);
 
       no_writes++;
       printf("*");
@@ -353,7 +360,8 @@ main(int argc, char **argv)
     {
         if (variables[j].Q && size_queue(variables[j].Q) > 0){
             /* Construct the query to be sent to the database */
-              TSequence * trip = construct_simplify_path(&variables[j],true,true, LINEAR, false);
+              TSequence * trip = construct_simplify_path_C(&variables[j],r[j],NO_INSTANTS_KEEP,true,true, LINEAR, false);
+           //printf("MMSI %i SIZE %i | %i  | %i \n",variables[j].MMSI,variables[j].i, size_queue(variables[j].Q),trip->count);
               char *temp_out = tsequence_out(trip, 15);
               char *query_buffer = malloc(sizeof(char) * (strlen(temp_out) + 256));
 

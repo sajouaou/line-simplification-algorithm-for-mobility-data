@@ -81,7 +81,7 @@
 #include <meos_internal.h>
 
 /* Number of instants to send in batch to the database */
-#define NO_INSTANTS_BATCH 1000
+#define NO_INSTANTS_BATCH 30000
 /* Number of instants to keep when restarting a sequence, should keep at least one */
 #define NO_INSTANTS_KEEP 2
 /* Maximum length in characters of a header record in the input CSV file */
@@ -104,6 +104,7 @@ typedef struct
 {
   long int MMSI;   /* Identifier of the trip */
   TSequence *trip; /* Latest observations of the trip */
+  int i;
 } trip_record;
 
 /**
@@ -163,7 +164,7 @@ main(int argc, char **argv)
   if (argc > 1)
     conninfo = argv[1];
   else
-    conninfo = "host=localhost user=postgres dbname=brussels password=1234";
+    conninfo = "host=localhost user=postgres dbname=brusselsPrec password=1234";
 
   /* Make a connection to the database */
   conn = PQconnectdb(conninfo);
@@ -273,6 +274,8 @@ main(int argc, char **argv)
      * - The timestamps are given in GMT time zone
      */
     char *t_out = pg_timestamp_out(rec.T);
+    // ST_TRANSFORM PLANAR COORDINATE SYSTEM  25832
+    // Apply distance on the planar coordinate system
     sprintf(point_buffer, "SRID=4326;Point(%lf %lf)@%s+00", rec.Longitude,
       rec.Latitude, t_out);
 
@@ -303,6 +306,7 @@ main(int argc, char **argv)
 
     /* Append the last observation */
     TInstant *inst = (TInstant *) tgeogpoint_in(point_buffer);
+    trips[j].i++;
     if (! trips[j].trip)
       trips[j].trip = tsequence_make_exp((const TInstant **) &inst, 1,
         NO_INSTANTS_BATCH, true, true, LINEAR, false);
@@ -312,6 +316,35 @@ main(int argc, char **argv)
 
   /* Close the file */
   fclose(file);
+
+
+
+    for (j = 0; j < MAX_TRIPS; j++)
+    {
+        if (trips[j].trip ){
+            /* Construct the query to be sent to the database */
+           printf("SIZE %i \n",trips[j].i);
+          char *temp_out = tsequence_out(trips[j].trip, 15);
+          char *query_buffer = malloc(sizeof(char) * (strlen(temp_out) + 256));
+          sprintf(query_buffer, "INSERT INTO public.AISTrips(MMSI, trip) "
+            "VALUES (%ld, '%s') ON CONFLICT (MMSI) DO "
+            "UPDATE SET trip = public.update(AISTrips.trip, EXCLUDED.trip, true);",
+            trips[j].MMSI, temp_out);
+
+          res_sql = exec_sql(conn, query_buffer, PGRES_COMMAND_OK);
+          if (res_sql < 0)
+            goto cleanup;
+
+          /* Free memory */
+          free(temp_out);
+          free(query_buffer);
+          no_writes++;
+          printf("*");
+          fflush(stdout);
+          /* Restart the sequence by only keeping the last instants */
+
+        }
+    }
 
   printf("\n%d records read\n%d incomplete records ignored\n"
     "%d writes to the database\n", no_records, no_nulls, no_writes);
