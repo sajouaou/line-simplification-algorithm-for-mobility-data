@@ -290,7 +290,7 @@ tsequence_simplify_sqe(const TSequence *seq, double dist, bool syncdist,
   uint32_t minpts)
 {
 
-  //elog(NOTICE,"=== SQUISH-E Simplification ===");
+  elog(NOTICE,"=== SQUISH-E Simplification ===");
   squish_variables SQ_variables;
   init_squish_variables(&SQ_variables);
 
@@ -307,7 +307,7 @@ tsequence_simplify_sqe(const TSequence *seq, double dist, bool syncdist,
 
   }
   while(SQ_variables.i < seq->count);
-  //elog(NOTICE,"=== SQUISH-E Simplification ===");
+  elog(NOTICE,"=== SQUISH-E Simplification ===");
 
   TSequence *result = result = construct_simplify_path(&SQ_variables,seq->period.lower_inc,
                     seq->period.upper_inc, LINEAR, false);
