@@ -1,4 +1,4 @@
-Trajectory Data Warehouses DashBoard
+Line Simplification Algorithm DashBoard
 ==================================
 <img src="../../../doc/images/mobilitydb-logo.svg" width="200" alt="MobilityDB Logo" />
 
