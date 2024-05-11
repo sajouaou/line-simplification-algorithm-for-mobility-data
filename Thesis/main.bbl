@@ -1,0 +1,983 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nty/global//global/global/global}
+    \entry{abam2007streaming}{inproceedings}{}{}
+      \name{author}{4}{}{%
+        {{hash=1d669ba7e619204f2732012100e2a695}{%
+           family={Abam},
+           familyi={A\bibinitperiod},
+           given={Mohammad\bibnamedelima Ali},
+           giveni={M\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+        {{hash=aff678a462fa10e25a9a69949be042aa}{%
+           family={Berg},
+           familyi={B\bibinitperiod},
+           given={Mark},
+           giveni={M\bibinitperiod},
+           prefix={de},
+           prefixi={d\bibinitperiod}}}%
+        {{hash=0fea59dd66aba189dadff36dcb7bbdbd}{%
+           family={Hachenberger},
+           familyi={H\bibinitperiod},
+           given={Peter},
+           giveni={P\bibinitperiod}}}%
+        {{hash=8681444654604e23a055ebb7c0a56454}{%
+           family={Zarei},
+           familyi={Z\bibinitperiod},
+           given={Alireza},
+           giveni={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{8c8bf8933377457fa752f08827334a51}
+      \strng{fullhash}{0d9116767682f965bc4e783715e431df}
+      \strng{fullhashraw}{0d9116767682f965bc4e783715e431df}
+      \strng{bibnamehash}{8c8bf8933377457fa752f08827334a51}
+      \strng{authorbibnamehash}{8c8bf8933377457fa752f08827334a51}
+      \strng{authornamehash}{8c8bf8933377457fa752f08827334a51}
+      \strng{authorfullhash}{0d9116767682f965bc4e783715e431df}
+      \strng{authorfullhashraw}{0d9116767682f965bc4e783715e431df}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the twenty-third annual symposium on Computational geometry}
+      \field{title}{Streaming algorithms for line simplification}
+      \field{year}{2007}
+      \field{pages}{175\bibrangedash 183}
+      \range{pages}{9}
+    \endentry
+    \entry{agarwal2005near}{article}{}{}
+      \name{author}{4}{}{%
+        {{hash=689f1a8618a49eec825831f3f2f7caca}{%
+           family={Agarwal},
+           familyi={A\bibinitperiod},
+           given={Pankaj\bibnamedelima K},
+           giveni={P\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
+        {{hash=c9609db02e16e7ff812eddca25a683d6}{%
+           family={Har-Peled},
+           familyi={H\bibinithyphendelim P\bibinitperiod},
+           given={Sariel},
+           giveni={S\bibinitperiod}}}%
+        {{hash=a4804fc5d342ff073c92f15c166de92f}{%
+           family={Mustafa},
+           familyi={M\bibinitperiod},
+           given={Nabil\bibnamedelima H},
+           giveni={N\bibinitperiod\bibinitdelim H\bibinitperiod}}}%
+        {{hash=fed5f88670059b51be0c9cbe3b404b5e}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Yusu},
+           giveni={Y\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{af4af3ad4d29fb5bf648f5fa55f9b5fb}
+      \strng{fullhash}{5423a47325c00d11b7bb0ad3103c0b32}
+      \strng{fullhashraw}{5423a47325c00d11b7bb0ad3103c0b32}
+      \strng{bibnamehash}{af4af3ad4d29fb5bf648f5fa55f9b5fb}
+      \strng{authorbibnamehash}{af4af3ad4d29fb5bf648f5fa55f9b5fb}
+      \strng{authornamehash}{af4af3ad4d29fb5bf648f5fa55f9b5fb}
+      \strng{authorfullhash}{5423a47325c00d11b7bb0ad3103c0b32}
+      \strng{authorfullhashraw}{5423a47325c00d11b7bb0ad3103c0b32}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Algorithmica}
+      \field{title}{Near-linear time approximation algorithms for curve simplification}
+      \field{volume}{42}
+      \field{year}{2005}
+      \field{pages}{203\bibrangedash 219}
+      \range{pages}{17}
+    \endentry
+    \entry{AltGodau}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=dfa170a08197e06d8e21a960c8a18a0e}{%
+           family={Alt},
+           familyi={A\bibinitperiod},
+           given={Helmut},
+           giveni={H\bibinitperiod}}}%
+        {{hash=9111f62e8910e128dd0148bb40e5e0ca}{%
+           family={GODAU},
+           familyi={G\bibinitperiod},
+           given={MICHAEL},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{6e549ad5c683062c0d16d0172908b54b}
+      \strng{fullhash}{6e549ad5c683062c0d16d0172908b54b}
+      \strng{fullhashraw}{6e549ad5c683062c0d16d0172908b54b}
+      \strng{bibnamehash}{6e549ad5c683062c0d16d0172908b54b}
+      \strng{authorbibnamehash}{6e549ad5c683062c0d16d0172908b54b}
+      \strng{authornamehash}{6e549ad5c683062c0d16d0172908b54b}
+      \strng{authorfullhash}{6e549ad5c683062c0d16d0172908b54b}
+      \strng{authorfullhashraw}{6e549ad5c683062c0d16d0172908b54b}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Int. J. Comput. Geometry Appl.}
+      \field{month}{03}
+      \field{title}{Computing the Fréchet Distance between Two Polygonal Curves}
+      \field{volume}{5}
+      \field{year}{1995}
+      \field{pages}{75\bibrangedash 91}
+      \range{pages}{17}
+      \verb{doi}
+      \verb 10.1142/S0218195995000064
+      \endverb
+    \endentry
+    \entry{ApacheKA}{inproceedings}{}{}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labeltitlesource}{title}
+      \field{title}{Apache Kafka A high-throughput distributed messaging system . Kafka 0 . 9 . 0 Documentation 1}
+      \verb{urlraw}
+      \verb https://api.semanticscholar.org/CorpusID:189759316
+      \endverb
+      \verb{url}
+      \verb https://api.semanticscholar.org/CorpusID:189759316
+      \endverb
+    \endentry
+    \entry{ballard2014ibm}{book}{}{}
+      \true{moreauthor}
+      \true{morelabelname}
+      \name{author}{10}{}{%
+        {{hash=ee699d4b1ee462c33de7ea6e3b436091}{%
+           family={Ballard},
+           familyi={B\bibinitperiod},
+           given={Chuck},
+           giveni={C\bibinitperiod}}}%
+        {{hash=0b0b164815f6c6667307fb2a9ebbdf47}{%
+           family={Brandt},
+           familyi={B\bibinitperiod},
+           given={Oliver},
+           giveni={O\bibinitperiod}}}%
+        {{hash=ae9db3436c82c01ed72983fa6f84c668}{%
+           family={Devaraju},
+           familyi={D\bibinitperiod},
+           given={Bharath},
+           giveni={B\bibinitperiod}}}%
+        {{hash=dc360188c2644e7b55fb7557a097ed8f}{%
+           family={Farrell},
+           familyi={F\bibinitperiod},
+           given={Daniel},
+           giveni={D\bibinitperiod}}}%
+        {{hash=02a6a8bb0fd93b041f0b9fa55ce0b392}{%
+           family={Foster},
+           familyi={F\bibinitperiod},
+           given={Kevin},
+           giveni={K\bibinitperiod}}}%
+        {{hash=65b4c4b2c6acfe8c595b3037aad9fea5}{%
+           family={Howard},
+           familyi={H\bibinitperiod},
+           given={Chris},
+           giveni={C\bibinitperiod}}}%
+        {{hash=94f85a4e8b3ef2f676ee4c47753f6444}{%
+           family={Nicholls},
+           familyi={N\bibinitperiod},
+           given={Peter},
+           giveni={P\bibinitperiod}}}%
+        {{hash=9f5e452385fb6cf48bbd2685dc532e5b}{%
+           family={Pasricha},
+           familyi={P\bibinitperiod},
+           given={Ankit},
+           giveni={A\bibinitperiod}}}%
+        {{hash=5f4fffcb821e610b5b725cf94e26ab90}{%
+           family={Rea},
+           familyi={R\bibinitperiod},
+           given={Roger},
+           giveni={R\bibinitperiod}}}%
+        {{hash=aedb1f855ec44c1348417134818c48d0}{%
+           family={Schulz},
+           familyi={S\bibinitperiod},
+           given={Norbert},
+           giveni={N\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {IBM Redbooks}%
+      }
+      \strng{namehash}{b9378d715b199ac19f3c69e06b87d8f9}
+      \strng{fullhash}{6b4d3a1eabd7c67c2b6cef7850a244fc}
+      \strng{fullhashraw}{6b4d3a1eabd7c67c2b6cef7850a244fc}
+      \strng{bibnamehash}{b9378d715b199ac19f3c69e06b87d8f9}
+      \strng{authorbibnamehash}{b9378d715b199ac19f3c69e06b87d8f9}
+      \strng{authornamehash}{b9378d715b199ac19f3c69e06b87d8f9}
+      \strng{authorfullhash}{6b4d3a1eabd7c67c2b6cef7850a244fc}
+      \strng{authorfullhashraw}{6b4d3a1eabd7c67c2b6cef7850a244fc}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Ibm Infosphere Streams: Accelerating Deployments with Analytic Accelerators}
+      \field{year}{2014}
+    \endentry
+    \entry{kinesis}{online}{}{}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Amazon Web Services, Inc.}
+      \field{title}{Data Stream Processing - Amazon Kinesis - AWS}
+      \field{urlday}{11}
+      \field{urlmonth}{11}
+      \field{urlyear}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb http://aws.amazon.com/kinesis/
+      \endverb
+      \verb{url}
+      \verb http://aws.amazon.com/kinesis/
+      \endverb
+    \endentry
+    \entry{douglas1973algorithms}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=d3ab99885e91e4dc39c86696958ca0b1}{%
+           family={Douglas},
+           familyi={D\bibinitperiod},
+           given={David\bibnamedelima H},
+           giveni={D\bibinitperiod\bibinitdelim H\bibinitperiod}}}%
+        {{hash=5fb7b35000c2c42194bed2d4d13d63ce}{%
+           family={Peucker},
+           familyi={P\bibinitperiod},
+           given={Thomas\bibnamedelima K},
+           giveni={T\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {University of Toronto Press}%
+      }
+      \strng{namehash}{647d805984d7721a85dcba09a75545b7}
+      \strng{fullhash}{647d805984d7721a85dcba09a75545b7}
+      \strng{fullhashraw}{647d805984d7721a85dcba09a75545b7}
+      \strng{bibnamehash}{647d805984d7721a85dcba09a75545b7}
+      \strng{authorbibnamehash}{647d805984d7721a85dcba09a75545b7}
+      \strng{authornamehash}{647d805984d7721a85dcba09a75545b7}
+      \strng{authorfullhash}{647d805984d7721a85dcba09a75545b7}
+      \strng{authorfullhashraw}{647d805984d7721a85dcba09a75545b7}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Cartographica: the international journal for geographic information and geovisualization}
+      \field{number}{2}
+      \field{title}{Algorithms for the reduction of the number of points required to represent a digitized line or its caricature}
+      \field{volume}{10}
+      \field{year}{1973}
+      \field{pages}{112\bibrangedash 122}
+      \range{pages}{11}
+    \endentry
+    \entry{garofalakis2016data}{book}{}{}
+      \name{author}{3}{}{%
+        {{hash=24c4048315c3ac8a7ea43d047ba12ff0}{%
+           family={Garofalakis},
+           familyi={G\bibinitperiod},
+           given={Minos},
+           giveni={M\bibinitperiod}}}%
+        {{hash=89173e109d33053942397c24c048f5c2}{%
+           family={Gehrke},
+           familyi={G\bibinitperiod},
+           given={Johannes},
+           giveni={J\bibinitperiod}}}%
+        {{hash=5f6bcd33f186294619c1e79faa97cd57}{%
+           family={Rastogi},
+           familyi={R\bibinitperiod},
+           given={Rajeev},
+           giveni={R\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{9566a1c71272e5136f53e8e63c0a7775}
+      \strng{fullhash}{9566a1c71272e5136f53e8e63c0a7775}
+      \strng{fullhashraw}{9566a1c71272e5136f53e8e63c0a7775}
+      \strng{bibnamehash}{9566a1c71272e5136f53e8e63c0a7775}
+      \strng{authorbibnamehash}{9566a1c71272e5136f53e8e63c0a7775}
+      \strng{authornamehash}{9566a1c71272e5136f53e8e63c0a7775}
+      \strng{authorfullhash}{9566a1c71272e5136f53e8e63c0a7775}
+      \strng{authorfullhashraw}{9566a1c71272e5136f53e8e63c0a7775}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Data stream management: processing high-speed data streams}
+      \field{year}{2016}
+    \endentry
+    \entry{GfG_2023}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=8d4bcf381709f0afa85ff2523330209d}{%
+           family={GfG},
+           familyi={G\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {GeeksforGeeks}%
+      }
+      \strng{namehash}{8d4bcf381709f0afa85ff2523330209d}
+      \strng{fullhash}{8d4bcf381709f0afa85ff2523330209d}
+      \strng{fullhashraw}{8d4bcf381709f0afa85ff2523330209d}
+      \strng{bibnamehash}{8d4bcf381709f0afa85ff2523330209d}
+      \strng{authorbibnamehash}{8d4bcf381709f0afa85ff2523330209d}
+      \strng{authornamehash}{8d4bcf381709f0afa85ff2523330209d}
+      \strng{authorfullhash}{8d4bcf381709f0afa85ff2523330209d}
+      \strng{authorfullhashraw}{8d4bcf381709f0afa85ff2523330209d}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{GeeksforGeeks}
+      \field{month}{4}
+      \field{title}{C program to implement min heap}
+      \field{year}{2023}
+      \verb{urlraw}
+      \verb https://www.geeksforgeeks.org/c-program-to-implement-min-heap/
+      \endverb
+      \verb{url}
+      \verb https://www.geeksforgeeks.org/c-program-to-implement-min-heap/
+      \endverb
+    \endentry
+    \entry{guting2000foundation}{article}{}{}
+      \name{author}{7}{}{%
+        {{hash=d05d02029623c3a0cb454e8f0029c8c8}{%
+           family={Güting},
+           familyi={G\bibinitperiod},
+           given={Ralf\bibnamedelima Hartmut},
+           giveni={R\bibinitperiod\bibinitdelim H\bibinitperiod}}}%
+        {{hash=1665fd3d6173052a7cbccf4a76da3c31}{%
+           family={Böhlen},
+           familyi={B\bibinitperiod},
+           given={Michael\bibnamedelima H},
+           giveni={M\bibinitperiod\bibinitdelim H\bibinitperiod}}}%
+        {{hash=92e5385c41432644fcded54d78d51b7d}{%
+           family={Erwig},
+           familyi={E\bibinitperiod},
+           given={Martin},
+           giveni={M\bibinitperiod}}}%
+        {{hash=a56b208b85a628195d8329bc04d490d2}{%
+           family={Jensen},
+           familyi={J\bibinitperiod},
+           given={Christian\bibnamedelima S},
+           giveni={C\bibinitperiod\bibinitdelim S\bibinitperiod}}}%
+        {{hash=3ba76adb634b4ec0fe33b9e1697939d5}{%
+           family={Lorentzos},
+           familyi={L\bibinitperiod},
+           given={Nikos\bibnamedelima A},
+           giveni={N\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+        {{hash=c7ee90d44e0945dac76afbfad424b00c}{%
+           family={Schneider},
+           familyi={S\bibinitperiod},
+           given={Markus},
+           giveni={M\bibinitperiod}}}%
+        {{hash=a325a5cf58bcb9d372a4bcab568fc2c5}{%
+           family={Vazirgiannis},
+           familyi={V\bibinitperiod},
+           given={Michalis},
+           giveni={M\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {ACM New York, NY, USA}%
+      }
+      \strng{namehash}{7ed59141c71190cfd4378848c88d7199}
+      \strng{fullhash}{de3087fa0a7cfc1ad5bc7ab59dafc254}
+      \strng{fullhashraw}{de3087fa0a7cfc1ad5bc7ab59dafc254}
+      \strng{bibnamehash}{7ed59141c71190cfd4378848c88d7199}
+      \strng{authorbibnamehash}{7ed59141c71190cfd4378848c88d7199}
+      \strng{authornamehash}{7ed59141c71190cfd4378848c88d7199}
+      \strng{authorfullhash}{de3087fa0a7cfc1ad5bc7ab59dafc254}
+      \strng{authorfullhashraw}{de3087fa0a7cfc1ad5bc7ab59dafc254}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{ACM Transactions on Database Systems (TODS)}
+      \field{number}{1}
+      \field{title}{A foundation for representing and querying moving objects}
+      \field{volume}{25}
+      \field{year}{2000}
+      \field{pages}{1\bibrangedash 42}
+      \range{pages}{42}
+    \endentry
+    \entry{hershberger1994n}{inproceedings}{}{}
+      \name{author}{2}{}{%
+        {{hash=7ad4fa6268daceae6e27f2b3acbfee51}{%
+           family={Hershberger},
+           familyi={H\bibinitperiod},
+           given={John},
+           giveni={J\bibinitperiod}}}%
+        {{hash=12f688fcdadc80455f0b4718dd0f7548}{%
+           family={Snoeyink},
+           familyi={S\bibinitperiod},
+           given={Jack},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{4042daf304185a0b01093ee723da0029}
+      \strng{fullhash}{4042daf304185a0b01093ee723da0029}
+      \strng{fullhashraw}{4042daf304185a0b01093ee723da0029}
+      \strng{bibnamehash}{4042daf304185a0b01093ee723da0029}
+      \strng{authorbibnamehash}{4042daf304185a0b01093ee723da0029}
+      \strng{authornamehash}{4042daf304185a0b01093ee723da0029}
+      \strng{authorfullhash}{4042daf304185a0b01093ee723da0029}
+      \strng{authorfullhashraw}{4042daf304185a0b01093ee723da0029}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the tenth annual symposium on Computational geometry}
+      \field{title}{An O (n log n) implementation of the Douglas-Peucker algorithm for line simplification}
+      \field{year}{1994}
+      \field{pages}{383\bibrangedash 384}
+      \range{pages}{2}
+    \endentry
+    \entry{ibmdoc}{online}{}{}
+      \field{sortinit}{I}
+      \field{sortinithash}{8d291c51ee89b6cd86bf5379f0b151d8}
+      \field{labeltitlesource}{title}
+      \field{title}{IBM Documentation}
+      \field{urlday}{11}
+      \field{urlmonth}{11}
+      \field{urlyear}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.ibm.com/docs/en/streams/4.1.0?topic=welcome-introduction-infosphere-streams
+      \endverb
+      \verb{url}
+      \verb https://www.ibm.com/docs/en/streams/4.1.0?topic=welcome-introduction-infosphere-streams
+      \endverb
+    \endentry
+    \entry{IMAI198631}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=2e30648fa24550c2f9c85452e787ca78}{%
+           family={Imai},
+           familyi={I\bibinitperiod},
+           given={Hiroshi},
+           giveni={H\bibinitperiod}}}%
+        {{hash=298f252829eea762a2632ada12e41dd0}{%
+           family={Iri},
+           familyi={I\bibinitperiod},
+           given={Masao},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{43ddfec3e9d7d2e670a15063ce909af6}
+      \strng{fullhash}{43ddfec3e9d7d2e670a15063ce909af6}
+      \strng{fullhashraw}{43ddfec3e9d7d2e670a15063ce909af6}
+      \strng{bibnamehash}{43ddfec3e9d7d2e670a15063ce909af6}
+      \strng{authorbibnamehash}{43ddfec3e9d7d2e670a15063ce909af6}
+      \strng{authornamehash}{43ddfec3e9d7d2e670a15063ce909af6}
+      \strng{authorfullhash}{43ddfec3e9d7d2e670a15063ce909af6}
+      \strng{authorfullhashraw}{43ddfec3e9d7d2e670a15063ce909af6}
+      \field{sortinit}{I}
+      \field{sortinithash}{8d291c51ee89b6cd86bf5379f0b151d8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{In cartography, computer graphics, pattern recognition, etc., we often encounter the problem of approximating a given finer piecewise linear curve by another coarser piecewise linear curve consisting of fewer line segments. In connection with this problem, a number of papers have been published, but it seems that the problem itself has not been well modelled from the standpoint of specific applications, nor has a nice algorithm, nice from the computational-geometric viewpoint, been proposed. In the present paper, we first consider (i) the problem of approximating a piecewise linear curve by another whose vertices are a subset of the vertices of the former, and show that an optimum solution of this problem can be found in a polynomial time. We also mention recent results on related problems by several researchers including the authors themselves. We then pose (ii) a problem of covering a sequence of n points by a minimum number of rectangles with a given width, and present an O(n long n)-time algorithm by making use of some fundamental established techniques in computational geometry. Furthermore, an O(mn(logn)2)-time algorithm is presented for finding the minimum width w such that a sequence of n points can be covered by at most m rectangles with width w. Finally, (iii) several related problems are discussed.}
+      \field{issn}{0734-189X}
+      \field{journaltitle}{Computer Vision, Graphics, and Image Processing}
+      \field{number}{1}
+      \field{title}{Computational-geometric methods for polygonal approximations of a curve}
+      \field{volume}{36}
+      \field{year}{1986}
+      \field{pages}{31\bibrangedash 41}
+      \range{pages}{11}
+      \verb{doi}
+      \verb https://doi.org/10.1016/S0734-189X(86)80027-5
+      \endverb
+      \verb{urlraw}
+      \verb https://www.sciencedirect.com/science/article/pii/S0734189X86800275
+      \endverb
+      \verb{url}
+      \verb https://www.sciencedirect.com/science/article/pii/S0734189X86800275
+      \endverb
+    \endentry
+    \entry{jain2014learning}{book}{}{}
+      \name{author}{2}{}{%
+        {{hash=2de151a1ac0a17aa53428d3dfd3df296}{%
+           family={Jain},
+           familyi={J\bibinitperiod},
+           given={Ankit},
+           giveni={A\bibinitperiod}}}%
+        {{hash=4ad94b81ab445a2a9cd13aedb2809c7b}{%
+           family={Nalya},
+           familyi={N\bibinitperiod},
+           given={Anand},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Packt Publishing}%
+      }
+      \strng{namehash}{abac2841795b3f661607aa545fb17f52}
+      \strng{fullhash}{abac2841795b3f661607aa545fb17f52}
+      \strng{fullhashraw}{abac2841795b3f661607aa545fb17f52}
+      \strng{bibnamehash}{abac2841795b3f661607aa545fb17f52}
+      \strng{authorbibnamehash}{abac2841795b3f661607aa545fb17f52}
+      \strng{authornamehash}{abac2841795b3f661607aa545fb17f52}
+      \strng{authorfullhash}{abac2841795b3f661607aa545fb17f52}
+      \strng{authorfullhashraw}{abac2841795b3f661607aa545fb17f52}
+      \field{sortinit}{J}
+      \field{sortinithash}{b2f54a9081ace9966a7cb9413811edb4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Learning storm}
+      \field{year}{2014}
+    \endentry
+    \entry{kerkhof2022algorithmic}{thesis}{}{}
+      \name{author}{1}{}{%
+        {{hash=14839f6b659249feaf3e1fbd528e5da5}{%
+           family={Kerkhof},
+           familyi={K\bibinitperiod},
+           given={Mees\bibnamedelimb van\bibnamedelima de},
+           giveni={M\bibinitperiod\bibinitdelim v\bibinitperiod\bibinitdelim d\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {Utrecht University}%
+      }
+      \strng{namehash}{14839f6b659249feaf3e1fbd528e5da5}
+      \strng{fullhash}{14839f6b659249feaf3e1fbd528e5da5}
+      \strng{fullhashraw}{14839f6b659249feaf3e1fbd528e5da5}
+      \strng{bibnamehash}{14839f6b659249feaf3e1fbd528e5da5}
+      \strng{authorbibnamehash}{14839f6b659249feaf3e1fbd528e5da5}
+      \strng{authornamehash}{14839f6b659249feaf3e1fbd528e5da5}
+      \strng{authorfullhash}{14839f6b659249feaf3e1fbd528e5da5}
+      \strng{authorfullhashraw}{14839f6b659249feaf3e1fbd528e5da5}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Algorithmic and Experimental Results on Trajectory Data Processing}
+      \field{type}{phdthesis}
+      \field{year}{2022}
+    \endentry
+    \entry{marquez2015postgis}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=d86a3e1e01a2b4073604aa8c57fe4c3d}{%
+           family={Marquez},
+           familyi={M\bibinitperiod},
+           given={Angel},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Packt Publishing Birmingham}%
+      }
+      \strng{namehash}{d86a3e1e01a2b4073604aa8c57fe4c3d}
+      \strng{fullhash}{d86a3e1e01a2b4073604aa8c57fe4c3d}
+      \strng{fullhashraw}{d86a3e1e01a2b4073604aa8c57fe4c3d}
+      \strng{bibnamehash}{d86a3e1e01a2b4073604aa8c57fe4c3d}
+      \strng{authorbibnamehash}{d86a3e1e01a2b4073604aa8c57fe4c3d}
+      \strng{authornamehash}{d86a3e1e01a2b4073604aa8c57fe4c3d}
+      \strng{authorfullhash}{d86a3e1e01a2b4073604aa8c57fe4c3d}
+      \strng{authorfullhashraw}{d86a3e1e01a2b4073604aa8c57fe4c3d}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{PostGIS essentials}
+      \field{year}{2015}
+    \endentry
+    \entry{muckell2014compression}{article}{}{}
+      \name{author}{5}{}{%
+        {{hash=5d6e206a74c41fba81824274aa333c8c}{%
+           family={Muckell},
+           familyi={M\bibinitperiod},
+           given={Jonathan},
+           giveni={J\bibinitperiod}}}%
+        {{hash=522e593077ad2460ae9fa877ebcfbc67}{%
+           family={Olsen},
+           familyi={O\bibinitperiod},
+           given={Paul\bibnamedelima W},
+           giveni={P\bibinitperiod\bibinitdelim W\bibinitperiod}}}%
+        {{hash=71611c7ceb3b39577a911b39cb5d2519}{%
+           family={Hwang},
+           familyi={H\bibinitperiod},
+           given={Jeong-Hyon},
+           giveni={J\bibinithyphendelim H\bibinitperiod}}}%
+        {{hash=eb9ab74a847c1476b640938f58c8c638}{%
+           family={Lawson},
+           familyi={L\bibinitperiod},
+           given={Catherine\bibnamedelima T},
+           giveni={C\bibinitperiod\bibinitdelim T\bibinitperiod}}}%
+        {{hash=050953a1fc96501790e8dfce575e4dc4}{%
+           family={Ravi},
+           familyi={R\bibinitperiod},
+           given={SS},
+           giveni={S\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{3d7f44733e20c5a68eec228af4fd95c3}
+      \strng{fullhash}{da75ab22231dfce73a37b112263a19ed}
+      \strng{fullhashraw}{da75ab22231dfce73a37b112263a19ed}
+      \strng{bibnamehash}{3d7f44733e20c5a68eec228af4fd95c3}
+      \strng{authorbibnamehash}{3d7f44733e20c5a68eec228af4fd95c3}
+      \strng{authornamehash}{3d7f44733e20c5a68eec228af4fd95c3}
+      \strng{authorfullhash}{da75ab22231dfce73a37b112263a19ed}
+      \strng{authorfullhashraw}{da75ab22231dfce73a37b112263a19ed}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{GeoInformatica}
+      \field{title}{Compression of trajectory data: a comprehensive evaluation and new approach}
+      \field{volume}{18}
+      \field{year}{2014}
+      \field{pages}{435\bibrangedash 460}
+      \range{pages}{26}
+    \endentry
+    \entry{muller2007dynamic}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=80b6d841b668c1c8aa2744a675afd39e}{%
+           family={Müller},
+           familyi={M\bibinitperiod},
+           given={Meinard},
+           giveni={M\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{80b6d841b668c1c8aa2744a675afd39e}
+      \strng{fullhash}{80b6d841b668c1c8aa2744a675afd39e}
+      \strng{fullhashraw}{80b6d841b668c1c8aa2744a675afd39e}
+      \strng{bibnamehash}{80b6d841b668c1c8aa2744a675afd39e}
+      \strng{authorbibnamehash}{80b6d841b668c1c8aa2744a675afd39e}
+      \strng{authornamehash}{80b6d841b668c1c8aa2744a675afd39e}
+      \strng{authorfullhash}{80b6d841b668c1c8aa2744a675afd39e}
+      \strng{authorfullhashraw}{80b6d841b668c1c8aa2744a675afd39e}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Information retrieval for music and motion}
+      \field{title}{Dynamic time warping}
+      \field{year}{2007}
+      \field{pages}{69\bibrangedash 84}
+      \range{pages}{16}
+    \endentry
+    \entry{namiot2015big}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=c9927f01aa951aa5a70de69f114f95de}{%
+           family={Namiot},
+           familyi={N\bibinitperiod},
+           given={Dmitry},
+           giveni={D\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Лаборатория Открытых Информационных Технологий факультета ВМК МГУ им. МВ~…}%
+      }
+      \strng{namehash}{c9927f01aa951aa5a70de69f114f95de}
+      \strng{fullhash}{c9927f01aa951aa5a70de69f114f95de}
+      \strng{fullhashraw}{c9927f01aa951aa5a70de69f114f95de}
+      \strng{bibnamehash}{c9927f01aa951aa5a70de69f114f95de}
+      \strng{authorbibnamehash}{c9927f01aa951aa5a70de69f114f95de}
+      \strng{authornamehash}{c9927f01aa951aa5a70de69f114f95de}
+      \strng{authorfullhash}{c9927f01aa951aa5a70de69f114f95de}
+      \strng{authorfullhashraw}{c9927f01aa951aa5a70de69f114f95de}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{International Journal of Open Information Technologies}
+      \field{number}{8}
+      \field{title}{On big data stream processing}
+      \field{volume}{3}
+      \field{year}{2015}
+      \field{pages}{48\bibrangedash 51}
+      \range{pages}{4}
+    \endentry
+    \entry{postgresql}{misc}{}{}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{PostgreSQL Documentation}
+      \field{month}{11}
+      \field{title}{S1.  What Is PostgreSQL?_2023}
+      \field{urlday}{11}
+      \field{urlmonth}{11}
+      \field{urlyear}{2023}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.postgresql.org/docs/16/intro-whatis.html
+      \endverb
+      \verb{url}
+      \verb https://www.postgresql.org/docs/16/intro-whatis.html
+      \endverb
+    \endentry
+    \entry{samza}{online}{}{}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labeltitlesource}{title}
+      \field{title}{Samza}
+      \field{urlday}{11}
+      \field{urlmonth}{11}
+      \field{urlyear}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://samza.apache.org/
+      \endverb
+      \verb{url}
+      \verb https://samza.apache.org/
+      \endverb
+    \endentry
+    \entry{shoro2015big}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=a044f7ca2dbfb817b4814e7b17403db9}{%
+           family={Shoro},
+           familyi={S\bibinitperiod},
+           given={Abdul\bibnamedelima Ghaffar},
+           giveni={A\bibinitperiod\bibinitdelim G\bibinitperiod}}}%
+        {{hash=237afa8e2f477ed639cf574dd9a45d83}{%
+           family={Soomro},
+           familyi={S\bibinitperiod},
+           given={Tariq\bibnamedelima Rahim},
+           giveni={T\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+      }
+      \strng{namehash}{fe93a46194798e6dcc4b04d30a8f1d80}
+      \strng{fullhash}{fe93a46194798e6dcc4b04d30a8f1d80}
+      \strng{fullhashraw}{fe93a46194798e6dcc4b04d30a8f1d80}
+      \strng{bibnamehash}{fe93a46194798e6dcc4b04d30a8f1d80}
+      \strng{authorbibnamehash}{fe93a46194798e6dcc4b04d30a8f1d80}
+      \strng{authornamehash}{fe93a46194798e6dcc4b04d30a8f1d80}
+      \strng{authorfullhash}{fe93a46194798e6dcc4b04d30a8f1d80}
+      \strng{authorfullhashraw}{fe93a46194798e6dcc4b04d30a8f1d80}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Global Journal of Computer Science and Technology: C Software \& Data Engineering}
+      \field{number}{1}
+      \field{title}{Big data analysis: Ap spark perspective}
+      \field{volume}{15}
+      \field{year}{2015}
+      \field{pages}{7\bibrangedash 14}
+      \range{pages}{8}
+    \endentry
+    \entry{spark}{online}{}{}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labeltitlesource}{title}
+      \field{title}{Spark Streaming - Spark 3.5.0 Documentation}
+      \field{urlday}{11}
+      \field{urlmonth}{11}
+      \field{urlyear}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://spark.apache.org/docs/latest/streaming-programming-guide.html
+      \endverb
+      \verb{url}
+      \verb https://spark.apache.org/docs/latest/streaming-programming-guide.html
+      \endverb
+    \endentry
+    \entry{Wähner_2014}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=f81dfa1aeffb6a002146246a007db4cc}{%
+           family={Wähner},
+           familyi={W\bibinitperiod},
+           given={Kai},
+           giveni={K\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {InfoQ}%
+      }
+      \strng{namehash}{f81dfa1aeffb6a002146246a007db4cc}
+      \strng{fullhash}{f81dfa1aeffb6a002146246a007db4cc}
+      \strng{fullhashraw}{f81dfa1aeffb6a002146246a007db4cc}
+      \strng{bibnamehash}{f81dfa1aeffb6a002146246a007db4cc}
+      \strng{authorbibnamehash}{f81dfa1aeffb6a002146246a007db4cc}
+      \strng{authornamehash}{f81dfa1aeffb6a002146246a007db4cc}
+      \strng{authorfullhash}{f81dfa1aeffb6a002146246a007db4cc}
+      \strng{authorfullhashraw}{f81dfa1aeffb6a002146246a007db4cc}
+      \field{sortinit}{v}
+      \field{sortinithash}{afb52128e5b4dc4b843768c0113d673b}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{InfoQ}
+      \field{month}{9}
+      \field{title}{Real-time stream processing as game changer in a big data world with Hadoop and Data Warehouse}
+      \field{year}{2014}
+      \verb{urlraw}
+      \verb https://www.infoq.com/articles/stream-processing-hadoop/
+      \endverb
+      \verb{url}
+      \verb https://www.infoq.com/articles/stream-processing-hadoop/
+      \endverb
+    \endentry
+    \entry{Kafka}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=1eb7552c6ea712a30e5b05e6f943e688}{%
+           family={Kreps},
+           familyi={K\bibinitperiod},
+           given={Jay},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{1eb7552c6ea712a30e5b05e6f943e688}
+      \strng{fullhash}{1eb7552c6ea712a30e5b05e6f943e688}
+      \strng{fullhashraw}{1eb7552c6ea712a30e5b05e6f943e688}
+      \strng{bibnamehash}{1eb7552c6ea712a30e5b05e6f943e688}
+      \strng{authorbibnamehash}{1eb7552c6ea712a30e5b05e6f943e688}
+      \strng{authornamehash}{1eb7552c6ea712a30e5b05e6f943e688}
+      \strng{authorfullhash}{1eb7552c6ea712a30e5b05e6f943e688}
+      \strng{authorfullhashraw}{1eb7552c6ea712a30e5b05e6f943e688}
+      \field{sortinit}{v}
+      \field{sortinithash}{afb52128e5b4dc4b843768c0113d673b}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Confluent}
+      \field{title}{Putting apache kafka to use: A practical guide to building an event streaming platform (part 1)}
+      \field{urlday}{11}
+      \field{urlmonth}{11}
+      \field{urlyear}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.confluent.io/blog/event-streaming-platform-1/
+      \endverb
+      \verb{url}
+      \verb https://www.confluent.io/blog/event-streaming-platform-1/
+      \endverb
+    \endentry
+    \entry{van2017extensive}{thesis}{}{}
+      \true{moreauthor}
+      \true{morelabelname}
+      \name{author}{1}{}{%
+        {{hash=60296d90eb9daa6100928f2252cbf337}{%
+           family={Van\bibnamedelima Hunnik},
+           familyi={V\bibinitperiod\bibinitdelim H\bibinitperiod},
+           given={RR},
+           giveni={R\bibinitperiod}}}%
+      }
+      \strng{namehash}{d1ba4ca79b8b39393222cfafa5497fcf}
+      \strng{fullhash}{d1ba4ca79b8b39393222cfafa5497fcf}
+      \strng{fullhashraw}{d1ba4ca79b8b39393222cfafa5497fcf}
+      \strng{bibnamehash}{d1ba4ca79b8b39393222cfafa5497fcf}
+      \strng{authorbibnamehash}{d1ba4ca79b8b39393222cfafa5497fcf}
+      \strng{authornamehash}{d1ba4ca79b8b39393222cfafa5497fcf}
+      \strng{authorfullhash}{d1ba4ca79b8b39393222cfafa5497fcf}
+      \strng{authorfullhashraw}{d1ba4ca79b8b39393222cfafa5497fcf}
+      \field{sortinit}{V}
+      \field{sortinithash}{afb52128e5b4dc4b843768c0113d673b}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Extensive comparison of trajectory simplification algorithms}
+      \field{type}{mathesis}
+      \field{year}{2017}
+    \endentry
+    \entry{doi:10.1179/000870493786962263}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=4a86a4dbbf4009c81726f7a3703c6249}{%
+           family={Visvalingam},
+           familyi={V\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+        {{hash=6c0e01ec58176663d41fe3b0ccc47de5}{%
+           family={Whyatt},
+           familyi={W\bibinitperiod},
+           given={J.\bibnamedelimi D.},
+           giveni={J\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Taylor & Francis}%
+      }
+      \strng{namehash}{7e11d82ec0f031e0ee941d9df01eb5ff}
+      \strng{fullhash}{7e11d82ec0f031e0ee941d9df01eb5ff}
+      \strng{fullhashraw}{7e11d82ec0f031e0ee941d9df01eb5ff}
+      \strng{bibnamehash}{7e11d82ec0f031e0ee941d9df01eb5ff}
+      \strng{authorbibnamehash}{7e11d82ec0f031e0ee941d9df01eb5ff}
+      \strng{authornamehash}{7e11d82ec0f031e0ee941d9df01eb5ff}
+      \strng{authorfullhash}{7e11d82ec0f031e0ee941d9df01eb5ff}
+      \strng{authorfullhashraw}{7e11d82ec0f031e0ee941d9df01eb5ff}
+      \field{sortinit}{V}
+      \field{sortinithash}{afb52128e5b4dc4b843768c0113d673b}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{The Cartographic Journal}
+      \field{number}{1}
+      \field{title}{Line generalisation by repeated elimination of points}
+      \field{volume}{30}
+      \field{year}{1993}
+      \field{pages}{46\bibrangedash 51}
+      \range{pages}{6}
+      \verb{doi}
+      \verb 10.1179/000870493786962263
+      \endverb
+      \verb{eprint}
+      \verb https://www.tandfonline.com/doi/pdf/10.1179/000870493786962263
+      \endverb
+      \verb{urlraw}
+      \verb https://www.tandfonline.com/doi/abs/10.1179/000870493786962263
+      \endverb
+      \verb{url}
+      \verb https://www.tandfonline.com/doi/abs/10.1179/000870493786962263
+      \endverb
+    \endentry
+    \entry{flume}{online}{}{}
+      \field{sortinit}{W}
+      \field{sortinithash}{4315d78024d0cea9b57a0c6f0e35ed0d}
+      \field{labeltitlesource}{title}
+      \field{title}{Welcome to Apache Flume — Apache Flume}
+      \field{urlday}{11}
+      \field{urlmonth}{11}
+      \field{urlyear}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://flume.apache.org/
+      \endverb
+      \verb{url}
+      \verb https://flume.apache.org/
+      \endverb
+    \endentry
+    \entry{zimanyi2019mobilitydb}{inproceedings}{}{}
+      \name{author}{4}{}{%
+        {{hash=bc2353394836cede28eede7a1fc7b318}{%
+           family={Zimányi},
+           familyi={Z\bibinitperiod},
+           given={Esteban},
+           giveni={E\bibinitperiod}}}%
+        {{hash=23a82b098b2acb71aa42b4bc7eeeb82e}{%
+           family={Sakr},
+           familyi={S\bibinitperiod},
+           given={Mahmoud},
+           giveni={M\bibinitperiod}}}%
+        {{hash=1908420287ba914c54d3f1b4101c6de4}{%
+           family={Lesuisse},
+           familyi={L\bibinitperiod},
+           given={Arthur},
+           giveni={A\bibinitperiod}}}%
+        {{hash=eb9cba5f4a594bfeeef10d7f6aa2f477}{%
+           family={Bakli},
+           familyi={B\bibinitperiod},
+           given={Mohamed},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{61b129be2f0f446820b036b55d0244f3}
+      \strng{fullhash}{578d26b43b358f980b24624362a6a638}
+      \strng{fullhashraw}{578d26b43b358f980b24624362a6a638}
+      \strng{bibnamehash}{61b129be2f0f446820b036b55d0244f3}
+      \strng{authorbibnamehash}{61b129be2f0f446820b036b55d0244f3}
+      \strng{authornamehash}{61b129be2f0f446820b036b55d0244f3}
+      \strng{authorfullhash}{578d26b43b358f980b24624362a6a638}
+      \strng{authorfullhashraw}{578d26b43b358f980b24624362a6a638}
+      \field{sortinit}{Z}
+      \field{sortinithash}{96892c0b0a36bb8557c40c49813d48b3}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 16th International Symposium on Spatial and Temporal Databases}
+      \field{title}{MobilityDB: A mainstream moving object database system}
+      \field{year}{2019}
+      \field{pages}{206\bibrangedash 209}
+      \range{pages}{4}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

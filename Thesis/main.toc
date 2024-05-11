@@ -1,0 +1,61 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}Introduction}{9}{chapter.1}%
+\contentsline {chapter}{\numberline {2}State of the Art}{10}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Error Metrics}{10}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Hausdorff Distance}{10}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Frechet Distance}{11}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}Dynamic Time Warping Distance}{12}{subsection.2.1.3}%
+\contentsline {section}{\numberline {2.2}Line Simplification Algorithm}{12}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Douglas-Peucker Algorithm}{13}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Visvalingam-Whyatt Algorithm}{13}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Imai-Iri}{14}{subsection.2.2.3}%
+\contentsline {section}{\numberline {2.3}Streaming Process Algorithm}{15}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Data-Stream}{15}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Stream Processing}{16}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Technologies}{17}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.4}Streaming for Line Simplification}{19}{subsection.2.3.4}%
+\contentsline {paragraph}{Formalization}{20}{paragraph*.5}%
+\contentsline {paragraph}{Evaluation}{21}{paragraph*.6}%
+\contentsline {paragraph}{Algorithm}{21}{paragraph*.7}%
+\contentsline {subsection}{\numberline {2.3.5}Moving Object Database}{22}{subsection.2.3.5}%
+\contentsline {paragraph}{PostgreSQL}{22}{paragraph*.8}%
+\contentsline {paragraph}{PostGIS}{23}{paragraph*.9}%
+\contentsline {paragraph}{MobilityDB}{23}{paragraph*.10}%
+\contentsline {chapter}{\numberline {3}Design}{24}{chapter.3}%
+\contentsline {section}{\numberline {3.1}SQUISH-E}{24}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Algorithm Pseudo-Code}{24}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Variables}{26}{subsection.3.1.2}%
+\contentsline {paragraph}{Map}{26}{paragraph*.11}%
+\contentsline {subparagraph}{Method}{26}{subparagraph*.12}%
+\contentsline {paragraph}{PriorityQueue}{26}{paragraph*.13}%
+\contentsline {subparagraph}{Method}{26}{subparagraph*.14}%
+\contentsline {chapter}{\numberline {4}Implementation}{27}{chapter.4}%
+\contentsline {section}{\numberline {4.1}SQUISH-E Implementation}{27}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Algorithm 1}{27}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Algorithm 2}{28}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}Algorithm 3}{29}{subsection.4.1.3}%
+\contentsline {section}{\numberline {4.2}Variables Implementation}{29}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Map}{29}{subsection.4.2.1}%
+\contentsline {paragraph}{Method}{30}{paragraph*.15}%
+\contentsline {paragraph}{Discussion}{31}{paragraph*.16}%
+\contentsline {subsection}{\numberline {4.2.2}PriorityQueue}{31}{subsection.4.2.2}%
+\contentsline {paragraph}{Method}{31}{paragraph*.17}%
+\contentsline {paragraph}{Discussion}{34}{paragraph*.18}%
+\contentsline {section}{\numberline {4.3}Postgres Implementation}{34}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}SQL Code}{34}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Example}{34}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}Result}{35}{subsection.4.3.3}%
+\contentsline {subsection}{\numberline {4.3.4}Performance}{35}{subsection.4.3.4}%
+\contentsline {paragraph}{Comparison with C}{35}{paragraph*.19}%
+\contentsline {subsection}{\numberline {4.3.5}Precision}{36}{subsection.4.3.5}%
+\contentsline {paragraph}{Trajectory 1}{36}{paragraph*.20}%
+\contentsline {paragraph}{Comparison With C}{38}{paragraph*.21}%
+\contentsline {paragraph}{Trajectory 1}{38}{paragraph*.22}%
+\contentsline {chapter}{\numberline {5}Comparison}{39}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Douglas Peucker}{39}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Performance}{39}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Similarity}{39}{subsection.5.1.2}%
+\contentsline {section}{\numberline {5.2}MinDist}{39}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Performance}{39}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Similarity}{39}{subsection.5.2.2}%
+\contentsline {chapter}{\numberline {6}Conclusion}{42}{chapter.6}%

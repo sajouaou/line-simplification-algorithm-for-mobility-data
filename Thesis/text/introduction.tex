@@ -1,16 +1,27 @@
 
 \chapter{Introduction}
-In the domain of cartography, the challenge of simplifying complex geographical data for clear and effective representation has grown increasingly important. As our reliance on automated cartography powered by computer technologies continues to expand, the demand for efficient algorithms becomes ever more critical, particularly in the realms of feature extraction and simplification. Among these algorithms, the Douglas-Peucker line simplification method has remained a foundational tool for representing linear features.
 
-This research is dedicated to extending the frontiers of cartographic representation, with a primary focus on POSTGIS and MobilityDB \cite{zimanyi2019mobilitydb}, by transforming the Douglas-Peucker algorithm into a streaming paradigm. Unlike the traditional application of Douglas-Peucker on static datasets, a streaming algorithm processes data dynamically and continuously, making it ideally suited for real-time or rapidly evolving input. This dynamic adaptability is crucial in modern applications such as GPS navigation, real-time geospatial data analysis, and the constant monitoring of geospatial data streams, all of which are integral to the POSTGIS and MobilityDB ecosystem.
 
-In this study, our paramount objective is the simplification of line representations of mobility data within the POSTGIS and MobilityDB environment. This entails processing an ordered set of n+1 points in a plane, forming a polygonal path comprised of line segments, and deriving a streamlined path with fewer segments while retaining the essential characteristics of the original path. The key distinction here is that our research focuses on the streaming nature of the data, aligning seamlessly with the principles and capabilities of POSTGIS and MobilityDB.
+In cartography, the need to simplify complex geographical data for clear and efficient representation is becoming increasingly important. The rise of automated cartography driven by computer technologies has heightened the demand for efficient algorithms, especially in the areas of feature extraction and simplification.\\
 
-An underlying assumption for this work is the simplicity of the provided path, with an absence of self-intersections. The presence of self-intersections in cartographic data often indicates issues related to digitization errors. While we aspire to maintain the simplicity of the resultant approximation, the question of computational feasibility within the POSTGIS and MobilityDB environment remains a central theme.
 
-The concept of "representing well" encompasses a variety of dimensions, including maintaining proximity between the original and simplified paths, minimizing the area between them, integrating critical points from the original path into the simplified version, and optimizing other measures of curve discrepancy. This study builds upon the established foundations of the Douglas-Peucker algorithm and pioneers the integration of stream data processing into the POSTGIS and MobilityDB framework. This innovation opens new horizons in real-time and dynamic cartographic applications, with a key focus on mobility data.
+This master thesis aims to contribute to the study of cartographic representation techniques, with a central emphasis on the utilization of POSTGIS and MobilityDB \cite{zimanyi2019mobilitydb}, by exploring solutions for real-time processing of trajectories. Indeed dynamic adaptability is crucial in modern applications such as GPS navigation, real-time geospatial data analysis, and the constant monitoring of geospatial data streams, all of which are integral to the POSTGIS and MobilityDB ecosystems.\\
 
-In summary, this thesis embarks on a pioneering journey to generalize the Douglas-Peucker algorithm for streaming line simplification, with a primary emphasis on the POSTGIS and MobilityDB ecosystem. The motivation behind this endeavor is rooted in the ever-growing demand for adapting cartographic methods to real-time data streams, particularly in the context of dynamic geospatial mobility data.
+
+
+In this study, our primary aim will be to simplify line representations of mobility data within the environment of POSTGIS and MobilityDB. This involves the processing of an ordered set of n+1 points in a plane, delineating a polygonal path composed of line segments, and deriving a simplified path with fewer segments while preserving the fundamental attributes of the initial path. Our study stands out for its focus on the real-time nature of the data, which aligns well with the principles and capabilities of POSTGIS and MobilityDB.\\
+
+
+
+
+An underlying assumption for this work is the simplicity of the provided path, with an absence of self-intersections. The presence of self-intersections in cartographic data often indicates issues related to digitization errors. While our goal is to keep the resulting approximation simple, the issue of computational feasibility within the POSTGIS and MobilityDB environment is a key consideration.\\
+
+
+
+
+The idea of effectively representing data involves several aspects, such as keeping the original and simplified paths close, minimizing the area between them, incorporating critical points from the original path into the simplified one, and optimizing various measures of curve discrepancy. These aspects represent challenges to overcome for an effective real-time trajectory compression algorithm because of the limited information available about the path being processed.\\
+
+
 
 \iffalse
 \subsection{Definitions and Key Concepts}

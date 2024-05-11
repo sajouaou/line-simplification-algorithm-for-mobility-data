@@ -1,0 +1,16 @@
+\babel@toc {english}{}\relax 
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces List of Variables Used in Algorithms}}{26}{table.3.1}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces Average Execution Time by Number of Points and Lambda}}{35}{table.4.1}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Average Execution Time (C) by Number of Points and Lambda}}{36}{table.4.2}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Precision metrics per Lambda for Trajectory 1 }}{38}{table.4.3}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces Comparison Precision metrics per Lambda for Trajectory 1 }}{38}{table.4.4}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {5.1}{\ignorespaces Average Execution Time by Number of Points and Distance}}{39}{table.5.1}%
+\contentsline {table}{\numberline {5.2}{\ignorespaces Comparison of differences between Douglas and SquishE (Frechet, Hausdorff, DTW)}}{40}{table.5.2}%
+\contentsline {table}{\numberline {5.3}{\ignorespaces Average Execution Time by Number of Points and Distance of MinDist Algorithm}}{40}{table.5.3}%
+\contentsline {table}{\numberline {5.4}{\ignorespaces Comparison of differences between MinDist and SquishE (Frechet, Hausdorff, DTW)}}{41}{table.5.4}%
+\addvspace {10\p@ }

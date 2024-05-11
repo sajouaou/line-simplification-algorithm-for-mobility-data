@@ -575,14 +575,4 @@ Difference of Temporal Distance            & 0.0284 & 0.0239 & 0.0175 & 1.842\\
 \caption{Comparison Precision metrics per Lambda for Trajectory 1 }
 \end{table}
 
-The comparison shows that the offline and online implementations provide different numbers of trajectory points. Because of its gradual processing, we find that the online version typically produces more points, while the offline version might use more forceful compression methods.
-
-We examine the success of both offline and online implementations using metrics for trajectory similarity. For smaller lambda values, the two solutions perform similarly on average; however, differences appear when the compression level is increased. In particular, because of its comprehensive approach to trajectory analysis, the offline implementation might yield similarity metrics that are more accurate.
-
-Lets additionally look at the temporal properties of the paths that the two implementations process. Our investigation reveals possible variations in temporal synchronization and alignment, with consequences for applications needing accurate temporal matching.
-
-The offline version shines in accuracy and thorough analysis, while the online version offers real-time processing capabilities and adaptability to dynamic data streams. The selection between the two paradigms is contingent upon particular application needs, such as the demand for accuracy, real-time responsiveness, and resource restrictions.
-
-
-
 
