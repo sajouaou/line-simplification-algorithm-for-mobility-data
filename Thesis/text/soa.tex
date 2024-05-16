@@ -100,6 +100,8 @@ For additional details we refer to the paper by Alt and Godau \cite{AltGodau}.
 %TO DO% Describe the dynamic time warping distance similarities
 Dynamic Time Warping (DTW) is a techniques to find the optimal alignment between two sequences in same time. The DTW distance take into account the time dimension. This distance can be expressed as the minimum cost of a warping path p between X and Y where X and Y are two sequences (time-dependant). \cite{muller2007dynamic}
 
+
+
 \section{Line Simplification Algorithm}
 Line simplification deals with the simplification of arbitrary lines, which can be straight or curved. The goal is to reduce the complexity of lines while still ensuring that the simplified representation captures the main features of the original lines. This algorithm address the problem of Line simplification this problem who is relevant for GPU computing and Spatial Data processing
 
@@ -116,8 +118,7 @@ demonstrated in Figure \ref{fig:dgpk}.
 \begin{figure}[!h]
     \centering
     \includegraphics[width=0.5\linewidth]{figures/dgpk.png}
-    \caption{Illustration of how the Douglas-Peucker algorithm
-    iteratively simplifies a line. The allowed spatial
+    \caption[Illustration of Douglas-Peucker algorithm]{Illustration of how the Douglas-Peucker algorithm iteratively simplifies a line. The allowed spatial
     error  $\varepsilon$  is depicted with green circles \cite{van2017extensive}. }
     \label{fig:dgpk}
 \end{figure}
@@ -138,8 +139,10 @@ as illustrated in Figure \ref{fig:visv}. This process halts when the
 \begin{figure}[!h]
     \centering
     \includegraphics[width=0.5\linewidth]{figures/visv.png}
-    \caption{Illustration of how the Visvalingam-Whyatt
-    algorithm iteratively simplifies the line \cite{van2017extensive}.}
+    \caption[Illustration of Visvalingam-Whyatt
+    algorithm \cite{van2017extensive}.] {Illustration of Visvalingam-Whyatt
+    	algorithm \cite{van2017extensive}.
+    }
     \label{fig:visv}
 \end{figure}
 \newpage
@@ -165,7 +168,7 @@ to find the shortest path through the graph from $p_{1}$ to $p_{n}$.
 \begin{figure}[!h]
     \centering
     \includegraphics[width=0.5\linewidth]{figures/imaiiri.png}
-    \caption{Illustration of how the Imai-Iri algorithm generates
+    \caption[Illustration of Imai-Iri algorithm]{Illustration of how the Imai-Iri algorithm generates
     shortcuts. Green lines are allowed shortcuts, red
     lines are not allowed \cite{van2017extensive}.}
     \label{fig:imai}
@@ -255,7 +258,7 @@ map, reduce, join and window, see Figure \ref{fig:streams}.
 \begin{figure}[!h]
     \centering
     \includegraphics[width=1\linewidth]{figures/streaming-arch.png}
-    \caption{Spark Streaming model representation as we can see it can receive multiple data sources and output to multiple data sources \cite{spark}.}
+    \caption{Spark Streaming model representation \cite{spark}.}
     \label{fig:streams}
 \end{figure}
 
