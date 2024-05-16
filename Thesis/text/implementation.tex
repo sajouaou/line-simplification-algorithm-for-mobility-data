@@ -9,6 +9,7 @@ In order to implement the SQUISH-E algorithm, it is necessary to follow the pseu
 
 The first main loop is written as C function. The function have no return and changes the states of the variables.  This function take all the variables mentionned above it has some types and struct that will be described down. 
 
+
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language=C, % Spécifie le langage du code
 caption={SQUISH-E}, % Légende du listing
@@ -47,10 +48,10 @@ bool syncdist,interpType interp ,bool hasz ,uint32_t minpts)
 	}
 }
 \end{lstlisting}
+ 
 \end{minipage}
 
-\vspace{1cm}
-This algorithm follow the pseudo code of SQUISH-E it called the set function of the priority queue and the set function of the point map and priority map that will be describe in the section about implementation of variable. Then the reduce function and adjust priority is called in order to reduce if the size meet the treshold and the adjustment for each point that has a predecessor and a successor in order to know the error that it will produce by removing the corresponding point.
+This algorithm \ref{lst:squish_c} follow the pseudo code of SQUISH-E it called the set function of the priority queue and the set function of the point map and priority map that will be describe in the section about implementation of variable. Then the reduce function and adjust priority is called in order to reduce if the size meet the treshold and the adjustment for each point that has a predecessor and a successor in order to know the error that it will produce by removing the corresponding point.
 
 \subsection{Algorithm 2 - Reduce}
 Then we have the main block of squish-e which is the reduce part. 
@@ -103,9 +104,11 @@ bool syncdist,interpType interp ,bool hasz )
 }
 
 \end{lstlisting}
+ 
 \end{minipage}
+\vspace{1cm}
 
-This algorithm describe the reduction method as mentioned above remove the lowest priority points from the queue and it update the neighbors. Because we use C langage we free memory of the useless data. Each call is represented by a function in order to simplify implementation and reduce it to pieces of code to be written for each particular variable. This choice of implementation also makes it possible to change the structure. 
+This algorithm \ref{lst:reduce_c} describe the reduction method as mentioned above remove the lowest priority points from the queue and it update the neighbors. Because we use C langage we free memory of the useless data. Each call is represented by a function in order to simplify implementation and reduce it to pieces of code to be written for each particular variable. This choice of implementation also makes it possible to change the structure. 
 
 \subsection{Algorithm 3 - Adjust Priority} 
 
@@ -140,9 +143,11 @@ bool syncdist,interpType interp ,bool hasz )
 }
 
 \end{lstlisting}
+ 
 \end{minipage}
+\vspace{1cm}
 
-This algorithm is what differentiates SQUISH from SQUISH-E: when a point is removed, the surrounding points are updated and their priority changed, so we only recover the neighbours and calculate the new priority on the basis of the old error present in the dictionary and the calculation of the synchronised Euclidean distance. 
+This algorithm \ref{lst:adjust_c} is what differentiates SQUISH from SQUISH-E: when a point is removed, the surrounding points are updated and their priority changed, so we only recover the neighbours and calculate the new priority on the basis of the old error present in the dictionary and the calculation of the synchronised Euclidean distance. 
 
 
 \section{Variables Implementation}
@@ -185,10 +190,10 @@ typedef void* Dict;
 typedef void* PDict;
 
 \end{lstlisting}
+ 
 \end{minipage}
 
-\vspace{1cm}
-This structure is a Map that link a point to a corresponding value like priority or another point. We just need to define a struct with two values the key and the value. The typedef void* is using for the GNU Library to avoid using void** and add more clarity to the code.
+This structure \ref{lst:map_c} is a Map that link a point to a corresponding value like priority or another point. We just need to define a struct with two values the key and the value. The typedef void* is using for the GNU Library to avoid using void** and add more clarity to the code.
 
 \paragraph{Method}
 
@@ -217,7 +222,6 @@ get_point_dict(void *p_i,Dict *dict)
 	return result;
 }
 
-
 void
 set_point_dict(void * p_i,void * p_j,Dict *dict)
 {
@@ -233,7 +237,6 @@ set_point_dict(void * p_i,void * p_j,Dict *dict)
 	}
 }
 
-
 void destroy_elem_PointDict(void * p_i,Dict *dict)
 {
 	PointDict find;
@@ -247,11 +250,11 @@ void destroy_elem_PointDict(void * p_i,Dict *dict)
 	}
 }
 
-\end{lstlisting}
+\end{lstlisting} 
 \end{minipage}
+\vspace{1pt}
 
-\vspace{1cm}
-Here we use function of GNU C Library that implement a binary tree. It has the property to have for each operation a maximal complexity of $O(log(n))$ The two mapping use the same implementation in reality it would be a good idea to resolve this duplication case using a template or thing that can resolve it but the C language limit the capability.
+Here \ref{lst:pmap_c} we use function of GNU C Library that implement a binary tree. It has the property to have for each operation a maximal complexity of $O(log(n))$ The two mapping use the same implementation in reality it would be a good idea to resolve this duplication case using a template or thing that can resolve it but the C language limit the capability.
 
 \paragraph{Discussion}
 As mentioned in the previous sub section the map use GNU C Library binary tree structure to perform search and set. Those algorithm have a complexity of $O(log(n))$ as mentioned before and it has the property to be have a dynamic allocation of memory.
@@ -288,11 +291,10 @@ typedef struct PriorityQueue
 	size_t capacity;
 } PriorityQueue;
 
-\end{lstlisting}
+\end{lstlisting} 
 \end{minipage}
-\vspace{1cm}
 
-This structure implements the function of a priority queue using the structure of a min heap. It has as value PriorityQueueElem which have the point and the corresponding priority and a reference to this index in the heap. The main structure is using an array of pointer of PriorityQueueElem as long as an index map, a int that represent the number of points in the queue and lastly the numbers points allocated.
+This structure \ref{lst:prqueue_c} implements the function of a priority queue using the structure of a min heap. It has as value PriorityQueueElem which have the point and the corresponding priority and a reference to this index in the heap. The main structure is using an array of pointer of PriorityQueueElem as long as an index map, a int that represent the number of points in the queue and lastly the numbers points allocated.
 
 \paragraph{Method}
 
@@ -335,9 +337,8 @@ PriorityQueueElem *remove_min(PriorityQueue *Q)
 }
 \end{lstlisting}
 \end{minipage}
-\vspace{1cm}
 
-So, in order to remove the point with the minimum result, the following procedure is used: we check the number of elements and retrieve the first element. The insertion methods ensure that the first element is always the one with the minimum result. Then we take the last element and remove it and place it at the beginning of the queue and balance the tree to keep the smallest element at index 0. Then remove the index from the dictionary. 
+So, in order to remove the point with the minimum result, the following procedure \ref{lst:prqueueMethodR_c} is used: we check the number of elements and retrieve the first element. The insertion methods ensure that the first element is always the one with the minimum result. Then we take the last element and remove it and place it at the beginning of the queue and balance the tree to keep the smallest element at index 0. Then remove the index from the dictionary. 
 
 
 \begin{minipage}{\linewidth}
@@ -398,10 +399,8 @@ push(PriorityQueueElem * insert,PriorityQueue *Q)
 
 \end{lstlisting}
 \end{minipage}
-\vspace{1cm}
 
-From other implementation this one has the property to have at most a complexity of $O(log(n))$ the choice of a min heap to implement the priorityqueue fullfill the complexity limitation that we see in the design phase. The min heap is structure has a structure of a tree like we see in Figure \ref{fig:min_heap} and has the property that each tree and sub tree has the property that the parent nodes is always lesser than the child nodes. The min heap implementation is inspired from this website \cite{GfG_2023}. 
-
+From other implementation this one \ref{lst:prqueueMethodSet_c} has the property to have at most a complexity of $O(log(n))$ the choice of a min heap to implement the priorityqueue fullfill the complexity limitation that we see in the design phase. The min heap is structure has a structure of a tree like we see in Figure \ref{fig:min_heap} and has the property that each tree and sub tree has the property that the parent nodes is always lesser than the child nodes. The min heap implementation is inspired from this website \cite{GfG_2023}. 
 
 
 \begin{figure}[!h]
@@ -420,6 +419,7 @@ The idea here is to use the min heap structure to obtain in a complexity of maxi
 
 In this section we describe how the algorithm is implemented into the mobilityDB sql functions.
 \subsection{SQL Code}
+As the implementation is in C, the implementation of the sql code \ref{lst:squish_sql} is only a reference to the C function.
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[

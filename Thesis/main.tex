@@ -203,17 +203,24 @@ Soufiane \textsc{AJOUAOU}\\  000459811\\
 
 
 \section*{Abstract}
+With the increasing use of real-time geospatial data, particularly for GPS navigation and dynamic geospatial data analysis applications, line simplification is essential for efficiently representing complex and voluminous data. The ability to process this data quickly and accurately is crucial to meet the needs of modern applications.
 
-BLABLABLA
+However, simplifying trajectories in a real-time processing environment poses significant challenges. Existing algorithms, such as Douglas-Peucker and Visvalingam-Whyatt, are not optimized for continuous data streams, limiting their effectiveness in scenarios where data continuously arrives and requires dynamic adaptation.
+
+To address this need, this thesis proposes the SQUISH-E algorithm, designed to simplify trajectories in real time while minimizing synchronized Euclidean distance (SED) error. The algorithm uses a priority queue structure to maintain a simplified approximation of trajectories, enabling efficient data compression without sacrificing spatial accuracy. This solution is integrated into the POSTGIS and MobilityDB environments, allowing for practical and performant implementation in geospatial database systems.
+[00:41]
+The advantages of this solution are numerous. The results show that the SQUISH-E algorithm significantly improves execution time compared to traditional implementations, particularly due to its efficiency in C. Additionally, the algorithm maintains high precision in trajectory simplification, as demonstrated by Hausdorff distance, Frechet distance, and Dynamic Time Warping measurements. Thus, the SQUISH-E algorithm substantially contributes to solving real-time line simplification problems, making geospatial data processing applications faster and more accurate.
+
+
 \vspace{10pt}
 
 %TC:ignore
-\keywords{AAA, BBB, DDD, CCCC, TTTT}
+\keywords{Line Simplification Algorithm, MobilityDB, Trajectory compression, Streaming algorithm, Trajectory reduction}
 
 \newpage
 
 \section*{Acknowledgements}
-BLABLABLA
+Je souhaite exprimer ma sincère reconnaissance et ma gratitude à l'égard de tous ceux qui ont participé à la concrétisation de ce projet. Ce projet s'est avéré être à la fois difficile et prolongé, et je tiens à exprimer ma gratitude envers celui qui m'a aidé à l'accomplir et qui m'a soutenu tout au long de ma vie, même avant ma naissance. Sans lui, rien ne pourrait se produire, pas même la chute d'une goutte de pluie. Je tiens également à exprimer ma gratitude envers Esteban Zimanyi, qui a fait preuve de grande patience et qui a assuré une supervision remarquable, malgré les divers obstacles et les retards survenus lors de la rédaction de cette thèse. Je tiens également à exprimer ma gratitude envers Mahmoud SAKR et Gilles DEJAEGERE pour leur dévouement, leur intérêt et leurs conseils avisés, qui m'ont été précieux pour trouver des idées pour ma thèse. Mes parents et ma famille m'ont non seulement soutenu, mais m'ont également aidé à découvrir une autre facette du monde, différente de ce que l'on peut voir à travers un écran d'ordinateur. De la même manière que mes amis m'ont aidé à trouver des ressources et à rédiger ce travail. Je tiens également à exprimer ma gratitude envers l'ULB pour avoir proposé ce master en informatique et la Belgique pour le soutien qu'elle m'a accordé. Je vous souhaite tout le bonheur possible pour votre vie et une issue heureuse pour tout ce que vous entreprenez. Je suis également reconnaissant envers la source de tout bienfait et je ne serai jamais assez reconnaissant pour tous les privilèges dans lesquels je suis baigné. 
 \newpage
 
 
