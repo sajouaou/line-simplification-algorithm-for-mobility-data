@@ -3,6 +3,248 @@
 This section will present a review of the literature on line simplification algorithms, stream processing algorithms and introduce several notions related to the subject of this master thesis.
 
 
+
+\section{Moving Object Database}
+In order to store the position of our tracking objects it is important to
+search on moving object database as data output for this thesis. Moving objects are objects that change their value or location
+with time. These can be vehicles, persons, animals, aircarft, the air
+temperature of a city, the fuel price in a certain gas station, etc.
+The ubiquity of tracking devices and IoT technologies has resulted
+in collecting massive amounts of data that describe the temporal
+evolution of such objects and values. This creates opportunities
+to build applications on this data, which in turn calls for building \cite{zimanyi2019MobilityDB}.
+
+As mentioned above the need for a specific database in order to have an efficient data storage.
+In the context of this thesis we will focus on MobilityDB which is a Moving Object database that extends
+PostgreSQL
+
+\subsection{PostgreSQL}
+
+PostgreSQL is an object-relational database management system (ORDBMS) based on PostgreSQL, Version 4.2,
+developed at the University of California at Berkeley Computer Science Department \cite{postgresql}. PostgreSQL pioneered many
+concepts that only became available in some commercial database systems much later.
+
+PostgreSQL is an open-source descendant of this original Berkeley code. It supports a large part of the SQL standard
+and offers many modern features complex queries,foreign keys,triggers,updatable views, transactional integrity and multiversion concurrency control.
+
+Also, PostgreSQL can be extended by the user in many ways, for example by adding new data types, functions, operators,aggregate functions, index methods and procedural languages.
+
+Because of the liberal license, PostgreSQL can be used, modified, and distributed by anyone free of charge for any purpose, be it private, commercial, or academic.
+
+
+\subsection{PostGIS}
+PostGIS represents a potent open-source instrument facilitating the creation of resilient spatial databases. Serving as the geographic extension of the PostgreSQL database management system, PostGIS enables the incorporation of geographic objects within data tables \cite{marquez2015postgis}. These geographic objects are specialized data types designed for the storage of geographic positions or sets thereof, integrated seamlessly into lines or polygons. In essence, PostGIS emerges as a formidable tool, empowering users to manage intricate geographical data proficiently and to visually interrogate such data when employed in conjunction with graphical tools, exemplified by QGIS.
+
+\subsection{MobilityDB}
+MobilityDB uses the abstract data type approach of MOD implementations
+\cite{guting2000foundation}. In an extensible relational database system this
+amounts to adding user-defined types that can be used as attribute
+types inside relations. MobilityDB defines in PostgreSQL and PostGIS
+the temporal types: \texttt{tgeompoint}, \texttt{tgeogpoint}, \texttt{tfloat}, \texttt{tint},
+\texttt{ttext}, and \texttt{tbool}. These types encode functions from the time
+domain to their corresponding base type domains. MobilityDB extends the existential
+spatial database by adding a new dimension. It becomes more dynamics and respond to the need
+of processing moving object data.
+
+
+
+
+\section{Line Simplification Algorithm}
+Line simplification deals with the simplification of arbitrary lines, which can be straight or curved. The goal is to reduce the complexity of lines while still ensuring that the simplified representation captures the main features of the original lines. This algorithm address the problem of Line simplification this problem who is relevant for GPU computing and Spatial Data processing
+
+\subsection{Douglas-Peucker Algorithm}
+The Douglas-Peucker algorithm  \cite{douglas1973algorithms} \cite{hershberger1994n} takes a polyline
+P a sequence of points $\{p_{1},..., p_{n}\}$ , and a user defined
+allowed spatial error, $\varepsilon$ > 0. The algorithm builds an
+approximation polyline $P'$ , initially consisting of $p_{1}$ and
+$p_{n}$. It continues adding the point pi out of the original
+polyline that has the largest shortest-euclideandistance
+to $P'$ until that distance is smaller than $\varepsilon$ as
+demonstrated in Figure \ref{fig:dgpk}.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/dgpk.png}
+    \caption[Illustration of Douglas-Peucker algorithm]{Illustration of how the Douglas-Peucker algorithm iteratively simplifies a line. The allowed spatial
+    error  $\varepsilon$  is depicted with green circles \cite{van2017extensive}. }
+    \label{fig:dgpk}
+\end{figure}
+
+\subsection{Visvalingam-Whyatt Algorithm}
+
+The Visvalingam-Whyatt algorithm \cite{doi:10.1179/000870493786962263} uses the concept
+of ‘effective area’, which is the area of the triangle
+formed by a point and its two neighbors. The algorithm
+takes a polyline P a sequence of points $\{p_{1},..., p_{n}\}$, and
+a user defined allowed spatial displacement error, $\varepsilon$ > 0.
+For every set of three consecutive points $\{p_{i-1},p_{i},p_{i+1}\}$
+a triangle is formed with its surface being the ‘effective area’. Iteratively point $p_{i}$ is dropped that results in
+the least areal displacement to form an approximation
+as illustrated in Figure \ref{fig:visv}. This process halts when the
+‘effective area’ is larger than $\varepsilon$.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/visv.png}
+    \caption[Illustration of Visvalingam-Whyatt
+    algorithm \cite{van2017extensive}.] {Illustration of Visvalingam-Whyatt
+    	algorithm \cite{van2017extensive}.
+    }
+    \label{fig:visv}
+\end{figure}
+
+\subsection{Imai-Iri}
+The basis of the Imai-Iri algorithm \cite{IMAI198631} lies in the construction
+of an unweighted directed acyclic graph G.
+This graph is constructed by connecting all combinations
+of two points that would create an allowed shortcut.
+A breadth-first search is done on this graph to
+compute the shortest path connecting the first and last
+point, resulting in the approximation.
+This algorithm takes a polyline P a sequence of
+points $\{p_{1},..., p_{n}\}$, and a user defined allowed spatial
+error, $\varepsilon $ > 0. For each combination of two points ($p_{i}$ and $p_{j}$) it checks if a line between them intersects all
+circles with radius $\varepsilon $ that center on the points that lie{\tiny {\tiny }}
+between them $\{p_{x} > p_{i},p_{x} < p_{j}\}$. When this is the
+case, the line $p_{i}p_{j}$ is an allowed shortcut and is added
+to the graph G, see Figure \ref{fig:imai}. After all allowed shortcuts
+are added to graph G, breadth-first search is done
+to find the shortest path through the graph from $p_{1}$ to $p_{n}$.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/imaiiri.png}
+    \caption[Illustration of Imai-Iri algorithm]{Illustration of how the Imai-Iri algorithm generates
+    shortcuts. Green lines are allowed shortcuts, red
+    lines are not allowed \cite{van2017extensive}.}
+    \label{fig:imai}
+\end{figure}
+
+\newpage
+
+\section{Streaming Process Algorithm}
+
+Traditional data-management systems software is built on the concept of persistent
+data sets that are stored reliably in stable storage and queried/updated several
+times throughout their lifetime. For several emerging application domains, however,
+data arrives and needs to be processed on a continuous (24×7) basis, without
+the benefit of several passes over a static, persistent data image \cite{garofalakis2016data}.
+
+It is therefore important to have algorithm to process those stream data.
+
+\subsection{Data-Stream}
+
+Perhaps the most basic synopsis of a data stream is a sample of elements from the
+stream. A key benefit of such a sample is its flexibility: the sample can serve as input
+to a wide variety of analytical procedures and can be reduced further to provide
+many additional data synopses \cite{garofalakis2016data}. If, in particular, the sample is collected using random
+sampling techniques, then the sample can form a basis for statistical inference
+about the contents of the stream. Data-stream sampling problems require the application of many ideas and techniques
+from traditional database sampling, but also need significant new innovations,
+especially to handle queries over infinite-length streams. Indeed, the unbounded
+nature of streaming data represents a major departure from the traditional
+setting. We draw an important distinction
+between a stationary window, whose endpoints are specified times or specified
+positions in the stream sequence, and a sliding window whose endpoints move forward
+as time progresses. Examples of the latter type of window include “the most
+recent n elements in the stream” and “elements that have arrived within the past
+hour.” Sampling from a finite stream is a special case of sampling from a stationary
+window in which the window boundaries correspond to the first and last stream
+elements. When dealing with a stationary window, many traditional tools and techniques
+for database sampling can be directly brought to bear. In general, sampling
+from a sliding window is a much harder problem than sampling from a stationary
+window: in the former case, elements must be removed from the sample as they
+expire, and maintaining a sample of adequate size can be difficult.We also consider
+“generalized” windows in which the stream consists of a sequence of transactions
+that insert and delete items into the window; a sliding window corresponds to the
+special case in which items are deleted in the same order that they are inserted.
+
+In the context of this thesis we will investigate the technology of PostGIS on data stream and adapt the algorithm based on the techniques used by PostGIS for data stream.
+
+\subsection{Stream Processing}
+
+Data streams can be generated in various scenarios,
+including a network of sensor nodes, a stock market or a
+network monitoring system and so on \cite{namiot2015big}. It exist multiple techniques that could be done on a data stream such as continuous queries,clustering,classification,frequent items mining,outlier and anomaly detection.A stream processing solution has to solve different
+challenges mainly \cite{Wähner_2014} :
+\begin{itemize}
+    \item  Processing massive amounts of streaming events (filter, aggregate, rule, automate, predict, act, monitor, alert)
+    \item  Real-time responsiveness 
+    \item  Performance and scalability as data volumes increase in size and complexity
+    \item  Analytics: Live data discovery and monitoring, continuous query processing, automated alerts and reactions
+\end{itemize}
+
+
+\subsection{Streaming for Line Simplification}
+In this section we will discuss the current state of line simplification algorithm/problem in the context of stream processing.
+The main problematic of this thesis is related to this problem because of that this subject will have a more in depth analysis.
+
+As mentionned in "Streaming algorithms for line simplification" \cite{abam2007streaming}, suppose we are tracking one, or maybe many,
+moving objects. Each object is equipped with a device that
+is continuously transmitting its position. Thus we are re-
+ceiving a stream of data points that describes the path along
+which the object moves. The goal is to maintain this path
+for each object. We are interested in the scenario where we
+are tracking the objects over a very long period of time, as
+happens for instance when studying the migratory patterns
+of animals. In this situation it may be undesirable or even
+impossible to store the complete stream of data points. In-
+stead we have to maintain an approximation of the input
+path. This leads us to the following problem: we are receiving a (possibly infinite) stream $p0,p1,p2,...$ of points in
+the plane, and we wish to maintain a simplification (of the
+part of the path seen so far) that is as close to the original
+path as possible, while using not more than a given (fixed)
+amount of available storage.
+
+\paragraph{Formalization}
+In this subsection we will formalize the problem of line simplification in a streaming mode based on the article \cite{abam2007streaming}.
+To be able to state the problem we wish to solve and the results we obtain more precisely, we first introduce some terminology and definitions.
+Let $p_0, p_1, \ldots$ be the given stream of input points. We use $P(n)$ to denote the path defined by the points
+$p_0, p_1, \ldots, p_n$ - that is, the path connecting those points in order - and for any two points $p, q$ on the path we use
+$P(p, q)$ to denote the subpath from $p$ to $q$. For two vertices $p_i, p_j$ we use $P(i, j)$ as a shorthand for $P\left(p_i, p_j\right)$.
+A segment $p_i p_j$ with $i<j$ is called a link or sometimes a shortcut. Thus $P(n)$ consists of the links $p_{i-1} p_i$ for $0<i \leqslant n$.
+We assume a function error is given that assigns a non-negative error to each link $p_i p_j$.
+A $\ell$-simplification of $P(n)$ is a polygonal path $Q:=q_0, q_1, \ldots, q_k, q_{k+1}$ where
+$k \leqslant \ell$ and $q_0=p_0$ and $q_{k+1}=p_n$, and $q_1, \ldots, q_k$ is a subsequence of
+$p_1, \ldots, p_{n-1}$. The error of a simplification $Q$ for a given function error, denoted
+$\operatorname{error}(Q)$, is defined as the maximum error of any of its links.
+
+\paragraph{Evaluation}
+Now consider an algorithm $\mathcal{A}:=\mathcal{A}(\ell)$ that maintains an $\ell$-simplification for the input stream $p_0, p_1, \ldots$,
+for some given $\ell$. Let $Q_{\mathcal{A}}(n)$ denote the simplification that $\mathcal{A}$ produces for the path $P(n)$. Let $\operatorname{Opt}(\ell)$
+denote an optimal off-line algorithm that produces an $\ell$-simplification. Thus $\operatorname{error}\left(Q_{O p t(\ell)}(n)\right)$ is the minimum possible
+error of any $\ell-$ simplification of $P(n)$. We define the quality of $\mathcal{A}$ using the competitive ratio, as is standard for on-line algorithms.
+We also allow resource augmentation. More precisely, we allow $\mathcal{A}$ to use a $2k$-simplification, but we compare the error of this simplification
+to $Q_{O p t(k)}(n)$. (This is similar to Agarwal et al. \cite{agarwal2005near} who compare the quality of their solution to the min- $k$ problem for a given maximum error $\delta$
+to the optimal value for maximum error $\delta / 2$.) Thus we define the competitive ratio of an algorithm $\mathcal{A}(2 k)$ as
+$$
+\text { competitive ratio of } \mathcal{A}(2 k):=\max _{n \geqslant 0} \frac{\operatorname{error}\left(Q_{\mathcal{A}(2 k)}(n)\right)}{\operatorname{error}\left(Q_{O p t(k)}(n)\right)},
+$$
+where $\frac{\operatorname{error}\left(Q_{\mathcal{A}(2 k)}(n)\right)}{\operatorname{error}\left(Q_{O p t(k)}(n)\right)}$ is defined as
+1 if $\operatorname{error}\left(Q_{\mathcal{A}(2 k)}(n)\right)=$ $\operatorname{error}\left(Q_{O p t(k)}(n)\right)=0$.
+We say that an algorithm is $c$ competitive if its competitive ratio is at most $c$.
+
+\paragraph{Algorithm}
+We will discuss the existing algorithm for the line simplification in a streaming model. In the article \cite{abam2007streaming} they propose
+the following algorithm. Our algorithm is quite simple. Suppose we have already handled the points $p_0, \ldots, p_n$.
+(We assume $n>\ell+1$; until that moment we can simply use all points and have zero error.) Let $Q:=q_0, q_1, \ldots, q_{\ell}, q_{\ell+1}$
+be the current simplification. Our algorithm will maintain a priority queue $\mathcal{Q}$ that stores the points $q_i$ with $1 \leqslant i \leqslant \ell$,
+where the priority of a point is the error (as computed by the oracle) of the link $q_{i-1} q_{i+1}$. In other words, the priority of $q_i$ is
+(an approximation of) the error that is incurred when $q_i$ is removed from the simplification. Now the next point $p_{n+1}$ is handled as follows:
+
+\begin{enumerate}
+    \item  Set $q_{\ell+2}:=p_{n+1}$, thus obtaining an $(\ell+1)$-simplification of $P(n+1)$.
+    \item  Compute $\operatorname{error}^*\left(q_{\ell} q_{\ell+2}\right)$ and insert $q_{\ell+1}$ into $\mathcal{Q}$ with this error as priority.
+    \item  Extract the point $q_s$ with minimum priority from $\mathcal{Q}$; remove $q_s$ from the simplification.
+    \item  Update the priorities of $q_{s-1}$ and $q_{s+1}$ in $\mathcal{Q}$.
+
+\end{enumerate}
+
+As we can see the following algorithm is using the error function in order to correct the result in real-time. In the context of this thesis we will investigate a solution
+that is based on the existing algorithm Douglas-Peucker to see if it is possible to maintain a simplified version of the trip using this algorithm.
+
+
+
 \section{Error Metrics}
 
 In this section we will explain how to compare a trajectory with its simple counterpart in detail. In this study, a trajectory is represented as a polyline P, which is made up of a series of points  $\{p_{1},..., p_{n}\}$, where the points pi are made up of the longitude, latitude, and sample time-stamp, Xi, Yi, and ti, respectively. Approximation A, which is a subset of P, the polyline of the original trajectory, is the name given to the simplified version of a trajectory \cite{van2017extensive}. Moreover, the original trajectory's p1 and pn must be included in Approximation A.
@@ -78,17 +320,17 @@ than $ \delta $ , the point lies in the forbidden space. See Figure \ref{fig:fsd
 
 
 \begin{figure}[!h]
-    \centering
-    \includegraphics[width=1.0\linewidth]{figures/Figure.jpg}
-    \caption[Free space diagram of polygonal curves P and Q for a given $ \delta $]{Enter Two polygonal curves P (in blue) and Q (in red), and their free space
-    diagram for the chosen value of  $ \delta $. The free space is shown in white and the forbidden
-    space is shown in gray. Each cell of the FSD corresponds to the combination of
-    one edge of P and one edge of Q. (s, t) is a free point in the diagram, lying on a
-    reachable path in the free space. One green spot is marked in both the FSD and on
-    the associated spots on P and Q. A x- and y- monotone path contained in the free
-    space from (1, 1) to (8, 10), shown in green, corresponds to parametrizations of P and
-    Q realizing a Fréchet distance of at most  $ \delta $ \cite{kerkhof2022algorithmic}.}
-    \label{fig:fsd}
+	\centering
+	\includegraphics[width=1.0\linewidth]{figures/Figure.jpg}
+	\caption[Free space diagram of polygonal curves P and Q for a given $ \delta $]{Enter Two polygonal curves P (in blue) and Q (in red), and their free space
+		diagram for the chosen value of  $ \delta $. The free space is shown in white and the forbidden
+		space is shown in gray. Each cell of the FSD corresponds to the combination of
+		one edge of P and one edge of Q. (s, t) is a free point in the diagram, lying on a
+		reachable path in the free space. One green spot is marked in both the FSD and on
+		the associated spots on P and Q. A x- and y- monotone path contained in the free
+		space from (1, 1) to (8, 10), shown in green, corresponds to parametrizations of P and
+		Q realizing a Fréchet distance of at most  $ \delta $ \cite{kerkhof2022algorithmic}.}
+	\label{fig:fsd}
 \end{figure}
 \vspace{1cm}
 Now, an x- and y-monotone path from the point (1, 1) to (n,m) entirely through
@@ -100,383 +342,4 @@ For additional details we refer to the paper by Alt and Godau \cite{AltGodau}.
 %TO DO% Describe the dynamic time warping distance similarities
 Dynamic Time Warping (DTW) is a techniques to find the optimal alignment between two sequences in same time. The DTW distance take into account the time dimension. This distance can be expressed as the minimum cost of a warping path p between X and Y where X and Y are two sequences (time-dependant). \cite{muller2007dynamic}
 
-
-
-\section{Line Simplification Algorithm}
-Line simplification deals with the simplification of arbitrary lines, which can be straight or curved. The goal is to reduce the complexity of lines while still ensuring that the simplified representation captures the main features of the original lines. This algorithm address the problem of Line simplification this problem who is relevant for GPU computing and Spatial Data processing
-
-\subsection{Douglas-Peucker Algorithm}
-The Douglas-Peucker algorithm  \cite{douglas1973algorithms} \cite{hershberger1994n} takes a polyline
-P a sequence of points $\{p_{1},..., p_{n}\}$ , and a user defined
-allowed spatial error, $\varepsilon$ > 0. The algorithm builds an
-approximation polyline $P'$ , initially consisting of $p_{1}$ and
-$p_{n}$. It continues adding the point pi out of the original
-polyline that has the largest shortest-euclideandistance
-to $P'$ until that distance is smaller than $\varepsilon$ as
-demonstrated in Figure \ref{fig:dgpk}.
-
-\begin{figure}[!h]
-    \centering
-    \includegraphics[width=0.5\linewidth]{figures/dgpk.png}
-    \caption[Illustration of Douglas-Peucker algorithm]{Illustration of how the Douglas-Peucker algorithm iteratively simplifies a line. The allowed spatial
-    error  $\varepsilon$  is depicted with green circles \cite{van2017extensive}. }
-    \label{fig:dgpk}
-\end{figure}
-
-\subsection{Visvalingam-Whyatt Algorithm}
-
-The Visvalingam-Whyatt algorithm \cite{doi:10.1179/000870493786962263} uses the concept
-of ‘effective area’, which is the area of the triangle
-formed by a point and its two neighbors. The algorithm
-takes a polyline P a sequence of points $\{p_{1},..., p_{n}\}$, and
-a user defined allowed spatial displacement error, $\varepsilon$ > 0.
-For every set of three consecutive points $\{p_{i-1},p_{i},p_{i+1}\}$
-a triangle is formed with its surface being the ‘effective area’. Iteratively point $p_{i}$ is dropped that results in
-the least areal displacement to form an approximation
-as illustrated in Figure \ref{fig:visv}. This process halts when the
-‘effective area’ is larger than $\varepsilon$.
-
-\begin{figure}[!h]
-    \centering
-    \includegraphics[width=0.5\linewidth]{figures/visv.png}
-    \caption[Illustration of Visvalingam-Whyatt
-    algorithm \cite{van2017extensive}.] {Illustration of Visvalingam-Whyatt
-    	algorithm \cite{van2017extensive}.
-    }
-    \label{fig:visv}
-\end{figure}
-\newpage
-
-\subsection{Imai-Iri}
-The basis of the Imai-Iri algorithm \cite{IMAI198631} lies in the construction
-of an unweighted directed acyclic graph G.
-This graph is constructed by connecting all combinations
-of two points that would create an allowed shortcut.
-A breadth-first search is done on this graph to
-compute the shortest path connecting the first and last
-point, resulting in the approximation.
-This algorithm takes a polyline P a sequence of
-points $\{p_{1},..., p_{n}\}$, and a user defined allowed spatial
-error, $\varepsilon $ > 0. For each combination of two points ($p_{i}$ and $p_{j}$) it checks if a line between them intersects all
-circles with radius $\varepsilon $ that center on the points that lie{\tiny {\tiny }}
-between them $\{p_{x} > p_{i},p_{x} < p_{j}\}$. When this is the
-case, the line $p_{i}p_{j}$ is an allowed shortcut and is added
-to the graph G, see Figure \ref{fig:imai}. After all allowed shortcuts
-are added to graph G, breadth-first search is done
-to find the shortest path through the graph from $p_{1}$ to $p_{n}$.
-
-\begin{figure}[!h]
-    \centering
-    \includegraphics[width=0.5\linewidth]{figures/imaiiri.png}
-    \caption[Illustration of Imai-Iri algorithm]{Illustration of how the Imai-Iri algorithm generates
-    shortcuts. Green lines are allowed shortcuts, red
-    lines are not allowed \cite{van2017extensive}.}
-    \label{fig:imai}
-\end{figure}
-
-\newpage
-
-\section{Streaming Process Algorithm}
-
-Traditional data-management systems software is built on the concept of persistent
-data sets that are stored reliably in stable storage and queried/updated several
-times throughout their lifetime. For several emerging application domains, however,
-data arrives and needs to be processed on a continuous (24×7) basis, without
-the benefit of several passes over a static, persistent data image \cite{garofalakis2016data}.
-
-It is therefore important to have algorithm to process those stream data.
-
-\subsection{Data-Stream}
-
-Perhaps the most basic synopsis of a data stream is a sample of elements from the
-stream. A key benefit of such a sample is its flexibility: the sample can serve as input
-to a wide variety of analytical procedures and can be reduced further to provide
-many additional data synopses \cite{garofalakis2016data}. If, in particular, the sample is collected using random
-sampling techniques, then the sample can form a basis for statistical inference
-about the contents of the stream. Data-stream sampling problems require the application of many ideas and techniques
-from traditional database sampling, but also need significant new innovations,
-especially to handle queries over infinite-length streams. Indeed, the unbounded
-nature of streaming data represents a major departure from the traditional
-setting. We draw an important distinction
-between a stationary window, whose endpoints are specified times or specified
-positions in the stream sequence, and a sliding window whose endpoints move forward
-as time progresses. Examples of the latter type of window include “the most
-recent n elements in the stream” and “elements that have arrived within the past
-hour.” Sampling from a finite stream is a special case of sampling from a stationary
-window in which the window boundaries correspond to the first and last stream
-elements. When dealing with a stationary window, many traditional tools and techniques
-for database sampling can be directly brought to bear. In general, sampling
-from a sliding window is a much harder problem than sampling from a stationary
-window: in the former case, elements must be removed from the sample as they
-expire, and maintaining a sample of adequate size can be difficult.We also consider
-“generalized” windows in which the stream consists of a sequence of transactions
-that insert and delete items into the window; a sliding window corresponds to the
-special case in which items are deleted in the same order that they are inserted.
-
-In the context of this thesis we will investigate the technology of POSTGIS on data stream and adapt the algorithm based on the techniques used by POSTGIS for data stream.
-
-\subsection{Stream Processing}
-
-Data streams can be generated in various scenarios,
-including a network of sensor nodes, a stock market or a
-network monitoring system and so on \cite{namiot2015big}. It exist multiple techniques that could be done on
-a data stream such as continuous queries,clustering,classification,frequent items mining,outlier and anomaly detection.A stream processing solution has to solve different
-challenges \cite{Wähner_2014} :
-\begin{itemize}
-    \item  Processing massive amounts of streaming events (filter, aggregate, rule, automate, predict, act, monitor, alert)
-    \item  Real-time responsiveness to changing market conditions
-    \item  Performance and scalability as data volumes increase in size and complexity
-    \item  Rapid integration with existing infrastructure and data sources: Input (e.g. market data, user inputs, files, history data from a DWH) and output (e.g. trades, email alerts, dashboards, automated reactions)
-    \item  Fast time-to-market for application development and deployment due to quickly changing landscape and requirements
-    \item  Developer productivity throughout all stages of the application development lifecycle by offering good tool support and agile development
-    \item  Analytics: Live data discovery and monitoring, continuous query processing, automated alerts and reactions
-    \item  Community (component / connector exchange, education / discussion, training / certification)
-    \item  End-user|ad-hoc continuous query access
-    \item  Alerting
-    \item  Push-based visualization
-\end{itemize}
-
-\subsection{Technologies}
-In this section, we discuss some technological solutions for
-data streams processing.
-Apache Storm is a distributed real-time computation system
-for processing large volumes of high-velocity data \cite{jain2014learning}. Is a
-distributed real-time computation system for processing fast,
-large streams of data. Storm is an architecture based on
-master-workers paradigm. So a Storm cluster mainly
-consists of a master and worker nodes, with coordination
-done by Zookeeper.
-
-Spark Streaming \cite{spark} is an extension of the core Spark API
-\cite{shoro2015big} that enables scalable, high-throughput, fault-tolerant
-stream processing of live data streams. Data can be ingested
-from many sources like Kafka, Flume, Twitter, ZeroMQ,
-Kinesis, or TCP sockets, and can be processed using
-complex algorithms expressed with high-level functions like
-map, reduce, join and window, see Figure \ref{fig:streams}.
-
-\begin{figure}[!h]
-    \centering
-    \includegraphics[width=1\linewidth]{figures/streaming-arch.png}
-    \caption{Spark Streaming model representation \cite{spark}.}
-    \label{fig:streams}
-\end{figure}
-
-
-
-Finally, processed data can be pushed out to files systems,
-databases, and live dashboards. In fact, you can apply
-Spark’s machine learning and graph processing algorithms
-on data streams, see Figure \ref{fig:procs}).
-
-\begin{figure}[!h]
-    \centering
-    \includegraphics[width=1\linewidth]{figures/streaming-flow.png}
-    \caption{Spark Processing \cite{spark}.}
-    \label{fig:procs}
-\end{figure}
-
-
-
-Apache Samza \cite{samza} is a distributed stream processing
-framework. It uses Apache Kafka for messaging, and
-Apache Hadoop YARN to provide fault tolerance, processor
-isolation, security, and resource management see Figure \ref{fig:samza}.
-
-\begin{figure}[!h]
-    \centering
-    \includegraphics[width=1\linewidth]{figures/samza-arch4.png}
-    \caption{Apache Samza \cite{samza}.}
-    \label{fig:samza}
-\end{figure}
-
-
-
-Apache Flume \cite{flume} is a distributed, reliable, and available
-service for efficiently collecting, aggregating, and moving
-large amounts of log data. It has a simple and flexible
-architecture based on streaming data flows. It is robust and
-fault tolerant with tunable reliability mechanisms and many
-failovers and recovery mechanisms. It uses a simple
-extensible data model that supports online analytic
-applications see Figure \ref{fig:flume}.
-
-\begin{figure}[!h]
-    \centering
-    \includegraphics[width=1\linewidth]{figures/DevGuide_image00.png}
-    \caption{Apache Flume \cite{flume}.}
-    \label{fig:flume}
-\end{figure}
-
-
-Apache Kafka itself is often used as a kernel for data stream
-architecture. Originally, Apache Kafka is publish-subscribe
-messaging rethought as a distributed commit log \cite{ApacheKA}.
-Apache Kafka is a distributed system designed for streams.
-It is built to be fault-tolerant, high-throughput, horizontally
-scalable, and allows geographically distributing data streams
-and processing. See Figure \ref{fig:kafka} illustrates stream-centric
-architecture in Confluent blog  \cite{Kafka}.
-
-\begin{figure}[!h]
-    \centering
-    \includegraphics[width=1\linewidth]{figures/data-flow-768x584.png}
-    \caption{Stream-centric architecture on Apache Kafka \cite{Kafka}.}
-    \label{fig:kafka}
-\end{figure}
-
-Amazon Kinesis \cite{kinesis} is a fully managed, cloud-based
-service for real-time data processing over large, distributed
-data streams. Amazon Kinesis can continuously capture and
-store terabytes of data per hour from hundreds of thousands
-of sources such as website clickstreams, financial
-transactions, social media feeds, IT logs, and locationtracking
-events.
-
-
-
-IBM InfoSphere Streams \cite{ballard2014ibm,ibmdoc} is an advanced analytic
-platform that enables the development and execution
-of applications that process information in data streams.
-InfoSphere Streams enables continuous and fast analysis of massive volumes
-of moving data to help improve the speed of business insight and decision making see Figure \ref{fig:ibm}.
-
-\begin{figure}[!h]
-    \centering
-    \includegraphics[width=1\linewidth]{figures/model.jpg}
-    \caption{IBM InfoSphere Streams \cite{ibmdoc}.}
-    \label{fig:ibm}
-\end{figure}
-
-
-\subsection{Streaming for Line Simplification}
-In this section we will discuss the current state of line simplification algorithm/problem in the context of stream processing.
-The main problematic of this thesis is related to this problem because of that this subject will have a more in depth analysis.
-
-As mentionned in "Streaming algorithms for line simplification" \cite{abam2007streaming}, suppose we are tracking one, or maybe many,
-moving objects. Each object is equipped with a device that
-is continuously transmitting its position. Thus we are re-
-ceiving a stream of data points that describes the path along
-which the object moves. The goal is to maintain this path
-for each object. We are interested in the scenario where we
-are tracking the objects over a very long period of time, as
-happens for instance when studying the migratory patterns
-of animals. In this situation it may be undesirable or even
-impossible to store the complete stream of data points. In-
-stead we have to maintain an approximation of the input
-path. This leads us to the following problem: we are receiving a (possibly infinite) stream $p0,p1,p2,...$ of points in
-the plane, and we wish to maintain a simplification (of the
-part of the path seen so far) that is as close to the original
-path as possible, while using not more than a given (fixed)
-amount of available storage.
-
-\paragraph{Formalization}
-In this subsection we will formalize the problem of line simplification in a streaming mode based on the article \cite{abam2007streaming}.
-To be able to state the problem we wish to solve and the results we obtain more precisely, we first introduce some terminology and definitions.
-Let $p_0, p_1, \ldots$ be the given stream of input points. We use $P(n)$ to denote the path defined by the points
-$p_0, p_1, \ldots, p_n$ - that is, the path connecting those points in order - and for any two points $p, q$ on the path we use
-$P(p, q)$ to denote the subpath from $p$ to $q$. For two vertices $p_i, p_j$ we use $P(i, j)$ as a shorthand for $P\left(p_i, p_j\right)$.
-A segment $p_i p_j$ with $i<j$ is called a link or sometimes a shortcut. Thus $P(n)$ consists of the links $p_{i-1} p_i$ for $0<i \leqslant n$.
-We assume a function error is given that assigns a non-negative error to each link $p_i p_j$.
-A $\ell$-simplification of $P(n)$ is a polygonal path $Q:=q_0, q_1, \ldots, q_k, q_{k+1}$ where
-$k \leqslant \ell$ and $q_0=p_0$ and $q_{k+1}=p_n$, and $q_1, \ldots, q_k$ is a subsequence of
-$p_1, \ldots, p_{n-1}$. The error of a simplification $Q$ for a given function error, denoted
-$\operatorname{error}(Q)$, is defined as the maximum error of any of its links.
-
-\paragraph{Evaluation}
-Now consider an algorithm $\mathcal{A}:=\mathcal{A}(\ell)$ that maintains an $\ell$-simplification for the input stream $p_0, p_1, \ldots$,
-for some given $\ell$. Let $Q_{\mathcal{A}}(n)$ denote the simplification that $\mathcal{A}$ produces for the path $P(n)$. Let $\operatorname{Opt}(\ell)$
-denote an optimal off-line algorithm that produces an $\ell$-simplification. Thus $\operatorname{error}\left(Q_{O p t(\ell)}(n)\right)$ is the minimum possible
-error of any $\ell-$ simplification of $P(n)$. We define the quality of $\mathcal{A}$ using the competitive ratio, as is standard for on-line algorithms.
-We also allow resource augmentation. More precisely, we allow $\mathcal{A}$ to use a $2k$-simplification, but we compare the error of this simplification
-to $Q_{O p t(k)}(n)$. (This is similar to Agarwal et al. \cite{agarwal2005near} who compare the quality of their solution to the min- $k$ problem for a given maximum error $\delta$
-to the optimal value for maximum error $\delta / 2$.) Thus we define the competitive ratio of an algorithm $\mathcal{A}(2 k)$ as
-$$
-\text { competitive ratio of } \mathcal{A}(2 k):=\max _{n \geqslant 0} \frac{\operatorname{error}\left(Q_{\mathcal{A}(2 k)}(n)\right)}{\operatorname{error}\left(Q_{O p t(k)}(n)\right)},
-$$
-where $\frac{\operatorname{error}\left(Q_{\mathcal{A}(2 k)}(n)\right)}{\operatorname{error}\left(Q_{O p t(k)}(n)\right)}$ is defined as
-1 if $\operatorname{error}\left(Q_{\mathcal{A}(2 k)}(n)\right)=$ $\operatorname{error}\left(Q_{O p t(k)}(n)\right)=0$.
-We say that an algorithm is $c$ competitive if its competitive ratio is at most $c$.
-
-\paragraph{Algorithm}
-We will discuss the existing algorithm for the line simplification in a streaming model. In the article \cite{abam2007streaming} they propose
-the following algorithm. Our algorithm is quite simple. Suppose we have already handled the points $p_0, \ldots, p_n$.
-(We assume $n>\ell+1$; until that moment we can simply use all points and have zero error.) Let $Q:=q_0, q_1, \ldots, q_{\ell}, q_{\ell+1}$
-be the current simplification. Our algorithm will maintain a priority queue $\mathcal{Q}$ that stores the points $q_i$ with $1 \leqslant i \leqslant \ell$,
-where the priority of a point is the error (as computed by the oracle) of the link $q_{i-1} q_{i+1}$. In other words, the priority of $q_i$ is
-(an approximation of) the error that is incurred when $q_i$ is removed from the simplification. Now the next point $p_{n+1}$ is handled as follows:
-
-\begin{enumerate}
-    \item  Set $q_{\ell+2}:=p_{n+1}$, thus obtaining an $(\ell+1)$-simplification of $P(n+1)$.
-    \item  Compute $\operatorname{error}^*\left(q_{\ell} q_{\ell+2}\right)$ and insert $q_{\ell+1}$ into $\mathcal{Q}$ with this error as priority.
-    \item  Extract the point $q_s$ with minimum priority from $\mathcal{Q}$; remove $q_s$ from the simplification.
-    \item  Update the priorities of $q_{s-1}$ and $q_{s+1}$ in $\mathcal{Q}$.
-
-\end{enumerate}
-
-As we can see the following algorithm is using the error function in order to correct the result in real-time. In the context of this thesis we will investigate a solution
-that is based on the existing algorithm douglas-peucker to see if it is possible to maintain a simplified version of the trip using this algorithm.
-
-
-
-
-\subsection{Moving Object Database}
-In order to store the position of our tracking objects it is important to
-search on moving object database as data output for this thesis. Moving objects are objects that change their value or location
-with time. These can be vehicles, persons, animals, aircarft, the air
-temperature of a city, the fuel price in a certain gas station, etc.
-The ubiquity of tracking devices and IoT technologies has resulted
-in collecting massive amounts of data that describe the temporal
-evolution of such objects and values. This creates opportunities
-to build applications on this data, which in turn calls for building \cite{zimanyi2019mobilitydb}.
-
-As mentioned above the need for a specific database in order to have an efficient data storage.
-In the context of this thesis we will focus on mobilityDB which is a Moving Object database that extends
-PostgreSQL
-
-\paragraph{PostgreSQL}
-
-PostgreSQL is an object-relational database management system (ORDBMS) based on POSTGRES, Version 4.2,
-developed at the University of California at Berkeley Computer Science Department \cite{postgresql}. POSTGRES pioneered many
-concepts that only became available in some commercial database systems much later.
-
-PostgreSQL is an open-source descendant of this original Berkeley code. It supports a large part of the SQL standard
-and offers many modern features:
-
-\begin{itemize}
-
-    \item complex queries
-    \item foreign keys
-    \item triggers
-    \item updatable views
-    \item transactional integrity
-    \item multiversion concurrency control
-\end{itemize}
-
-Also, PostgreSQL can be extended by the user in many ways, for example by adding new
-
-\begin{itemize}
-    \item data types
-    \item functions
-    \item operators
-    \item aggregate functions
-    \item index methods
-    \item procedural languages
-\end{itemize}
-And because of the liberal license, PostgreSQL can be used, modified, and distributed by anyone free of charge for any purpose, be it private, commercial, or academic.
-
-
-\paragraph{PostGIS}
-PostGIS represents a potent open-source instrument facilitating the creation of resilient spatial databases. Serving as the geographic extension of the PostgreSQL database management system, PostGIS enables the incorporation of geographic objects within data tables \cite{marquez2015postgis}. These geographic objects are specialized data types designed for the storage of geographic positions or sets thereof, integrated seamlessly into lines or polygons. In essence, PostGIS emerges as a formidable tool, empowering users to manage intricate geographical data proficiently and to visually interrogate such data when employed in conjunction with graphical tools, exemplified by QGIS.
-
-\paragraph{MobilityDB}
-MobilityDB uses the abstract data type approach of MOD implementations
-\cite{guting2000foundation}. In an extensible relational database system this
-amounts to adding user-defined types that can be used as attribute
-types inside relations. MobilityDB defines in PostgreSQL and PostGIS
-the temporal types: \texttt{tgeompoint}, \texttt{tgeogpoint}, \texttt{tfloat}, \texttt{tint},
-\texttt{ttext}, and \texttt{tbool}. These types encode functions from the time
-domain to their corresponding base type domains. MobilityDB extends the existential
-spatial database by adding a new dimension. It becomes more dynamics and respond to the need
-of processing moving object data.
 

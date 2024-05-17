@@ -156,7 +156,7 @@
 %----------------------------------------------------------------------------------------
 
 \HRule \\[0.4cm]
-{ \huge Line Simplification Algorithm \bfseries }\\[0.4cm] % Title of your document
+{ \huge Simplification Algorithms for Mobility Data \bfseries }\\[0.4cm] % Title of your document
 \HRule \\[1.2cm]
  
 %----------------------------------------------------------------------------------------
@@ -203,12 +203,13 @@ Soufiane \textsc{AJOUAOU}\\  000459811\\
 
 
 \section*{Abstract}
-With the increasing use of real-time geospatial data, particularly for GPS navigation and dynamic geospatial data analysis applications, line simplification is essential for efficiently representing complex and voluminous data. The ability to process this data quickly and accurately is crucial to meet the needs of modern applications.
 
-However, simplifying trajectories in a real-time processing environment poses significant challenges. Existing algorithms, such as Douglas-Peucker and Visvalingam-Whyatt, are not optimized for continuous data streams, limiting their effectiveness in scenarios where data continuously arrives and requires dynamic adaptation.
+With the increasing use of real-time geospatial data, particularly for GPS navigation and dynamic geospatial data analysis applications, line simplification is essential for efficiently representing complex and voluminous data. The ability to process this data quickly and accurately is crucial to meet the needs of modern applications.\\
 
-To address this need, this thesis proposes the SQUISH-E algorithm, designed to simplify trajectories in real time while minimizing synchronized Euclidean distance (SED) error. The algorithm uses a priority queue structure to maintain a simplified approximation of trajectories, enabling efficient data compression without sacrificing spatial accuracy. This solution is integrated into the POSTGIS and MobilityDB environments, allowing for practical and performant implementation in geospatial database systems.
-[00:41]
+However, simplifying trajectories in a real-time processing environment poses significant challenges. Existing algorithms, such as Douglas-Peucker and Visvalingam-Whyatt, are not optimized for continuous data streams, limiting their effectiveness in scenarios where data continuously arrives and requires dynamic adaptation.\\
+
+To address this need, this thesis proposes the SQUISH-E algorithm, designed to simplify trajectories in real time while minimizing synchronized Euclidean distance (SED) error. The algorithm uses a priority queue structure to maintain a simplified approximation of trajectories, enabling efficient data compression without sacrificing spatial accuracy. This solution is integrated into the POSTGIS and MobilityDB environments, allowing for practical and performant implementation in geospatial database systems.\\
+
 The advantages of this solution are numerous. The results show that the SQUISH-E algorithm significantly improves execution time compared to traditional implementations, particularly due to its efficiency in C. Additionally, the algorithm maintains high precision in trajectory simplification, as demonstrated by Hausdorff distance, Frechet distance, and Dynamic Time Warping measurements. Thus, the SQUISH-E algorithm substantially contributes to solving real-time line simplification problems, making geospatial data processing applications faster and more accurate.
 
 

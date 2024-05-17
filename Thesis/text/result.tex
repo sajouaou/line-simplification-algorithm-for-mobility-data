@@ -1,7 +1,7 @@
 
-\chapter{Result}
+\chapter{Experimental Evaluation}
 
-Here we will talk about the result of the function and see the precision and the performance of the requests. We will also compare it with the C implementation in real time using the same data to compare the offline implementation with the online one.
+In this chapter it will be discussed the function's effective performance and examine the accuracy and effectiveness of the queries. To compare the offline and online executions, we will also balance the differences between it in real time with the C implementation handling the same data.
 
 \section{Performance}
 This section will analyze and discuss the performance of the sql function by varying the lambda parameter and the number of points.
@@ -62,7 +62,7 @@ This section will focus on the precision of the simplification using the same pa
     \label{fig:traj_1}
 \end{figure}
 
-This trajectory is composed of 20865 points and begin at 1am the 8/1/2021 with a duration of 1 day. This trajectory have convex and concave path in order to analyze the effect of the simplification in those specific moment. The precision of the trajectory will be computed based on the current metrics proposed in the state of the art such as frechet distance and hausdorff distances. We will not discuss the precision of lambda 1 because it does not reduce any points from the original trajectory.
+This trajectory is composed of 20865 points and begin at 1am the 8/1/2021 with a duration of 1 day. This trajectory have convex and concave path in order to analyze the effect of the simplification in those specific moment. The precision of the trajectory will be computed based on the current metrics proposed in the state of the art such as Frechet distance and Hausdorff distances. We will not discuss the precision of lambda 1 because it does not reduce any points from the original trajectory.
 
 
 
@@ -103,7 +103,7 @@ In this we can see the path being simplified where there is curves and having le
     \caption{Precision metrics per Lambda for Trajectory 1 }
 \end{table}
 
-This table gives a view of the precision of squish-e on the first trajectory. The data shows that it is consistent and precise and that errors is increasing when lambda decreases. Dynamic Time Warping Distance gives also an overview of the loss of precision when we remove more points.
+This table gives a view of the precision of SQUISH-E on the first trajectory. The data shows that it is consistent and precise and that errors is increasing when lambda decreases. Dynamic Time Warping Distance gives also an overview of the loss of precision when we remove more points.
 
 \subsection{Comparison With C}
 This section will outline the differences between the SQL and C execution since the SQL represents an offline execution and C represents the online the differences here is to underline the possible loss of accuracy in the process. In order to keep this part concise a table with all variables above will be given and choose the differences of the distances between the offline and the online trajectories.
