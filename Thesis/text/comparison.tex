@@ -1,17 +1,16 @@
 
 
-\chapter{Comparison}
-This chapter focus on the comparison of our implementation with existing other implementation in MobilityDB.  In this section, the algorithms implemented in MobilityDB and SQUISH-E will be compared on various measures. Essentially performance and similarity, the competition factor will also be derived in order to determine whether the SQUISH-E points at the output compete with the algorithms present when we duplicate them. Tests and results are retrieved through MobilityDB and processed from a custom front-end under react and grafana to obtain an analytical dashboard. Comparisons will only be made between versions implemented in MobilityDB.
+\section{Comparison With Other Algorithms}
+This chapter focus on the comparison of our implementation with existing other implementation in MobilityDB.  This section presents a comparison of SQUISH-E and the algorithms that are implemented in MobilityDB based on several metrics. To find out whether the SQUISH-E points at the output compete with the algorithms existing when we replicate them, we will also derive the competitiveness factor, which is essentially performance and similarity. Tests and results are retrieved through MobilityDB and processed from a custom front-end under react and grafana to obtain an analytical dashboard. Only versions that have been implemented in MobilityDB will be compared.
 
+\subsection{Douglas-Peucker}
 
-\section{Douglas-Peucker}
+Douglas-Peucker is a trajectory simplification method based on offline execution, as stated in the state of the art. Thus, for it to function correctly, the entire trajectory is required.
 
-As mentioned in the state of the art Douglas-Peucker is a trajectory simplification algorithm based on offline execution. So it needs the full trajectory in order to work properly.
+\paragraph{Performance}
+Different input settings were used to run the executions at different point sizes. In order to approximate compression ratios between 90\% and 1\%, lambda variables were selected. To highlight the algorithm's performance, the points are actually in the same location and have no actual geographical position.
 
-\subsection{Performance}
-The executions were run under different point sizes by varying the input parameters. The lambda variables were chosen to approximate compression ratios between 90\%-1\%. The points have no real geographical position and are in fact at the same location, in order only to underline the performance of the .
-
-\begin{table}[htbp]
+\begin{table}
     \centering
     \label{tab:execution_time_douglas}
     \begin{tabular}{@{}lccccc@{}}
@@ -27,17 +26,20 @@ The executions were run under different point sizes by varying the input paramet
         1000000          & 00.169507 & 00.147934 & EOF & EOF & EOF \\
         \bottomrule
     \end{tabular}
-    \caption{Average Execution Time by Number of Points and Distance}
+    \caption{Average Execution Time for varying Number of Points and Distance values for Douglas-Peucker algorithm.}
 \end{table}
 
-The table \ref{tab:execution_time_douglas} shows the results representing the number of input points and the lambda parameter given to Douglas-Peucker.
-It's quite astonishing to see the speed of the algorithm for lambda=5. Having a speed higher than an execution on C while the program runs under psql.  This is due to the nature of Douglas-Peucker, which doesn't continue with unnecessary simplifications and starts with the extremities. We can also see that for values less than or equal to 0.02 the algorithm is quite slow and even causes EOFs. We can point out that to have simplifications at a rate of less than 50\% Douglas-Peucker is quite fast, but when the compression must be above a certain threshold which depends on any trajectory as the parameter is an error distance and not a compression rate then it becomes quite slow compared to its sibling SQUISH-E.  SQUISH-E is fairly constant and is the slowest for a compression ratio of 50\% as seen above.
+The table \ref{tab:execution_time_douglas} displays the results for the number of input points and the lambda parameter provided to Douglas-Peucker.
+It's amazing how fast the algorithm is for lambda=5. While the program executes in PostgreSQL, its performance is faster than that of an operation in C.  This is due to the nature of Douglas-Peucker, which avoids unnecessary simplifications and begins with the edges. We can also see that for values less than or equal to 0.02, the process is slow and even results in EOFs. 
 
-\subsection{Similarity}
-Similarity is an important measure for comparing these two algorithms with two different inputs, so in order to make a comparison let's look at the level of compression at the output. 
+Simplifications at a rate of less than 50\% Douglas-Peucker are quite fast. However, when the compression must be above a certain threshold, which depends on any trajectory as the parameter is an error distance rather than a compression rate, it becomes quite slow compared to its sibling SQUISH-E.  As can be seen above, SQUISH-E is the slowest with a compression ratio of 50\% and is quite consistent.
 
 
-\begin{table}[htbp]
+\paragraph{Similarity}
+Similarity is a key metric for comparing these two algorithms with two different inputs, thus to make a comparison, consider the level of compression at the output. 
+
+
+\begin{table}
 	\centering
 	\label{tab:douglas_vs_squish_comparison}
 	\begin{tabular}{@{}lccc@{}}
@@ -55,7 +57,21 @@ Similarity is an important measure for comparing these two algorithms with two d
 		Frechet 		& -28363 & -6034 & -617.274 \\
 		Hausdorff 		& -28363 & -6034 & -617.274 \\
 		DTW  		& -262452925 & -47034601 & -8163405 \\
-		Temporal 	& 102 & 19.191 & -1.590 \\ \midrule
+		Temporal 	& 102 & 19.191 & -1.590 \\ 
+		\bottomrule
+	\end{tabular}
+	\caption{Comparison of differences between the Douglas-Peucker and SQUISH-E (1x,2x) algorithms using Frechet, Hausdorff, and DTW distance metrics for Trajectory 1.}
+\end{table}
+
+\begin{table}
+	\centering
+	\label{tab:douglas_vs_squish_comparison_2}
+	\begin{tabular}{@{}lccc@{}}
+		\toprule
+		& \multicolumn{3}{c}{\textbf{Douglas}} \\
+		\cmidrule(l){2-4}
+		\textbf{SquishE} & 0.02 & 0.002 & 0.0002 \\
+		\midrule
 		\textbf{3x} 	& 54 & 201 & 2304 \\
 		Frechet 		& -34532 & -8073 & -617.274 \\
 		Hausdorff 		& -34532 & -8073 & -617.274 \\
@@ -68,18 +84,20 @@ Similarity is an important measure for comparing these two algorithms with two d
 		Temporal 			& -278 & -22.036 & -2.315 \\
 		\bottomrule
 	\end{tabular}
-	\caption{Comparison of differences between Douglas and SquishE (Frechet, Hausdorff, DTW)}
+	\caption{Comparison of differences between the Douglas-Peucker and SQUISH-E (3x,4x) algorithms using Frechet, Hausdorff, and DTW distance metrics for Trajectory 1.}
 \end{table}
 
-The table \ref{tab:douglas_vs_squish_comparison} shows the differences in distances between the two algorithms. The different boxes represent the number of points SQUISH-E outputs compared to Douglas.
-Note that if the result is negative, SQUISH-E is more accurate than Douglas. For spatial distances such as Frechet and Hausdorff, we can see that SQUISH-E with the same number of points is more accurate. SQUISH-E, on the other hand, has a larger temporal area than Douglas, which shows that SQUISH-E's gap areas are larger than Douglas's, and competes with Douglas at x3 for small percentages, but x2 when the number of points is larger.
+The tables \labelcref{tab:douglas_vs_squish_comparison,tab:douglas_vs_squish_comparison_2} compare the distances between the two algorithms. The different boxes reflect the number of points SQUISH-E generates as compared to Douglas-Peucker.
+If the result is negative, SQUISH-E outperforms Douglas-Peucker. For spatial distances like Frechet and Hausdorff, we can observe that SQUISH-E with the same number of points performs better. SQUISH-E, on the other hand, has a bigger temporal area than Douglas-Peucker, indicating that SQUISH-E's gap regions are larger than Douglas-Peucker's. It competes with Douglas-Peucker at x3 for tiny percentages, but at x2 when the number of points is greater.
 
 
 
-\section{MinDist}
-\subsection{Performance}
-Min distance is a second algorithm implemented in MobilityDB. Min distance, like douglas, works offline and requires the entire trajectory in order to run correctly. % à décrire dans l'état de l'art
-\begin{table}[htbp]
+
+\subsection{MinDist}
+\paragraph{Performance}
+MinDist is another algorithm implemented in MobilityDB. Like SQUISH-E, MinDist operates iteratively, updating its state for each point. Its iterative structure allows it to function effectively in an online setting.
+
+\begin{table}
     \centering
     \label{tab:execution_time_mindist}
     \begin{tabular}{@{}lccccc@{}}
@@ -95,15 +113,15 @@ Min distance is a second algorithm implemented in MobilityDB. Min distance, like
         1000000          & 00.034338 & 00.036202 & 00.152152 & 00.163061 & 00.178996 \\
         \bottomrule
     \end{tabular}
-    \caption{Average Execution Time by Number of Points and Distance of MinDist Algorithm}
+    \caption{Average Execution Time across varying Number of Points and Distance values for the MinDist Algorithm.}
 \end{table}
 
-In terms of performance, min distances outperforms SQUISH-E. Min distance is slower when we increase the lambda variable.
+In terms of performance, MinDist outperforms SQUISH-E. However, MinDist experiences a decrease in speed as the lambda variable increases.
 
-\subsection{Similarity}
-As in the previous section, the table below shows the similarity comparison between min distance and SQUISH-E.
+\paragraph{Similarity}
+As in the previous section, the table below shows the similarity comparison between MinDist and SQUISH-E.
 
-\begin{table}[htbp]
+\begin{table}
 	\centering
 	\label{tab:mindist_vs_squish_comparison}
 	\begin{tabular}{@{}lccc@{}}
@@ -121,7 +139,21 @@ As in the previous section, the table below shows the similarity comparison betw
 		Frechet 		& 598.393 & 582.269 & -66.409 \\
 		Hausdorff 		& 598.393 & 582.269 & -66.409 \\
 		DTW  		& -3452102 & -463775 & -36834 \\
-		Temporal 	& -3.687 & -0.563 & -0.647 \\ \midrule
+		Temporal 	& -3.687 & -0.563 & -0.647 \\ 
+		\bottomrule
+	\end{tabular}
+	\caption{Comparison of differences between the MinDist and SQUISH-E (1x,2x) algorithms using Frechet, Hausdorff, and DTW distance metrics for Trajectory 1.}
+\end{table}
+
+\begin{table}
+	\centering
+	\label{tab:mindist_vs_squish_comparison_2}
+	\begin{tabular}{@{}lccc@{}}
+		\toprule
+		& \multicolumn{3}{c}{\textbf{Mindist}} \\
+		\cmidrule(l){2-4}
+		\textbf{SquishE} & 0.02 & 0.002 & 0.0002 \\
+		\midrule
 		\textbf{3x} 	& 1254 & 201 & // \\
 		Frechet 		& 598.393 & 582.269 &  // \\
 		Hausdorff 		& 598.393 & 582.269 &  // \\
@@ -134,46 +166,123 @@ As in the previous section, the table below shows the similarity comparison betw
 		Temporal 			& -5.538 & -1.764 &  // \\
 		\bottomrule
 	\end{tabular}
-	\caption{Comparison of differences between MinDist and SquishE (Frechet, Hausdorff, DTW)}
+	\caption{Comparison of differences between the MinDist and SQUISH-E (3x,4x) algorithms using Frechet, Hausdorff, and DTW distance metrics for Trajectory 1.}
 \end{table}
 
-We can see in \ref{tab:mindist_vs_squish_comparison} and observe that min distance is remarkably accurate. SQUISH-E competes with min distance for double the number of points in output, but is less accurate for spatial metrics such as fréchet and Hausdorff. min distance has a surprising combination of performance and accuracy. SQUISH-E's advantage over min distance is its ability to operate in a streaming environment. We can also note that SQUISH-E competes with min distance when the number of points is multiplied by 2 in spatiotemporal metrics such as DTW and temporal.
 
+The tables \labelcref{tab:mindist_vs_squish_comparison,tab:mindist_vs_squish_comparison_2} demonstrate MinDist's remarkable accuracy. SQUISH-E competes with MinDist for twice as many output points, but it is less accurate for spatial metrics like Frechet and Hausdorff. MinDist offers a remarkable balance of performance and precision. MinDist can also be used in a streaming model, but it just takes distance as input, whereas SQUISH-E in our version only takes percentage of preservation. We can also see that SQUISH-E competes with MinDist when the number of points is multiplied by two in spatiotemporal metrics like DTW and temporal. A dashboard will be installed to gain a better understanding of power and comparison, as well as observations on different sorts of trajectories.
 
-\section{DashBoard}
+\subsection{DashBoard}
 
-To get a more global view and a picture of the comparison here are some graphs that can be obtained from the dashboard data: 
+A dashboard can help us visualize and understand our data while also providing a clear overview. The dashboard is powered by Grafana and enables for the collection and analysis of data via graphs. We can also specify that the data is pre-processed by a script in order to save analysis time and simplify the dashboard's duty.
 
-
-\begin{figure}[!h]
+\begin{figure}
 	\centering
-	\includegraphics[width=1\linewidth]{figures/Stats/hausdorff_comp.jpg}
-	\caption{Hausdorff comparison}
+	\includegraphics[width=1\linewidth]{figures/Stats/DashBoard3.jpg}
+	\caption{Screenshot of the Dashboard. }
+	\label{fig:dash}
+\end{figure}
+
+Figure \ref{fig:dash} shows a dashboard separated into boxes, one for each algorithm and three for each comparison.  We may compare the precision (Frechet, Hausdorff, and DTW) distances of the various compression techniques for each trajectory. This tool is powerful enough to collect analysis data on simplifications.  
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=1\linewidth]{figures/Stats/DashBoardright.jpg}
+	\caption{Right panel of the Dashboard. }
+	\label{fig:dashright}
+\end{figure}
+
+The graphs are interactive, allowing comparisons to be made. The Grafana plugin for the XY graph is useful but incomplete because the comparison graph is difficult to read. The dashboard contains highly useful information that can be retrieved to provide a more comprehensive perspective. Here are a few graphs that can be generated from dashboard data. Using a plot to read the extracted data :
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\linewidth]{figures/Stats/hausdorff_comp.png}
+	\caption{Comparison of Hausdorff distance between MinDist, Douglas-Peucker, and SQUISH-E algorithms by percentage of points in output for Trajectory 1.}
 	\label{fig:comp_h}
 \end{figure}
 
+The Hausdorff distance graphs in Figure \ref{fig:comp_h} indicate that the SQUISH-E algorithm often has greater values than Douglas-Peucker and MinDist across the whole range of percentages. Douglas-Peucker and MinDist retain shorter and more stable Hausdorff distances, indicating superior maximum deviation performance. SQUISH-E's lower competitive ratio shows that it performs better than Douglas-Peucker at keeping the original shape.
 
-\begin{figure}[!h]
+\begin{figure}
 	\centering
-	\includegraphics[width=1\linewidth]{figures/Stats/frechet_comp.jpg}
-	\caption{Frechet comparison}
+	\includegraphics[width=0.9\linewidth]{figures/Stats/fretchet_comp.png}
+	\caption{Comparison of Frechet distance between MinDist, Douglas-Peucker, and SQUISH-E algorithms by percentage of points in output for Trajectory 1.}
 	\label{fig:comp_f}
 \end{figure}
 
+SQUISH-E has much larger Frechet distance values than MinDist, as seen in Figure \ref{fig:comp_f}. SQUISH-E performs similarly to Douglas-Peucker, particularly in the middle range. However, SQUISH-E's competitive ratio is almost always less than one. There is a similar finding for Hausdorff.
 
-\begin{figure}[!h]
+
+
+\begin{figure}
 	\centering
-	\includegraphics[width=1\linewidth]{figures/Stats/dtw_comp.jpg}
-	\caption{DTW comparison}
+	\includegraphics[width=0.9\linewidth]{figures/Stats/dtimewarp_comp.png}
+	\caption{Comparison of DTW distance between MinDist, Douglas-Peucker, and SQUISH-E algorithms by percentage of points in output for Trajectory 1.}
 	\label{fig:comp_dt}
 \end{figure}
 
+Figure \ref{fig:comp_dt} shows that SQUISH-E has lower DTW distances than Douglas-Peucker and MinDist. SQUISH-E is very near to MinDist and maintains a high accuracy level.  
 
-\begin{figure}[!h]
+\begin{figure}
 	\centering
-	\includegraphics[width=1\linewidth]{figures/Stats/atemp_comp.jpg}
-	\caption{Temporal Integral comparison}
+	\includegraphics[width=0.9\linewidth]{figures/Stats/atemp_comp.png}
+	\caption{Comparison of Temporal Integral between MinDist, Douglas-Peucker, and SQUISH-E algorithms by percentage of points in output for Trajectory 1.}
 	\label{fig:comp_at}
 \end{figure}
 
-These figures show the comparison of accuracies on trajectory 1 between the three algorithms mentioned above (Douglas,SQUISH-E,MinDist). Here the variation in error distance as a function of compression level can be observed. Frechet and Hausdorff's error level for Douglas and SQUISH-E has a staircase formation, while for Mindistance it constantly decreases. SQUISH-E is generally better than douglas and worse than min distance, except in \ref{fig:comp_at} where SQUISH-E is worse but very close to its competitors.
+In Figure \ref{fig:comp_at}, SQUISH-E demonstrates superior performance in aggregate difference over the time period as evidenced by its consistently lower values when compared to Douglas-Peucker and MinDist for the Temporal Integral.
+\\
+
+The comparison of accuracies on trajectory 1 amongst the three algorithms (Douglas, SQUISH-E, and MindDist) is displayed in the following figures \labelcref{fig:comp_at,fig:comp_dt,fig:comp_f,fig:comp_h}. This is where the error distance variation with the compression level may be seen. For Douglas-Peucker and SQUISH-E, Frechet and Hausdorff's error level has a staircase structure, while for MinDist, it continuously lowers. With the exception of \ref{fig:comp_at}, where SQUISH-E performs worse but is still extremely close to its rivals, SQUISH-E is typically better than Douglas-Peucker and worse than MinDist.
+
+\paragraph{Trajectory 2}
+
+This trajectory in the Figure \ref{fig:traj2} is composed of 16310 points and begin at 1am the 8/1/2021 with a duration of 1 day. This trajectory is exceptional and allows us to observe specific cases such as round trips and breakpoints. This is useful for observing the behaviour of compression algorithms for this type of trajectory. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/Stats/traj2.jpg}
+	\caption{Trajectory 2 on a map.}
+	\label{fig:traj2}
+\end{figure}
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\linewidth]{figures/Stats/hausdorff_comp2.png}
+	\caption{Comparison of Hausdorff distance between MinDist, Douglas-Peucker, and SQUISH-E algorithms by percentage of points in output  for Trajectory 2.}
+	\label{fig:comp_h2}
+\end{figure}
+
+SQUISH-E typically has greater values than Douglas-Peucker and MinDist across the whole range of percentages, according to the Hausdorff distance graphs in Figure \ref{fig:comp_h2}. Douglas-Peucker and MinDist retain shorter and more stable Hausdorff distances, indicating superior maximum deviation performance. The competitive ratio for SQUISH-E is greater than one, indicating lower performance when compared to the other algorithms. \\
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\linewidth]{figures/Stats/fretchet_comp2.png}
+	\caption{Comparison of Frechet distance between MinDist, Douglas-Peucker, and SQUISH-E algorithms by percentage of points in output  for Trajectory 2.}
+	\label{fig:comp_f2}
+\end{figure}
+
+In Figure \ref{fig:comp_f2}, SQUISH-E has substantially larger Frechet distance values than MinDist, yet there are many oscillations over the range. SQUISH-E performs similarly to Douglas-Peucker, particularly in the middle percentage range. However, the competitive ratio for SQUISH-E remains greater than one, indicating that it performs worse in retaining shape similarity than MinDist but is comparable to Douglas-Peucker in some ranges. \\
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\linewidth]{figures/Stats/dtimewarp_comp2.png}
+	\caption{Comparison of DTW distance between MinDist, Douglas-Peucker, and SQUISH-E algorithms by percentage of points in output  for Trajectory 2.}
+	\label{fig:comp_dt2}
+\end{figure}
+
+Figure \ref{fig:comp_dt2} shows that SQUISH-E starts with higher DTW distances than Douglas-Peucker and MinDist. Around the 0.5 to 0.6 percentage point, SQUISH-E approaches Douglas-Peucker's performance but falls short of MinDist's reduced DTW distances. Initially, SQUISH-E has a higher competitive ratio, which improves over time but remains more than one, showing that it approaches Douglas-Peucker but not MinDist. \\
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\linewidth]{figures/Stats/atemp_comp2.png}
+	\caption{Comparison of Temporal Integral between MinDist, Douglas-Peucker, and SQUISH-E algorithms by percentage of points in output  for Trajectory 2.}
+	\label{fig:comp_at2}
+\end{figure}
+
+In comparison to Douglas-Peucker and MinDist, SQUISH-E consistently displays lower values for the temporal integral area in Figure \ref{fig:comp_at2}, showing greater performance in aggregate difference over the time range. SQUISH-E is effective at preserving a lower cumulative deviation from the original data, as evidenced by its competitive ratio of less than 1.\\
+
+SQUISH-E demonstrates strengths in specific metrics such as Temporal integral area, where it consistently outperforms Douglas-Peucker and MinDist. This is particularly notable given the dataset's characteristics, which include stop points and round-trip trajectories. However, SQUISH-E struggles with Frechet distance and Hausdorff distance, maintaining higher values (worse performance) across the range. The DTW distance metric shows some improvement for SQUISH-E, with the algorithm approaching the performance of Douglas-Peucker at higher percentages but not quite reaching the performance of MinDist. These insights highlight the areas where SQUISH-E excels and where it needs improvement relative to its competitors. MinDist has shown a really amazing result but the type of input make him difficult to use for use case as it is a distance. As we also saw because MinDist does not take into account temporality it has some issues on temporal metrics like in the figure \ref{fig:comp_at2}.
+

@@ -3,6 +3,7 @@
 
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
+
 \usepackage{amsmath}
 \usepackage{graphicx}
 \setlength {\marginparwidth }{2.5cm}
@@ -24,11 +25,13 @@
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 \usepackage{hyperref}
+\usepackage{cleveref}
 \hypersetup{linktocpage}
 
 \usepackage{booktabs} % Pour de meilleurs tableaux
 
 \usepackage{longtable}
+\usepackage{csquotes}  % Add this line to load csquotes
 \providecommand{\keywords}[1]
 {
   
@@ -118,7 +121,7 @@
 \usepackage[
     backend=biber,
     style=numeric,
-    sortlocale=fr_FR,
+    sortlocale=$fr_FR$,
     natbib=true,
     url=false,
     doi=true,
@@ -208,7 +211,7 @@ With the increasing use of real-time geospatial data, particularly for GPS navig
 
 However, simplifying trajectories in a real-time processing environment poses significant challenges. Existing algorithms, such as Douglas-Peucker and Visvalingam-Whyatt, are not optimized for continuous data streams, limiting their effectiveness in scenarios where data continuously arrives and requires dynamic adaptation.\\
 
-To address this need, this thesis proposes the SQUISH-E algorithm, designed to simplify trajectories in real time while minimizing synchronized Euclidean distance (SED) error. The algorithm uses a priority queue structure to maintain a simplified approximation of trajectories, enabling efficient data compression without sacrificing spatial accuracy. This solution is integrated into the POSTGIS and MobilityDB environments, allowing for practical and performant implementation in geospatial database systems.\\
+To address this need, this thesis proposes the SQUISH-E algorithm, designed to simplify trajectories in real time while minimizing synchronized Euclidean distance (SED) error. The algorithm uses a priority queue structure to maintain a simplified approximation of trajectories, enabling efficient data compression without sacrificing spatial accuracy. This solution is integrated into the PostGIS and MobilityDB environments, allowing for practical and performant implementation in geospatial database systems.\\
 
 The advantages of this solution are numerous. The results show that the SQUISH-E algorithm significantly improves execution time compared to traditional implementations, particularly due to its efficiency in C. Additionally, the algorithm maintains high precision in trajectory simplification, as demonstrated by Hausdorff distance, Frechet distance, and Dynamic Time Warping measurements. Thus, the SQUISH-E algorithm substantially contributes to solving real-time line simplification problems, making geospatial data processing applications faster and more accurate.
 

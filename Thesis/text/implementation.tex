@@ -9,8 +9,8 @@ In order to implement the SQUISH-E algorithm, it is necessary to follow the pseu
 
 The first main loop is written as C function. The function have no return and changes the states of the variables.  This function take all the variables mentionned above it has some types and struct that will be described down. 
 
-\begin{lstlisting}[float=h,language=C, % Spécifie le langage du code
-caption={SQUISH-E}, % Légende du listing
+\begin{lstlisting}[float=ht,language=C, % Spécifie le langage du code
+caption={Listing of the SQUISH-E algorithm implemented in C.}, % Légende du listing
 label=lst:squish_c, % Étiquette pour référencer le listing
 numbers=left,
 numberstyle=\tiny\color{gray},
@@ -20,7 +20,6 @@ breaklines=true,
 postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
 showstringspaces=false
 ]
-
 void
 iteration_simplification_sqe(void *p_i , void *p_j ,
 size_t *beta,const double lambda,int i,
@@ -48,13 +47,15 @@ bool syncdist,interpType interp ,bool hasz ,uint32_t minpts)
 \end{lstlisting}
 
 
-This algorithm \ref{lst:squish_c} follow the pseudo code of SQUISH-E it called the set function of the priority queue and the set function of the point map and priority map that will be describe in the section about implementation of variable. Then the reduce function and adjust priority is called in order to reduce if the size meet the treshold and the adjustment for each point that has a predecessor and a successor in order to know the error that it will produce by removing the corresponding point.
+The algorithm in Listing \ref{lst:squish_c} follows the pseudo code of SQUISH-E. It utilizes the set function for the priority queue, as well as the set functions for the point map and priority map, which will be described in the implementation section. The reduce function and adjust priority functions are called to manage the size of the data structure when it meets the threshold. These functions also adjust the priority for each point that has both a predecessor and a successor, in order to calculate the error that would result from removing the corresponding point.
 
 \subsection{Algorithm 2 - Reduce}
-Then we have the main block of SQUISH-E which is the reduce part.
+Then we have the main block of SQUISH-E, which is the reduce part.
+
+
 
 \begin{lstlisting}[language=C, % Spécifie le langage du code
-caption={reduce}, % Légende du listing
+caption={Implementation of the reduce function in C.}, % Légende du listing
 label=lst:reduce_c, % Étiquette pour référencer le listing
 numbers=left,
 numberstyle=\tiny\color{gray},
@@ -66,7 +67,6 @@ showstringspaces=false,
 float,
 floatplacement=H
 ]
-
 void
 reduce(struct PriorityQueue *Q,Dict *pred,Dict *succ,PDict  *p,
 bool syncdist,interpType interp ,bool hasz )
@@ -103,12 +103,12 @@ bool syncdist,interpType interp ,bool hasz )
 
 \end{lstlisting}
 
-This algorithm \ref{lst:reduce_c} describe the reduction method as mentioned above remove the lowest priority points from the queue and it update the neighbors. Because we use C langage we free memory of the useless data. Each call is represented by a function in order to simplify implementation and reduce it to pieces of code to be written for each particular variable. This choice of implementation also makes it possible to change the structure. 
+This algorithm in Listing \ref{lst:reduce_c} describes the reduction method. As mentioned above, it removes the lowest priority points from the queue and updates the neighbors. Since we use the C language, we free the memory of the unnecessary data. Each call is represented by a function to simplify implementation and break it down into manageable pieces of code for each particular variable. This choice of implementation also allows for flexibility in changing the structure.
 
 \subsection{Algorithm 3 - Adjust Priority} 
 
 \begin{lstlisting}[language=C, % Spécifie le langage du code
-caption={adjust\_priority}, % Légende du listing
+caption={C code implementation of the adjust\_priority function.}, % Légende du listing
 label=lst:adjust_c, % Étiquette pour référencer le listing
 numbers=left,
 numberstyle=\tiny\color{gray},
@@ -120,12 +120,10 @@ showstringspaces=false,
 float,
 floatplacement=H
 ]
-
 void
 adjust_priority(void *p_i,struct PriorityQueue *Q, Dict *pred,Dict *succ,PDict  *p,
 bool syncdist,interpType interp ,bool hasz )
 {
-
 	void * p_h = get_point_dict(p_i,pred);
 	void * p_k = get_point_dict(p_i,succ);
 	if( p_h != NULL &&  p_k != NULL )
@@ -141,17 +139,19 @@ bool syncdist,interpType interp ,bool hasz )
 \end{lstlisting}
  
 
-This algorithm \ref{lst:adjust_c} is what differentiates SQUISH from SQUISH-E: when a point is removed, the surrounding points are updated and their priority changed, so we only recover the neighbours and calculate the new priority on the basis of the old error present in the dictionary and the calculation of the synchronised Euclidean distance. 
+The algorithm in Listing \ref{lst:adjust_c} highlights what differentiates SQUISH from SQUISH-E. When a point is removed, the surrounding points are updated, and their priorities are adjusted accordingly. This process involves retrieving the neighboring points and recalculating their priorities based on the previously stored error in the dictionary and the synchronized Euclidean distance calculation.
 
 
 \section{Variables Implementation}
-In this section we'll discuss how the variables have been implemented and how effective they are, followed by a discussion of the performance and complexity achieved.
+In this section, we will discuss how the variables have been implemented and evaluate their effectiveness. This will be followed by a discussion on the performance and complexity achieved.
+
 
 \subsection{Map}
-In this section we will focus on the implementation of the map
+In this section, we will focus on the implementation of the map.
 
-\begin{lstlisting}[float=h,language=C, % Spécifie le langage du code
-caption={Map C implementation}, % Légende du listing
+
+\begin{lstlisting}[float=ht,language=C, % Spécifie le langage du code
+caption={C code implementation of the Map data structure.}, % Légende du listing
 label=lst:map_c, % Étiquette pour référencer le listing
 numbers=left,
 numberstyle=\tiny\color{gray},
@@ -161,9 +161,7 @@ breaklines=true,
 postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
 showstringspaces=false
 ]
-
 #include <search.h>
-
 
 typedef struct PriorityDict
 {
@@ -181,17 +179,17 @@ void *value;
 
 typedef void* Dict;
 typedef void* PDict;
-
 \end{lstlisting}
  
 
-This structure \ref{lst:map_c} is a Map that link a point to a corresponding value like priority or another point. We just need to define a struct with two values the key and the value. The typedef void* is using for the GNU Library to avoid using void** and add more clarity to the code.
+This structure in Listing \ref{lst:map_c} represents a Map that links a point to a corresponding value, such as a priority or another point. We define a struct with two fields: the key and the value. The \texttt{typedef void*} is used for the GNU Library to avoid using \texttt{void**}, adding more clarity to the code.
+
 
 \paragraph{Method}
 
-\begin{lstlisting}[float=h,language=C, % Spécifie le langage du code
-caption={Point Map Methods}, % Légende du listing
-label=lst:pmap_c, % Étiquette pour référencer le listing
+\begin{lstlisting}[float=ht,language=C, % Spécifie le langage du code
+caption={Methods get\_point for the Map implementation in C.}, % Légende du listing
+label=lst:pmap_c_g, % Étiquette pour référencer le listing
 numbers=left,
 numberstyle=\tiny\color{gray},
 stepnumber=1,
@@ -200,7 +198,6 @@ breaklines=true,
 postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
 showstringspaces=false
 ]
-
 void *
 get_point_dict(void *p_i,Dict *dict)
 {
@@ -213,6 +210,19 @@ get_point_dict(void *p_i,Dict *dict)
 	return result;
 }
 
+\end{lstlisting} 
+
+\begin{lstlisting}[float=ht,language=C, % Spécifie le langage du code
+caption={Methods set\_point for the Map implementation in C.}, % Légende du listing
+label=lst:pmap_c_s, % Étiquette pour référencer le listing
+numbers=left,
+numberstyle=\tiny\color{gray},
+stepnumber=1,
+frame=single,
+breaklines=true,
+postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+showstringspaces=false
+]
 void
 set_point_dict(void * p_i,void * p_j,Dict *dict)
 {
@@ -227,7 +237,20 @@ set_point_dict(void * p_i,void * p_j,Dict *dict)
 		tsearch(find, dict, compar); /* insert */
 	}
 }
+\end{lstlisting} 
 
+
+\begin{lstlisting}[float=ht,language=C, % Spécifie le langage du code
+caption={Methods destroy\_elem for the Map implementation in C.}, % Légende du listing
+label=lst:pmap_c, % Étiquette pour référencer le listing
+numbers=left,
+numberstyle=\tiny\color{gray},
+stepnumber=1,
+frame=single,
+breaklines=true,
+postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+showstringspaces=false
+]
 void destroy_elem_PointDict(void * p_i,Dict *dict)
 {
 	PointDict find;
@@ -243,15 +266,16 @@ void destroy_elem_PointDict(void * p_i,Dict *dict)
 
 \end{lstlisting} 
 
-Here \ref{lst:pmap_c} we use function of GNU C Library that implement a binary tree. It has the property to have for each operation a maximal complexity of $O(log(n))$ The two mapping use the same implementation in reality it would be a good idea to resolve this duplication case using a template or thing that can resolve it but the C language limit the capability.
+In the Listings \labelcref{lst:pmap_c,lst:pmap_c_g,lst:pmap_c_s}, we utilize functions from the GNU C Library that implement a binary tree. This structure ensures that each operation has a maximum complexity of \( O(\log(n)) \). Both mappings use the same implementation. Ideally, it would be beneficial to resolve this duplication by using a template or a similar approach, but the capabilities of the C language impose certain limitations.
+
 
 \paragraph{Discussion}
-As mentioned in the previous sub section the map use GNU C Library binary tree structure to perform search and set. Those algorithm have a complexity of $O(log(n))$ as mentioned before and it has the property to be have a dynamic allocation of memory.
+As mentioned in the previous subsection, the map uses the GNU C Library binary tree structure to perform search and set operations. These algorithms have a complexity of \( O(\log(n)) \) and feature dynamic memory allocation.
 
 \subsection{PriorityQueue}
 
-\begin{lstlisting}[float=h,language=C, % Spécifie le langage du code
-caption={PriorityQueue}, % Légende du listing
+\begin{lstlisting}[float=ht,language=C, % Spécifie le langage du code
+caption={C code implementation of the PriorityQueue.}, % Légende du listing
 label=lst:prqueue_c, % Étiquette pour référencer le listing
 numbers=left,
 numberstyle=\tiny\color{gray},
@@ -261,7 +285,6 @@ breaklines=true,
 postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
 showstringspaces=false
 ]
-
 typedef struct PriorityQueueElem
 {
 	void * point;
@@ -281,14 +304,15 @@ typedef struct PriorityQueue
 
 \end{lstlisting} 
 
-This structure \ref{lst:prqueue_c} implements the function of a priority queue using the structure of a min heap. It has as value PriorityQueueElem which have the point and the corresponding priority and a reference to this index in the heap. The main structure is using an array of pointer of PriorityQueueElem as long as an index map, a int that represent the number of points in the queue and lastly the numbers points allocated.
+This structure in Listing \ref{lst:prqueue_c} implements the functions of a priority queue using the structure of a min heap. It uses a `PriorityQueueElem` which contains the point, the corresponding priority, and a reference to this index in the heap. The main structure uses an array of pointers to `PriorityQueueElem`, along with an index map, an integer representing the number of points in the queue, and finally, the number of points allocated.
+
 
 \paragraph{Method}
 
-Once the skeleton of the algorithm has been implemented. To finish the implementation, the methods of the variables described can be implemented. 
+After establishing the algorithm's framework, the next step is to implement the methods for the described variables to complete the implementation process.
 
-\begin{lstlisting}[float=h,language=C, % Spécifie le langage du code
-	caption={PriorityQueue Remove Min}, % Légende du listing
+\begin{lstlisting}[float=ht,language=C, % Spécifie le langage du code
+	caption={C code implementation of the PriorityQueue's Remove Min function.}, % Légende du listing
 	label=lst:prqueueMethodR_c, % Étiquette pour référencer le listing
 	numbers=left,
 	numberstyle=\tiny\color{gray},
@@ -297,8 +321,7 @@ Once the skeleton of the algorithm has been implemented. To finish the implement
 	breaklines=true,
 	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
 	showstringspaces=false
-]
-	
+]	
 PriorityQueueElem *remove_min(PriorityQueue *Q)
 {
 	PriorityQueueElem *result = NULL;
@@ -323,12 +346,12 @@ PriorityQueueElem *remove_min(PriorityQueue *Q)
 }
 \end{lstlisting}
 
-So, in order to remove the point with the minimum result, the following procedure \ref{lst:prqueueMethodR_c} is used: we check the number of elements and retrieve the first element. The insertion methods ensure that the first element is always the one with the minimum result. Then we take the last element and remove it and place it at the beginning of the queue and balance the tree to keep the smallest element at index 0. Then remove the index from the dictionary. 
 
+To remove the point with the minimum result, we employ the procedure outlined in Listing \ref{lst:prqueueMethodR_c}: First, we verify the number of elements and retrieve the first one. Our insertion methods guarantee that this first element always holds the minimum result. Next, we extract the last element, relocate it to the beginning of the queue, and rebalance the tree to maintain the smallest element at index 0. Finally, we remove the index from the dictionary.
 
-\begin{lstlisting}[float=h,language=C, % Spécifie le langage du code
-caption={PriorityQueue Set Elem}, % Légende du listing
-label=lst:prqueueMethodSet_c, % Étiquette pour référencer le listing
+\begin{lstlisting}[float=ht,language=C, % Spécifie le langage du code
+caption={C code implementation of the PriorityQueue's Set Priority function.}, % Légende du listing
+label=lst:prqueueMethodSet_c_s, % Étiquette pour référencer le listing
 numbers=left,
 numberstyle=\tiny\color{gray},
 stepnumber=1,
@@ -337,7 +360,6 @@ breaklines=true,
 postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
 showstringspaces=false
 ]
-
 void
 set_priority_queue(void *p_i,double priority ,PriorityQueue *Q)
 {
@@ -353,8 +375,19 @@ set_priority_queue(void *p_i,double priority ,PriorityQueue *Q)
 		push(insert,Q);
 	}
 }
+\end{lstlisting}
 
-
+\begin{lstlisting}[float=ht,language=C, % Spécifie le langage du code
+caption={C code implementation of the PriorityQueue's Replace elem function.}, % Légende du listing
+label=lst:prqueueMethodSet_c_r, % Étiquette pour référencer le listing
+numbers=left,
+numberstyle=\tiny\color{gray},
+stepnumber=1,
+frame=single,
+breaklines=true,
+postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+showstringspaces=false
+]
 struct PriorityQueueElem *
 replace_elem(void *p_i,double priority ,PriorityQueue *Q)
 {
@@ -368,7 +401,19 @@ replace_elem(void *p_i,double priority ,PriorityQueue *Q)
 	}
 	return elem;
 }
-	
+\end{lstlisting}
+
+\begin{lstlisting}[float=ht,language=C, % Spécifie le langage du code
+caption={C code implementation of the PriorityQueue's Push function.}, % Légende du listing
+label=lst:prqueueMethodSet_c, % Étiquette pour référencer le listing
+numbers=left,
+numberstyle=\tiny\color{gray},
+stepnumber=1,
+frame=single,
+breaklines=true,
+postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+showstringspaces=false
+]
 void
 push(PriorityQueueElem * insert,PriorityQueue *Q)
 {
@@ -383,32 +428,39 @@ push(PriorityQueueElem * insert,PriorityQueue *Q)
 
 \end{lstlisting}
 
-From other implementation this one \ref{lst:prqueueMethodSet_c} has the property to have at most a complexity of $O(log(n))$ the choice of a min heap to implement the priorityqueue fullfill the complexity limitation that we see in the design phase. The min heap is structure has a structure of a tree like we see in Figure \ref{fig:min_heap} and has the property that each tree and sub tree has the property that the parent nodes is always lesser than the child nodes. The min heap implementation is inspired from this website \cite{GfG_2023}. 
+In other implementations, the procedures detailed in Listings \labelcref{lst:prqueueMethodSet_c_s,lst:prqueueMethodSet_c_r,lst:prqueueMethodSet_c} are designed with a maximum complexity of $O(\log(n))$. The decision to utilize a min heap structure for implementing the priority queue aligns with this complexity constraint established during the design phase.
+
+A min heap, as illustrated in Figure \ref{fig:min_heap}, embodies a tree-like structure where each node adheres to the property that parent nodes are always smaller than their child nodes. This property ensures efficient retrieval of the minimum element.
+
+The min heap implementation is derived from a reference on the website \footnote{https://www.geeksforgeeks.org/c-program-to-implement-min-heap/}, providing inspiration for its construction.
 
 
 \begin{figure}[!h]
 \centering
 \includegraphics[width=1\linewidth]{figures/tree.jpeg}
-\caption{Min Heap Structure}
+\caption{Illustration of the Min Heap structure.}
 \label{fig:min_heap}
 \end{figure}
 
 
 \paragraph{Discussion}
 
-The idea here is to use the min heap structure to obtain in a complexity of maximum $O(log(n))$  the point with the lowest priority. In the side we use a index map in order to replace point in the heap in an efficient way. Due to the fact that the design include the set of an element when it is already in the array. This structure has the advantage to benefit from static memory. The set works using the mapping to see if the point is already present in the map. If it is we replace it in the heap by changing his priority and apply a check with his ancestor then his descendant. If the point is not present we add a value at the end of the heap and check and update their ancestor to satisfy the condition of a min heap. So at the end the two operations needed for the algorithm reach a complexity of $O(log(n))$
+The concept here revolves around leveraging the min heap structure to achieve a maximum complexity of $O(\log(n))$ for obtaining the point with the lowest priority. Additionally, an index map is utilized to facilitate efficient replacement of points within the heap. This approach benefits from static memory allocation, a desirable trait.
+The set employs mapping to determine if a point is already present in the map. If it is, the point's priority is adjusted within the heap, followed by checks with its ancestors and descendants to maintain the min heap property. If the point is not present, it is added to the end of the heap, and adjustments are made to satisfy the min heap condition.
+Ultimately, both operations required by the algorithm achieve a complexity of $O(\log(n))$, ensuring efficient performance.
 
 \section{PostgreSQL Implementation}
 
-In this section we describe how the algorithm is implemented into the MobilityDB sql functions.
-\subsection{SQL Code}
-As the implementation is in C, the implementation of the sql code \ref{lst:squish_sql} is only a reference to the C function.\\
+In this section, we detail the implementation of the algorithm within the MobilityDB SQL functions.
 
-\begin{minipage}{\linewidth}
+\subsection{SQL Code}
+As the implementation is in C, the SQL code provided in Listing \ref{lst:squish_SQL} serves solely as a reference to the corresponding C function.\\
+
 \begin{lstlisting}[
 language=SQL, % Setting the language for SQL
-caption={SQUISHE SQL Code}, % Caption for the listing
-label=lst:squish_sql, % Label for referencing the listing
+caption={SQL code implementing the SQUISH-E algorithm.}, % Caption for the listing
+float=ht,
+label=lst:squish_SQL, % Label for referencing the listing
 basicstyle=\ttfamily\small, % Basic style
 keywordstyle=\color{blue}\ttfamily, % Style for keywords
 stringstyle=\color{red}\ttfamily, % Style for strings
@@ -430,17 +482,16 @@ RETURNS tgeompoint
 AS 'MODULE_PATHNAME', 'Temporal_simplify_sqe'
 LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 \end{lstlisting}
-\end{minipage}
 
 \subsection{Example}
-This section show some examples of usages of the pgsql function describe in \ref{lst:squish_sql}. This allowed to use the algorithm in an offline settings using request.\\
+This section presents examples demonstrating the usage of the PostgreSQL function described in Listing \ref{lst:squish_SQL}. These examples illustrate how the algorithm can be utilized in offline settings using queries.\\
 
 
-\begin{minipage}{\linewidth}
 \begin{lstlisting}[
 language=SQL, % Setting the language for SQL
-caption={Example SQL Code}, % Caption for the listing
-label=lst:example_sql, % Label for referencing the listing
+float=ht,
+caption={Example SQL queries demonstrating the use of the SQUISH-E algorithm.}, % Caption for the listing
+label=lst:example_SQL, % Label for referencing the listing
 basicstyle=\ttfamily\small, % Basic style
 keywordstyle=\color{blue}\ttfamily, % Style for keywords
 stringstyle=\color{red}\ttfamily, % Style for strings
@@ -453,7 +504,6 @@ breaklines=true, % Automatic line breaking
 postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}, % Arrow for line breaks
 showstringspaces=false % Don't show special spaces within strings
 ]
-
 SELECT SquishESimplify(tfloat '[1@2000-01-01, 2@2000-01-02, 3@2000-01-04,
 4@2000-01-05]', '1 day');
 -- [1@2000-01-01, 3@2000-01-04]
@@ -463,4 +513,3 @@ Point(2 2 2)@2000-01-02, Point(3 3 3)@2000-01-04, Point(5 5 5)@2000-01-05)', 0.5
 -- [POINT Z (1 1 1)@2000-01-01, POINT Z (3 3 3)@2000-01-04,POINT Z (5 5 5)@2000-01-05)
 
 \end{lstlisting}
-\end{minipage}

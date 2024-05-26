@@ -33,7 +33,7 @@ In this section we will present the pseudo-code of SQUISH-E algorithm used in ou
     \label{alg:squish_e}
 \end{algorithm}
 
-In the algorithm \ref{alg:squish_e} we can analyze the time complexity. The algorithm works iteratively, receiving each point one by one, which is convenient for our streaming case. Complexity is therefore at least $O(n * max(O(loop) ))$ .The lambda variable has also been modified. Next, the following adjust priority \ref{alg:adjust_priority} and reduce  \ref{alg:reduce} algorithms are presented.
+The algorithm in the Listing \ref{alg:squish_e} we can analyze the time complexity. The algorithm works iteratively, receiving each point one by one, which is convenient for our streaming case. Complexity is therefore at least $O(n * max(O(loop) ))$ .The lambda variable has also been modified. Next, the following adjust priority in the Listing \ref{alg:adjust_priority} and in the Listing \ref{alg:reduce} reduce algorithms are presented.
 
 
 \begin{algorithm}[H]
@@ -78,6 +78,7 @@ To achieve the optimum complexity of this algorithm, it is imperative that the m
 
 \subsection{Variables}
 
+In this section, we define and explain the various variables and data structures used in the SQUISH-E algorithm. Understanding these variables is crucial for comprehending how the algorithm operates and manages the compression process.
 
 \begin{table}[h!]
     \centering
@@ -86,50 +87,69 @@ To achieve the optimum complexity of this algorithm, it is imperative that the m
         \hline
         \textbf{Variable} & \textbf{Description} \\
         \hline
-        $Q$             & Priority queue \\
-        $p_{\pi}$       & Point with the lowest priority \\
-        $\text{pred}$   & Predecessor map \\
-        $\text{succ}$   & Successor map \\
-        $\pi$           & Priority map \\
-        $P_i$           & A point in the priority queue \\
-        $\text{SED}$    & Some distance function \\
+        $Q$             & Priority queue that stores points based on their priority. \\
+        $p_{\pi}$       & Point with the lowest priority in the priority queue. \\
+        $\text{pred}$   & Predecessor map that stores the predecessor of each point. \\
+        $\text{succ}$   & Successor map that stores the successor of each point. \\
+        $\pi$           & Priority map that stores the priority of each point. \\
+        $P_i$           & A specific point in the trajectory or priority queue. \\
+        $\text{SED}$    & Synchronized Euclidean Distance function used to calculate error. \\
         \hline
     \end{tabular}
-    \caption{List of Variables Used in Algorithms}
+    \caption{Comprehensive list of variables used in the SQUISH-E algorithm.}
 \end{table}
 
-\paragraph{Map}
+\paragraph{Maps}
 
-As mentioned before we have 3 map two that has as pair key-value point-point and another with point-priority .
+As mentioned before, we use three maps in the SQUISH-E algorithm: two that maintain point-point relationships and one that maintains point-priority relationships. These maps are essential for tracking the relationships and priorities of points in the trajectory.
 
-
-\subparagraph{Method}
-The method that is necessary to implement for this map is the following
+\subparagraph{Variables related to the Maps}
+The maps used in the algorithm include:
 
 \begin{itemize}
-    \item set(key,value,map)
-    \item remove(key,map)
-    \item get(key,map) -> value
+    \item \texttt{$\text{pred}$}: This map stores the predecessor of each point. For a given point $P_i$, 
+    $\text{pred}[P_i]$ returns the point that directly precedes $P_i$ in the trajectory.
+    \item \texttt{$\text{succ}$}: This map stores the successor of each point. For a given point $P_i$, 
+    $\text{succ}[P_i]$ returns the point that directly follows $P_i$ in the trajectory.
+    \item \texttt{$\pi$}: This map stores the priority of each point. For a given point $P_i$, $\pi[P_i]$ returns the priority value assigned to $P_i$ based on the Synchronized Euclidean Distance (SED) error that would be introduced by its removal.
 \end{itemize}
 
+\subparagraph{Methods for the Maps}
+The methods necessary to implement and manipulate these maps are derived from the core operations of the SQUISH-E algorithm, which involves setting and adjusting priorities, and managing predecessor and successor relationships:
 
-\paragraph{PriorityQueue}
-Another structure is a priority queue, but with quite different methods.
-The priority queue stores elements that are point-priority pairs, and has a sorted structure so that the minimum can be removed. This structure poses a real challenge, due to its nature and the methods we'll define below.
-
-
-\subparagraph{Method}
-The methods required to implement priorityqueue are as follows:
 \begin{itemize}
-    \item set\_priority(key,value,Q) this function can be expressed as the two following methods
+    \item \texttt{set(key, value, map)}: This method sets the value for a given key in the map. For example,
+    \texttt{set($P_i$, $P_j$,\text{pred})} would set $P_j$ as the predecessor of $P_i$.
+    
+    \item \texttt{remove(key, map)}: This method removes the key and its corresponding value from the map. For instance, \texttt{remove($P_i$, \text{pred})} would remove the entry for $P_i$ from the predecessor map.
+    \item \texttt{get(key, map)} $\rightarrow$ \texttt{value}: This method retrieves the value associated with the given key in the map. For example, \texttt{get($P_i$, \text{succ})} would return the successor of $P_i$.
+\end{itemize}
+
+\paragraph{Priority Queue}
+
+Another critical data structure in the SQUISH-E algorithm is the priority queue. The priority queue stores elements as point-priority pairs and maintains a sorted structure so that the point with the lowest priority can be efficiently removed. This structure is essential for the algorithm to function correctly, as it allows for the dynamic adjustment and removal of points based on their impact on the SED error.
+
+\subparagraph{Variables related to the Priority Queue}
+The priority queue $Q$ involves the following variables:
+
+\begin{itemize}
+    \item \texttt{$Q$}: The priority queue itself, which holds the points and their associated priorities.
+    \item \texttt{$p_{\pi}$}: This variable refers to the point with the lowest priority in the priority queue, which is the next candidate for removal.
+\end{itemize}
+
+\subparagraph{Methods for the Priority Queue}
+The methods required to implement and manipulate the priority queue are derived from the SQUISH-E algorithm's need to set and adjust priorities, and dynamically remove points to control the SED error. These methods include:
+
+\begin{itemize}
+    \item \texttt{set\_priority(key, value, Q)}: This function sets the priority of a point in the priority queue. It can be broken down into two sub-methods:
     \begin{itemize}
-        \item remove(key,Q) or replace(key,Q) // depends on implementation
-        \item push(key,value,Q)
+        \item \texttt{remove(key, Q)} or \texttt{replace(key, Q)}: Depending on the implementation, this method either removes the point with the given key from the priority queue or replaces its priority value.
+        \item \texttt{push(key, value, Q)}: This method adds a new point with its priority to the priority queue.
     \end{itemize}
-    \item remove\_min(Q)
+    \item \texttt{remove\_min(Q)}: This method removes and returns the point with the lowest priority from the priority queue. This operation is critical for maintaining the queue's structure and ensuring that the point causing the least increase in SED error is removed.
 \end{itemize}
 
-As the set function is closer to the characteristics of an array than a priorityqueue, this poses a challenge if existing resources don't allow these methods to be implemented in $O(log(n))$ at most.
+As the \texttt{set\_priority} function is closer to the characteristics of an array than a traditional priority queue, it poses a challenge if existing resources do not allow these methods to be implemented in $O(\log(n))$ time at most. Efficient implementation of these methods is crucial for the algorithm's performance and scalability.
 
 
 

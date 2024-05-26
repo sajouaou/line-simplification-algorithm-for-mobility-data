@@ -4,7 +4,7 @@
 In this chapter it will be discussed the function's effective performance and examine the accuracy and effectiveness of the queries. To compare the offline and online executions, we will also balance the differences between it in real time with the C implementation handling the same data.
 
 \section{Performance}
-This section will analyze and discuss the performance of the sql function by varying the lambda parameter and the number of points.
+This section will analyze and discuss the performance of the SQL function by varying the lambda parameter and the number of points.
 \begin{table}[htbp]
     \centering
     \label{tab:execution_time}
@@ -21,7 +21,7 @@ This section will analyze and discuss the performance of the sql function by var
         1000000          & 04.618455 & 05.371317 & 06.461961 & 06.021071 & 04.510934 \\
         \bottomrule
     \end{tabular}
-    \caption{Average Execution Time by Number of Points and Lambda}
+    \caption{Average Execution Time across various combinations of Number of Points and Lambda values.}
 \end{table}
 
 In order to get those results we benchmark the request 10 times for each requests and retrieve the average of those executions. As standalone results it has no real meaning outside but we can notice that the speed of the algorithm increase around $0.5$ and decrease outside those values of lambda. We can also state that maybe there is another value as maximum execution time between $0.75$ and $0.25$ . We can state that this is maybe because the number of instruction that mix setting in a priority queue and the instructions of reduction is around $0.5$. Because when lambda is equal to 1 there is no reduction and only setting in the maximal size of a priority queue and adjust priority operation and when lambda go towards $0$ there is a lot of reduction operation and setting in the minimal size of a priority queue. That is an explanation that could befit those data. When the size of the input is multiplying by $10$ the execution time is around $2$ times longer.
@@ -45,44 +45,45 @@ In order to have meaning to those result we will compare it with the C implement
         1000000          & 00.892172 & 00.864116 & 00.870661 & 00.937186 & 00.920517 \\
         \bottomrule
     \end{tabular}
-    \caption{Average Execution Time (C) by Number of Points and Lambda}
+    \caption{Average Execution Time (in C) across different combinations of Number of Points and Lambda values.}
 \end{table}
 
-As we can see, executing C code is much faster than executing sql queries, which makes execution and simplification using steam processing techniques in C both viable and possible. The speed is such that even for 1 million points the average execution time is less than 1 second.
+As we can see, executing C code is much faster than executing SQL queries, which makes execution and simplification using steam processing techniques in C both viable and possible. The speed is such that even for 1 million points the average execution time is less than 1 second.
 
 \section{Precision}
 This section will focus on the precision of the simplification using the same parameter as before in order to have an idea of the quality of the simplification in a function of lambda and types of path. We will discuss on trajectory based on AIS dataset. As stated in \cite{abam2007streaming}, there is different type of path as convex and concave. As a reminder this work focus on the simplification of lines and do not take into account land or see restriction during the simplification process. In this section we will analyze different trajectory defines them and see with different lambda and metrics evaluation the quality of the simplification. At the end we will run in a big datasets and see the results as a graph and discuss them.
 
 \subsection{Trajectory 1}
 
-\begin{figure}[!h]
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.5\linewidth]{figures/Stats/traj_1.jpg}
-    \caption{Trajectory 1}
+    \includegraphics[width=1\linewidth]{figures/Stats/traj_1.jpg}
+    \caption{Trajectory 1 on a map.}
     \label{fig:traj_1}
 \end{figure}
 
-This trajectory is composed of 20865 points and begin at 1am the 8/1/2021 with a duration of 1 day. This trajectory have convex and concave path in order to analyze the effect of the simplification in those specific moment. The precision of the trajectory will be computed based on the current metrics proposed in the state of the art such as Frechet distance and Hausdorff distances. We will not discuss the precision of lambda 1 because it does not reduce any points from the original trajectory.
+This trajectory shown in the Figure \ref{fig:traj_1} is composed of 20865 points and begin at 1am the 8/1/2021 with a duration of 1 day. In order to examine the impact of simplification at that particular instant, this trajectory has a convex and concave course. Using the current state-of-the-art metrics, such as Hausdorff and Frechet distances, the trajectory's precision will be calculated. Because lambda 1 does not subtract any points from the initial trajectory, we will not be talking about its precision.
 
 
 
-\begin{figure}[!h]
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.5\linewidth]{figures/Stats/squish_1.jpg}
-    \caption{Trajectory 1 - SQUISH-E}
+    \includegraphics[width=0.6\linewidth]{figures/Stats/squish_1.jpg}
+    \caption{Trajectory 1 compressed using the SQUISH-E algorithm.}
     \label{fig:traj_1_squish}
 \end{figure}
 
-The path looks really similar and is close to the original path in \ref{fig:traj_1_squish}. In order to see the differences we can zoom and move the slider in order to see the moving objects in relation with the current time.
+The trajectory in Figure \ref{fig:traj_1_squish} is very similar to the path that was originally made. We can see how the points move in line with the slider's setting, representing a span of time, by zooming in and modifying the slider.
 
-\begin{figure}[!h]
+
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.5\linewidth]{figures/Stats/squish_1_zoom.jpg}
-    \caption{Trajectory 1 - ZOOM }
+    \includegraphics[width=0.6\linewidth]{figures/Stats/squish_1_zoom.jpg}
+    \caption{Zoomed-in view of Trajectory 1. }
     \label{fig:traj_1_sqzoom}
 \end{figure}
 
-In this we can see the path being simplified where there is curves and having less precision as lambda decreases.
+The path becomes less precise as lambda decreases and becomes simpler when there are curves, as shown in Figure \ref{fig:traj_1_sqzoom}.
 
 \begin{table}[htbp]
     \centering
@@ -100,7 +101,7 @@ In this we can see the path being simplified where there is curves and having le
         Temporal Distance            & 0.909 & 1.712 & 2.635 & 49.748\\
         \bottomrule
     \end{tabular}
-    \caption{Precision metrics per Lambda for Trajectory 1 }
+    \caption{Precision metrics for Trajectory 1 across various Lambda values. }
 \end{table}
 
 This table gives a view of the precision of SQUISH-E on the first trajectory. The data shows that it is consistent and precise and that errors is increasing when lambda decreases. Dynamic Time Warping Distance gives also an overview of the loss of precision when we remove more points.
@@ -126,7 +127,7 @@ This section will outline the differences between the SQL and C execution since 
         Difference of Temporal Distance            & 0.0284 & 0.0239 & 0.0175 & 1.842\\
         \bottomrule
     \end{tabular}
-    \caption{Comparison Precision metrics per Lambda for Trajectory 1 }
+    \caption{Comparison of precision metrics for Trajectory 1 across different Lambda values.}
 \end{table}
 
 The comparison shows that the offline and online implementations provide different numbers of trajectory points. Because of its gradual processing, we find that the online version typically produces more points, while the offline version might use more forceful compression methods.
