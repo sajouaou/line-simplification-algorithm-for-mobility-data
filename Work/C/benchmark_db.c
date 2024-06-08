@@ -1,3 +1,7 @@
+/*
+This file benchmark the C Code of SQUISH-E
+Performance Test
+*/
 
 #include <stdio.h>
 #include <stdlib.h>

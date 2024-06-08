@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#This script add SQUISH-E into MobilityDB
+
 cd MobilityDB
 git reset
 git checkout .

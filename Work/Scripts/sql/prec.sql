@@ -1,3 +1,4 @@
+-- Precision benchmark for each algorithm
 DROP FUNCTION precBenchmarkSQ;
 CREATE OR REPLACE FUNCTION precBenchmarkSQ(
 	trip tgeompoint, -- Path on what the benchmark is running

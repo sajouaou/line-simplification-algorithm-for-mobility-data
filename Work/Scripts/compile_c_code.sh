@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# A script to run the BerlinMOD generator with my personnal sql
+# A script to compile the C code
 
 source creditentials
 export PGPASSWORD=$password

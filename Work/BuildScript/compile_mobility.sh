@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#This file compile and remove previous build file it receive as parameter r or m
+# r for remove it removes previous build file
+# m for meos it build the meos library for C
+
 can_remove=false
 is_meos=false
 while getopts "rm" option; do

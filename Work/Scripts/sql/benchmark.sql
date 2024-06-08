@@ -1,3 +1,4 @@
+-- Script for benchmarking multiple algorithm
 CREATE OR REPLACE FUNCTION perfBenchmarkSQ(
 	trip tgeompoint, -- Path on what the benchmark is running
 	lambda float,

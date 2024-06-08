@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# This script reset everything and compile C code and Load SQL file
+
 source creditentials
 export PGPASSWORD=$password
 

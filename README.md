@@ -17,11 +17,11 @@ purpose passwords are simple but do not take those scripts as secure.
 How to use
 -------------
 
-## Dependency
+### Dependency
 As a requirement you need [MobilityDB-BerlinMOD](https://github.com/MobilityDB/MobilityDB-BerlinMOD) to run the requests.
 You can use my personnal script for installation of the dependency.
 
-## Data generation
+### Data generation
 
 In order to generate data with our conceptual model you can use this command with parameter s to define the scalefactor
 
@@ -32,5 +32,26 @@ In order to generate data with our conceptual model you can use this command wit
 
         ./berlinmod_runall.sh -s $scalefactor
 
-## AIS Data
+### AIS Data
 The requests and queries work using AIS data you need to download and push it in the database. 
+
+### Repository Structure 
+
+
+```md
+Data/       -- This directory contains all the data files used in the project.
+Thesis/     -- This directory contains the thesis documents and related files.
+Work/       -- This directory is the main workspace for the project and contains the following subdirectories
+├── BuildScript/    -- Contains build scripts for the project.
+├── C/              -- Contains C language source code files for testing and generation.
+├── PythonCode/     -- Contains Python scripts and Proof of Concept. 
+├── Scripts/        -- Contains various scripts used in the project.
+│ ├── berlinmod_script/     -- Scripts specific to BerlinMOD.
+│ ├── sql/                  -- SQL scripts for database operations.
+│ ├── credentials           -- credentials files that contains user and db info for all scripts
+├── SquishE/        -- Contains the implementation of the SQUISH-E algorithm.
+└── View/           -- Contains files related to the project's user interface and visualization.
+│ ├──Dashboard/             -- Contains dashboard-related files.
+│ ├──ReactView/             -- Contains files for the React front-end.
+│ └── pgtileserv/           -- Contains files for the pgtileserv service.
+```

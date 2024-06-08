@@ -1,3 +1,10 @@
+/*
+
+This file execute SQUISH-E and updload the trajectory in MobilityDB.
+
+Accuracy Test
+
+*/
 
 #include <stdio.h>
 #include <stdlib.h>

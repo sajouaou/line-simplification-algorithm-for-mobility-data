@@ -1,3 +1,5 @@
+-- Scripts for pgtilesserv backend visualisation change the trips_ variable if you want a personal view
+
 CREATE OR REPLACE
 FUNCTION public.linesimpl(
             z integer, x integer, y  integer,s float[],algo text[],mmsi_ integer)

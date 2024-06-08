@@ -1,3 +1,4 @@
+-- Comparison between two trajectory and SQUISH-E using multiple error metrics
 select
 frechetDistance(trip,c_trip) -  frechetDistance(trip,s_trip) as dFrechet,
 hausdorffDistance(trip,c_trip) -  hausdorffDistance(trip,s_trip) as dHausdorff,

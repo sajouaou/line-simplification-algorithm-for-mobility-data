@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#This script install the dependance for MobilityDB and change the corresponding file
+
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 sudo apt-get update
 sudo apt install build-essential cmake libproj-dev libjson-c-dev postgresql-14-postgis-3 libgeos-dev libgsl-dev

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# This script setup and install grafana
+
 # Note These are instructions for Grafana Enterprise Edition (via APT repository),
 # which they recommend. It includes all the Open Source features and can also use
 # Enterprise features if you have a License.

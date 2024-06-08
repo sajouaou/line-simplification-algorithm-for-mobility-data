@@ -1,5 +1,6 @@
 #!/bin/bash
-# A script to run the BerlinMOD generator with my personnal sql
+
+# A script to test SQUISH-E it resets the database
 source creditentials
 export PGPASSWORD=$password
 

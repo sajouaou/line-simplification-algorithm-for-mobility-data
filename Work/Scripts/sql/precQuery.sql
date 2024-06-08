@@ -1,3 +1,4 @@
+-- Precise request and comparison between algorithms
 SELECT
 frechetDistance(trip,s_trip) as sFrechet,
 hausdorffDistance(trip,s_trip) as sHausdorff,
